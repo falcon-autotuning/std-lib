@@ -3,3 +3,6 @@ version: "1.0.0"
 maintainer: "falcon-devs"
 github: ""
 dependencies: []
+
+ffi:
+  build/symbol-unit-wrapper.so: sha256:090ee1e861b8a677ed09a70e81627cec3dd90b7aa2f5dbb502c8018925bb7ef7

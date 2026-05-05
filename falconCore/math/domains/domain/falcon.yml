@@ -6,3 +6,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/domain-wrapper.so: sha256:74e36d78d38d736c9ee2a3c813ed057f74ce50e6d76e9e01bbd81b8a8c1b4407

@@ -5,6 +5,7 @@ maintainer: "falcon-devs"
 github: "falcon-autotuning/falcon-lib"
 ffi:
   - "strings-wrapper.cpp"
+  build/strings-wrapper.so: sha256:03c7340c0239293d01d0a844faaa9bed229f7a8bf0da2ab81b7942e0e616a4ba
 dependencies:
   - name: testing
     version: "^1.0.0"

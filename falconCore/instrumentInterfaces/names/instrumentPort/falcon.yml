@@ -12,3 +12,6 @@ dependencies:
   - name: instrument
     version: "1.0.0"
     local_path: "../../../instrumentInterfaces/names/instrument"
+
+ffi:
+  build/instrument-port-wrapper.so: sha256:b076a32fb868698dc1e7d708686f763d189556c1bbf66115e613fd85cd994560

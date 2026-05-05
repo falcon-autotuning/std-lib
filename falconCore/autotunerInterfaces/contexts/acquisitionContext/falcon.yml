@@ -21,3 +21,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/acquisition-context-wrapper.so: sha256:a0243ec89df8d5a8827a379078ab5d4ad36d7cb3a4918d77921f3faefe8a6677

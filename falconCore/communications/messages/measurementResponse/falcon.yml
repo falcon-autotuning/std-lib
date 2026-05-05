@@ -12,3 +12,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/measurement-response-wrapper.so: sha256:5e93d0ea891614e70e3a8e8d1356ef8c5871ae5f45529f942c2c829eaba28361

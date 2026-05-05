@@ -6,3 +6,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/increasing-alignment-wrapper.so: sha256:ed2fa572ce3ca0fa2c4565c4f59c7865355d6c05a03c298d714be5b992021c8a

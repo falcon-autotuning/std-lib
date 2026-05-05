@@ -3,3 +3,6 @@ version: "1.0.0"
 maintainer: "falcon-devs"
 github: ""
 dependencies: []
+
+ffi:
+  build/database-wrapper.so: sha256:1c3acc4d23c15a9ed557003f6fc664a66ba3a22c4e907a70eacfb9a56eb52709

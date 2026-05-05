@@ -9,3 +9,6 @@ dependencies:
   - name: symbolUnit
     version: "1.0.0"
     local_path: "../../../physics/units/symbolUnit/"
+
+ffi:
+  build/device-voltage-state-wrapper.so: sha256:c08d7942d97b367d7c057cd71167bf2039f3dd73004e2d43f6235385c492d09f

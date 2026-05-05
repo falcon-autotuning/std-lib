@@ -3,3 +3,6 @@ version: "1.0.0"
 maintainer: "falcon-devs"
 github: ""
 dependencies: []
+
+ffi:
+  build/instrument-wrapper.so: sha256:509142e9aceca64b91795ba78998533a25088ae847eb04d037a710659e29c78c

@@ -18,3 +18,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/coupled-labelled-domain-wrapper.so: sha256:8303de255c141e87b63713d0487aa3f991aa366084ca094330943ac74e02eed6

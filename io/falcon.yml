@@ -3,3 +3,6 @@ version: "1.0.0"
 maintainer: "falcon-devs"
 github: ""
 dependencies: []
+
+ffi:
+  build/io-wrapper.so: sha256:63a5129dc3fa3c8f6fba4cf77dad18b935c0bc78f6acd1699d6811984227c05a

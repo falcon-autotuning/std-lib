@@ -15,3 +15,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/interpretation-container-wrapper.so: sha256:d6c43efd277c11afe63693cfd427f9cbc392f37fc15c3e7139007646d059dee4

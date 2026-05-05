@@ -27,9 +27,10 @@ build: ## Build all FFI wrappers
 	@for dir in $(PKG_DIRS); do \
 		echo "🔨 Building $$dir..."; \
 		(cd $$dir && \
+		 mkdir -p build && \
 		 cpp_file=$$(ls *-wrapper.cpp 2>/dev/null) && \
 		 if [ -n "$$cpp_file" ]; then \
-		   so_file=$${cpp_file%.cpp}.so; \
+		   so_file=build/$${cpp_file%.cpp}.so; \
 		   $(CXX) $(CXXFLAGS) -shared -o $$so_file $$cpp_file $(INCLUDES) $(LDFLAGS) || exit 1; \
 		   echo "  ✓ Created $$so_file"; \
 		 fi); \
@@ -38,15 +39,7 @@ build: ## Build all FFI wrappers
 update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 	@for dir in $(PKG_DIRS); do \
 		echo "🔒 Updating hashes for $$dir..."; \
-		(cd $$dir && \
-		 for so in $$(ls *.so 2>/dev/null); do \
-		   hash=$$(sha256sum $$so | cut -d' ' -f1); \
-		   if command -v yq &> /dev/null; then \
-		     yq eval ".ffi.\"$$so\" = \"sha256:$$hash\"" -i falcon.yml; \
-		   else \
-		     sed -i "s|$$so:.*|$$so: sha256:$$hash|" falcon.yml; \
-		   fi; \
-		 done); \
+		python3 scripts/update_hashes.py $$dir; \
 	done
 
 test: build ## Run tests for all packages
@@ -57,19 +50,29 @@ test: build ## Run tests for all packages
 		fi; \
 	done
 
-release: update-hashes ## Create releases for all packages (as per testing/Makefile)
+dist: build update-hashes ## Create a monolithic release tarball
+	@VERSION=$$(grep "version:" falcon.yml | cut -d' ' -f2 | tr -d '"') && \
+	 TARBALL="std-lib-$$VERSION.tar.gz" && \
+	 mkdir -p dist && \
+	 echo "📦 Creating monolithic release dist/$$TARBALL..." && \
+	 tar -czf dist/$$TARBALL --exclude='.git*' --exclude="dist" --exclude='scripts' --exclude='Makefile' --exclude='dist' . && \
+	 echo "  ✓ Created dist/$$TARBALL"
+
+release: dist ## Create releases for all packages (monolithic and individual)
 	@for dir in $(PKG_DIRS); do \
 		echo "🚀 Releasing $$dir..."; \
 		(cd $$dir && \
-		 VERSION=$$(grep "version:" falcon.yml | cut -d' ' -f2) && \
-		 PKG_NAME=$$(grep "name:" falcon.yml | cut -d' ' -f2) && \
+		 VERSION=$$(grep "version:" falcon.yml | cut -d' ' -f2 | tr -d '"') && \
+		 PKG_NAME=$$(grep "name:" falcon.yml | cut -d' ' -f2 | tr -d '"') && \
 		 TARBALL="$$PKG_NAME-$$VERSION.tar.gz" && \
-		 tar -czvf $$TARBALL falcon.yml *.fal *.so README.md 2>/dev/null || true; \
-		 echo "  ✓ Created $$TARBALL"); \
+		 mkdir -p build && \
+		 tar -czvf build/$$TARBALL falcon.yml *.fal build/*.so README.md 2>/dev/null || true; \
+		 echo "  ✓ Created build/$$TARBALL"); \
 	done
 
 clean: ## Remove build artifacts
-	@for dir in $(PKG_DIRS); do \
-		(cd $$dir && rm -f *.so *.tar.gz); \
-	done
+	@echo "Cleaning up..."
+	@find . -type d -name "build" -exec rm -rf {} +
+	@rm -rf dist
+	@rm -f *.tar.gz
 	@echo "✓ Clean complete"

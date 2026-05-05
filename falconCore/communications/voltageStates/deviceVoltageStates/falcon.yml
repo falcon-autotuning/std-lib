@@ -18,3 +18,6 @@ dependencies:
   - name: point 
     version: "1.0.0"
     local_path: "../../../math/point/"
+
+ffi:
+  build/device-voltage-states-wrapper.so: sha256:0c3c51e586a916cfb0209af511e5c5e21eb573a81f1025fdc4d9b2658ec40073

@@ -12,3 +12,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/port-transforms-wrapper.so: sha256:b5b157171d9abe5032f191cdfb2e4705163555750118646c9d583436098535a0

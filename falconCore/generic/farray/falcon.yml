@@ -6,3 +6,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/farray-wrapper.so: sha256:5d3b4c9d3afaad009d10902555da6784872674c9c5928b1891b538c63e5d8950

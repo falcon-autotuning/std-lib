@@ -18,3 +18,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/interpretation-context-wrapper.so: sha256:9ccd05bd6a36a8a194ade62b4e8a23142af6bc80470d03d56cfcceb571819bd9

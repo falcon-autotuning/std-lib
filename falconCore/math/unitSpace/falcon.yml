@@ -15,3 +15,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../testing/"
+
+ffi:
+  build/unit-space-wrapper.so: sha256:2dd0c13270b42941ab2a4c573fa217adcec5e10bc843fada3b4963d5c286ae0a

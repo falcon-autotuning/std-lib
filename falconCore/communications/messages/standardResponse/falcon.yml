@@ -6,3 +6,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/standard-response-wrapper.so: sha256:2f19bbd6c2a277d869c9aef80272ecdfb55e1a06bcdcdd68cdf688c466d09cea

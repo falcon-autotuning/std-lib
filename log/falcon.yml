@@ -3,3 +3,6 @@ version: "1.0.0"
 maintainer: "falcon-devs"
 github: ""
 dependencies: []
+
+ffi:
+  build/log-wrapper.so: sha256:3a4ef3977cc785e46711e0df2c76593d25f3a3f0fadc70426bdf7d639be0f599

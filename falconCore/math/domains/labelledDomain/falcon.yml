@@ -21,3 +21,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/labelled-domain-wrapper.so: sha256:ab20f0395f9dd41cd26fa5386be6bb5b841d3293d4baa5a671c1f45fd331a6c9

@@ -6,5 +6,6 @@ github: "falcon-autotuning/falcon-lib"
 
 ffi:
   - "array-wrapper.cpp"
+  build/array-wrapper.so: sha256:20faa442797c17b5ea29596e52c41a5fe6f3889ae3c93dc26648f0c87a014a5c
 
 dependencies: []

@@ -9,3 +9,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../testing/"
+
+ffi:
+  build/analytic-function-wrapper.so: sha256:dd3d185e2ccd86157b41fd65e7334c5bd3c6a5da73fdc55ea178ded9fa4c639d

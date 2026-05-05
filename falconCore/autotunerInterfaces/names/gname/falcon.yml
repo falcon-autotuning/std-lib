@@ -6,3 +6,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../../testing/"
+
+ffi:
+  build/gname-wrapper.so: sha256:83bdebc9d0a88341a3eacd357153c66f5b78fb1ed312ca9aaee9c12497b7f31a

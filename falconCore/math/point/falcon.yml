@@ -21,3 +21,6 @@ dependencies:
   - name: testing
     version: "1.0.0"
     local_path: "../../../testing/"
+
+ffi:
+  build/point-wrapper.so: sha256:2438071daf75f7e3616371e0a1b921d2d5b672a9fac688690ff681f5b6697e42
