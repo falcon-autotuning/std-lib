@@ -20,4 +20,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/labelled-arrays-wrapper.so: sha256:fd096dcca604ee9dbd46432a45ecd86db1cac505029f0d0bc48e864d7bb1a87f
+  build/labelled-arrays-wrapper.so: sha256:4026cdf79b28c1ba0392f479a58d2eb7b83846e8ae6448854b43c5d07ba6a194

@@ -5,4 +5,4 @@ github: ""
 dependencies: []
 
 ffi:
-  build/connection-wrapper.so: sha256:368ebfe087d3f0e70f7c310220550f3c5434dedaf8a31d9d1711c150ad3c49ff
+  build/connection-wrapper.so: sha256:eee620390ce240cccfba57f985ff80afe34d5d9f43d956f8bb01db17cd514bb0

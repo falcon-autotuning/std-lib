@@ -51,7 +51,6 @@ static void pack_ctx_array(
     auto inst = std::make_shared<StructInstance>("InterpretationContext");
     auto sp   = std::make_shared<InterpretationContextSP>(ctx);
     inst->native_handle = std::static_pointer_cast<void>(sp);
-    inst->is_native     = true;
     arr->items.push_back(inst);
   }
   out[0]                        = {};

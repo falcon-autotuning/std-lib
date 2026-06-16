@@ -5,4 +5,4 @@ github: ""
 dependencies: []
 
 ffi:
-  build/io-wrapper.so: sha256:63a5129dc3fa3c8f6fba4cf77dad18b935c0bc78f6acd1699d6811984227c05a
+  build/io-wrapper.so: sha256:b322a33683c1776b628de439bb18e79d550aac780f53b8d7bad99182ac77d76f

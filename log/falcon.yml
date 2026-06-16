@@ -5,4 +5,4 @@ github: ""
 dependencies: []
 
 ffi:
-  build/log-wrapper.so: sha256:3a4ef3977cc785e46711e0df2c76593d25f3a3f0fadc70426bdf7d639be0f599
+  build/log-wrapper.so: sha256:076d34ca1717ce81bffc36682d5c60bc7b50ea4d961fb58afd3431b397f873a1

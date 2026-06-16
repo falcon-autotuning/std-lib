@@ -5,4 +5,4 @@ github: ""
 dependencies: []
 
 ffi:
-  build/instrument-wrapper.so: sha256:509142e9aceca64b91795ba78998533a25088ae847eb04d037a710659e29c78c
+  build/instrument-wrapper.so: sha256:b0ea6e1fbe81c7ec735ec9d286cc8e2fb007d2d81377b1b4c6385358f7291ec5

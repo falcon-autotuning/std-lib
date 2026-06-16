@@ -4,5 +4,5 @@ description: "testing framework for use with falcon-test"
 maintainer: "falcon-devs"
 github: "falcon-autotuning/falcon-lib"
 ffi:
-  build/testing-wrapper.so: sha256:5331f415d7186015e5b3a05a194ffe33689ebba804e3cecfc720e4fb5d41bae4
+  build/testing-wrapper.so: sha256:9a977ecd64cb9a903c99d6eedbac1809384f8ed01742c52671976fff541d244a
 dependencies: []

@@ -81,8 +81,8 @@ void initialize_logger() {
       g_logger->set_level(spdlog::level::info); // default
     }
 
-    // Flush on warning and above
-    g_logger->flush_on(spdlog::level::warn);
+    // Flush on trace and above (i.e. all logs)
+    g_logger->flush_on(spdlog::level::trace);
 
     // Register as default logger
     spdlog::set_default_logger(g_logger);
