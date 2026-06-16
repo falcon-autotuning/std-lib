@@ -1,0 +1,9 @@
+# Falcon Standard Library Build Artifacts
+**/build/
+dist/
+.falcon/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
