@@ -1,5 +1,5 @@
 import "../collections/array/array.fal";
-ffimport "strings-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib/" "-lfmt")
+ffimport "strings-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib/")
 
 // ── Predicates ────────────────────────────────────────────────────────────────
 

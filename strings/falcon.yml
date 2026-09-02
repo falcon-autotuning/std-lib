@@ -1,11 +1,9 @@
 name: strings
-version: "1.0.0"
-description: "string handling for the falcon language"
-maintainer: "falcon-devs"
-github: "falcon-autotuning/std-lib"
+version: 1.0.0
+maintainer: falcon-devs
+github: falcon-autotuning/std-lib
+license: ""
 ffi:
-  strings-wrapper.so: ""
+  strings-wrapper.so: sha256:c4918863f13002cddf90413bed4f9fed6d93a42a535ab70075eb2a0f287f7e59
 dependencies:
-  - name: testing
-    version: "^1.1.4"
-    github: "github.com/falcon-autotuning/std-lib/testing"
+  []

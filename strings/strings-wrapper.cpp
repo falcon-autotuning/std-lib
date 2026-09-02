@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <falcon-typing/FFIHelpers.hpp>
-#include <fmt/core.h>
 #include <iostream>
 #include <memory>
 #include <regex>
@@ -12,6 +11,28 @@ using namespace falcon::typing::ffi::wrapper;
 
 // ── internal helpers
 // ──────────────────────────────────────────────────────────
+static std::string format_string(const std::string &fmt,
+                                 const std::vector<std::string> &args) {
+  std::string result;
+  size_t arg_index = 0;
+
+  for (size_t i = 0; i < fmt.size(); ++i) {
+    if (i + 1 < fmt.size() && fmt[i] == '{' && fmt[i + 1] == '}') {
+
+      if (arg_index < args.size()) {
+        result += args[arg_index++];
+      } else {
+        result += "{}";
+      }
+
+      ++i;
+    } else {
+      result += fmt[i];
+    }
+  }
+
+  return result;
+}
 
 static std::string unescape_pattern(const std::string &pat) {
   std::string out;
@@ -443,37 +464,7 @@ void Format(const FalconParamEntry *params, int32_t param_count,
     args_vec.push_back(std::get<std::string>(elem));
   }
   std::string result;
-  try {
-    switch (args_vec.size()) {
-    case 0:
-      result = fmt::format(fmt::runtime(fmt_str));
-      break;
-    case 1:
-      result = fmt::format(fmt::runtime(fmt_str), args_vec[0]);
-      break;
-    case 2:
-      result = fmt::format(fmt::runtime(fmt_str), args_vec[0], args_vec[1]);
-      break;
-    case 3:
-      result = fmt::format(fmt::runtime(fmt_str), args_vec[0], args_vec[1], args_vec[2]);
-      break;
-    case 4:
-      result = fmt::format(fmt::runtime(fmt_str), args_vec[0], args_vec[1], args_vec[2],
-                           args_vec[3]);
-      break;
-    case 5:
-      result = fmt::format(fmt::runtime(fmt_str), args_vec[0], args_vec[1], args_vec[2],
-                           args_vec[3], args_vec[4]);
-      break;
-    default:
-      throw std::runtime_error(
-          "Format: too many arguments for fmt::format (max 5)");
-    }
-  } catch (const std::exception &e) {
-    pack_results(FunctionResult{nullptr, ErrorObject{e.what(), false}}, out, 16,
-                 oc);
-    return;
-  }
+  result = format_string(fmt_str, args_vec);
   pack_results(FunctionResult{result}, out, 16, oc);
 }
 }
