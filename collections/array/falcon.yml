@@ -1,10 +1,11 @@
 name: array
 version: 1.0.0
-description: "Generic dynamically-sized array"
-maintainer: "Falcon Team"
-github: "falcon-autotuning/falcon-lib"
-
+maintainer: Falcon Team
+github: falcon-autotuning/std-lib
+license: ""
 ffi:
-  build/array-wrapper.so: sha256:fc90a3b9ff039354f10e373882e356cc5af1afc647e72840de7546904ad03366
-
-dependencies: []
+  array-wrapper.so: sha256:f08c78dc2c56055059153ac01dd91d85cc0a1edac1ff77cd57f41d1dd0b7f282
+dependencies:
+  - name: testing
+    version: ^1.1.4
+    github: github.com/falcon-autotuning/std-lib/testing

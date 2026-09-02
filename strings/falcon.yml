@@ -4,8 +4,8 @@ description: "string handling for the falcon language"
 maintainer: "falcon-devs"
 github: "falcon-autotuning/std-lib"
 ffi:
-  strings-wrapper.so: sha256:753d33b87db0b3b5331ea31499bebd5f66ae3dc9dab0475787b9fa8b29b48b0e
+  strings-wrapper.so: ""
 dependencies:
   - name: testing
-    version: "^1.0.0"
+    version: "^1.1.4"
     github: "github.com/falcon-autotuning/std-lib/testing"
