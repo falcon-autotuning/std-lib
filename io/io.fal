@@ -1,4 +1,4 @@
-ffimport "io-wrapper.cpp" ("/opt/falcon/include/") ()
+ffimport "io-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib/")
 
 // ── IO ────────────────────────────────────────────────────────────────────────
 // Stateless struct for top-level I/O operations.

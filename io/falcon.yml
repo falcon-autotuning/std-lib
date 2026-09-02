@@ -1,8 +1,9 @@
 name: io
-version: "1.0.0"
-maintainer: "falcon-devs"
-github: "falcon-autotuning/std-lib"
-dependencies: []
-
+version: 1.0.0
+maintainer: falcon-devs
+github: falcon-autotuning/std-lib
+license: ""
 ffi:
-  build/io-wrapper.so: sha256:b322a33683c1776b628de439bb18e79d550aac780f53b8d7bad99182ac77d76f
+  io-wrapper.so: sha256:4a819319d154dde7455a6c17c2b6ecf63c20e9c6220f01a38a1701c38c570266
+dependencies:
+  []

@@ -1,4 +1,4 @@
-ffimport "log-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lspdlog")
+ffimport "log-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib")
 
 routine Info(string message) -> (Error err)
 routine Debug(string message) -> (Error err)

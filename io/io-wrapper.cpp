@@ -9,7 +9,6 @@
 #include <sstream>
 #include <string>
 #include <unistd.h>
-#include <vector>
 
 using namespace falcon::typing;
 using namespace falcon::typing::ffi::wrapper;
@@ -188,47 +187,47 @@ extern "C" {
 // ── IOCapture
 // ─────────────────────────────────────────────────────────────────
 
-void BeginStdout(const FalconParamEntry *p, int32_t pc,
-                                FalconResultSlot *out, int32_t *oc) {
+void BeginStdout(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+                 int32_t *oc) {
   get_global_capture()->begin_stdout();
   pack_nil(out, oc);
 }
 
-void BeginStderr(const FalconParamEntry *p, int32_t pc,
-                                FalconResultSlot *out, int32_t *oc) {
+void BeginStderr(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+                 int32_t *oc) {
   get_global_capture()->begin_stderr();
   pack_nil(out, oc);
 }
 
-void End(const FalconParamEntry *p, int32_t pc,
-                        FalconResultSlot *out, int32_t *oc) {
+void End(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+         int32_t *oc) {
   std::string result = get_global_capture()->end_capture();
   pack_results(FunctionResult{result}, out, 16, oc);
 }
 
-void Peek(const FalconParamEntry *p, int32_t pc,
-                         FalconResultSlot *out, int32_t *oc) {
+void Peek(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+          int32_t *oc) {
   std::string result = get_global_capture()->peek();
   pack_results(FunctionResult{result}, out, 16, oc);
 }
 
-void IsActive(const FalconParamEntry *p, int32_t pc,
-                             FalconResultSlot *out, int32_t *oc) {
+void IsActive(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+              int32_t *oc) {
   auto cap = get_global_capture();
   pack_results(FunctionResult{cap->capturing_stdout || cap->capturing_stderr},
                out, 16, oc);
 }
 
-void WriteStdout(const FalconParamEntry *p, int32_t pc,
-                                FalconResultSlot *out, int32_t *oc) {
+void WriteStdout(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+                 int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto msg = std::get<std::string>(pm.at("msg"));
   get_global_capture()->write_stdout(msg);
   pack_nil(out, oc);
 }
 
-void WriteStderr(const FalconParamEntry *p, int32_t pc,
-                                FalconResultSlot *out, int32_t *oc) {
+void WriteStderr(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+                 int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto msg = std::get<std::string>(pm.at("msg"));
   get_global_capture()->write_stderr(msg);
@@ -238,8 +237,8 @@ void WriteStderr(const FalconParamEntry *p, int32_t pc,
 // ── IO
 // ────────────────────────────────────────────────────────────────────────
 
-void Println(const FalconParamEntry *p, int32_t pc,
-                     FalconResultSlot *out, int32_t *oc) {
+void Println(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+             int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto msg = std::get<std::string>(pm.at("msg"));
   std::cout << msg << "\n";
@@ -248,7 +247,7 @@ void Println(const FalconParamEntry *p, int32_t pc,
 }
 
 void Print(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
-                   int32_t *oc) {
+           int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto msg = std::get<std::string>(pm.at("msg"));
   std::cout << msg;
@@ -256,8 +255,8 @@ void Print(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
   pack_nil(out, oc);
 }
 
-void Eprintln(const FalconParamEntry *p, int32_t pc,
-                      FalconResultSlot *out, int32_t *oc) {
+void Eprintln(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+              int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto msg = std::get<std::string>(pm.at("msg"));
   std::cerr << msg << "\n";
@@ -265,8 +264,8 @@ void Eprintln(const FalconParamEntry *p, int32_t pc,
   pack_nil(out, oc);
 }
 
-void Eprint(const FalconParamEntry *p, int32_t pc,
-                    FalconResultSlot *out, int32_t *oc) {
+void Eprint(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
+            int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto msg = std::get<std::string>(pm.at("msg"));
   std::cerr << msg;

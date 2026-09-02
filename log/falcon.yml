@@ -1,8 +1,9 @@
 name: log
-version: "1.0.0"
-maintainer: "falcon-devs"
-github: "falcon-autotuning/std-lib"
-dependencies: []
-
+version: 1.0.0
+maintainer: falcon-devs
+github: falcon-autotuning/std-lib
+license: ""
 ffi:
-  build/log-wrapper.so: sha256:076d34ca1717ce81bffc36682d5c60bc7b50ea4d961fb58afd3431b397f873a1
+  log-wrapper.so: sha256:e48d3065766f60864113ecfa42577d571d35d1436bc2c0dfda988c355e2638d2
+dependencies:
+  []
