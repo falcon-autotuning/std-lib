@@ -6,4 +6,9 @@ license: ""
 ffi:
   strings-wrapper.so: sha256:c4918863f13002cddf90413bed4f9fed6d93a42a535ab70075eb2a0f287f7e59
 dependencies:
-  []
+  - name: array
+    version: 1.0.0
+    local_path: "../collections/array/"
+  - name: testing
+    version: 1.0.0
+    local_path: "../testing/"

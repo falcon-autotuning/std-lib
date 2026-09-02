@@ -6,4 +6,6 @@ license: ""
 ffi:
   io-wrapper.so: sha256:4a819319d154dde7455a6c17c2b6ecf63c20e9c6220f01a38a1701c38c570266
 dependencies:
-  []
+  - name: testing
+    version: 1.0.0
+    local_path: "../testing/"

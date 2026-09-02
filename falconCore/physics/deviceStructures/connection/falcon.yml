@@ -1,8 +1,11 @@
 name: connection
-version: "1.0.0"
+version: 1.0.0
 maintainer: "falcon-devs"
-github: ""
-dependencies: []
+github: falcon-autotuning/std-lib
+dependencies:
+  - name: testing
+    version: 1.0.0
+    local_path: "../../../../testing/"
 
 ffi:
-  build/connection-wrapper.so: sha256:eee620390ce240cccfba57f985ff80afe34d5d9f43d956f8bb01db17cd514bb0
+  connection-wrapper.so: sha256:eee620390ce240cccfba57f985ff80afe34d5d9f43d956f8bb01db17cd514bb0

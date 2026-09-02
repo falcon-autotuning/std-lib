@@ -6,4 +6,6 @@ license: ""
 ffi:
   log-wrapper.so: sha256:e48d3065766f60864113ecfa42577d571d35d1436bc2c0dfda988c355e2638d2
 dependencies:
-  []
+  - name: testing
+    version: 1.0.0
+    local_path: "../testing/"

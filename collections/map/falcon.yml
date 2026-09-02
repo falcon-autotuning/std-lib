@@ -3,4 +3,10 @@ version: 1.0.0
 description: "Generic key-value map"
 maintainer: "Falcon Team"
 github: "falcon-autotuning/std-lib"
-dependencies: []
+dependencies:
+  - name: array
+    version: 1.0.0
+    local_path: "../collections/array/"
+  - name: testing
+    version: 1.0.0
+    local_path: "../testing/"

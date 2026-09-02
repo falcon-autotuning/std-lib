@@ -1,8 +1,11 @@
 name: symbolUnit
-version: "1.0.0"
+version: 1.0.0
 maintainer: "falcon-devs"
-github: ""
-dependencies: []
+github: falcon-autotuning/std-lib
 
 ffi:
-  build/symbol-unit-wrapper.so: sha256:1569a0b085b1c2d57ee12830e4f85501e4f42f429876d5c70165c1dc3a7e0f11
+  symbol-unit-wrapper.so: sha256:1569a0b085b1c2d57ee12830e4f85501e4f42f429876d5c70165c1dc3a7e0f11
+dependencies:
+  - name: testing
+    version: 1.0.0
+    local_path: "../../../../testing/"

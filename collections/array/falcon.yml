@@ -7,5 +7,5 @@ ffi:
   array-wrapper.so: sha256:f08c78dc2c56055059153ac01dd91d85cc0a1edac1ff77cd57f41d1dd0b7f282
 dependencies:
   - name: testing
-    version: ^1.1.4
-    github: github.com/falcon-autotuning/std-lib/testing
+    version: 1.0.0
+    local_path: "../testing/"

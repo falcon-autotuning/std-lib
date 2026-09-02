@@ -1,10 +1,10 @@
 name: increasingAlignment
-version: "1.0.0"
+version: 1.0.0
 maintainer: "falcon-devs"
 github: ""
 dependencies:
   - name: testing
-    version: "1.0.0"
+    version: 1.0.0
     local_path: "../../../../testing/"
 
 ffi:
