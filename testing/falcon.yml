@@ -1,8 +1,9 @@
 name: testing
-version: "1.0.0"
-description: "testing framework for use with falcon-test"
-maintainer: "falcon-devs"
-github: "falcon-autotuning/falcon-lib"
+version: 1.0.0
+maintainer: falcon-devs
+github: falcon-autotuning/falcon-lib
+license: ""
 ffi:
-  build/testing-wrapper.so: sha256:9a977ecd64cb9a903c99d6eedbac1809384f8ed01742c52671976fff541d244a
-dependencies: []
+  testing-wrapper.so: sha256:1a7e46bcc01c1db3b84e75058edee042450eb864c4b08f795aaa71c5c89caa7d
+dependencies:
+  []

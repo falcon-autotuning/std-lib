@@ -7,7 +7,7 @@
 PKG_DIRS := $(shell find . -mindepth 2 -name "falcon.yml" -exec dirname {} \;)
 
 # Compiler settings
-CXX := g++
+CXX := clang++
 CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
 INCLUDES := -I$(shell pwd)/include -I/opt/falcon/include
 LDFLAGS := -L/opt/falcon/lib -lfalcon_core_cpp -lfmt -lhdf5_cpp -lhdf5
