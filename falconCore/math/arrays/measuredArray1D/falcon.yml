@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/measured-array-1D-wrapper.so: sha256:fe6b9ea01087d92409e1462bc06d97064c1d18216249540b42236525fa0c6d9b
+  build/measured-array-1D-wrapper.so: sha256:014a30b15a879e6b2b32466f4e54a2a32b63219ec07da081a78d1d3662344702

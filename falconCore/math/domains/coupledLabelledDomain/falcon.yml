@@ -20,4 +20,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/coupled-labelled-domain-wrapper.so: sha256:9766b13760894205bcc82fd78c760ab7e816471f660bea25a63c9800f90a7d31
+  build/coupled-labelled-domain-wrapper.so: sha256:9b4d4ce67e27753cb63626116e146c5894d5049597e9b1cc196708e2b34b5f5c

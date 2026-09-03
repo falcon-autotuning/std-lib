@@ -23,4 +23,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/vector-wrapper.so: sha256:335e583985eda2b2d1314a1369eb71668a1087f6ed02efa3f3654ca33e1d5ca0
+  build/vector-wrapper.so: sha256:91a5494d4b3ab8e48c45ebbb6b9d15ec1faa410d94db5be8c2170db18c557423

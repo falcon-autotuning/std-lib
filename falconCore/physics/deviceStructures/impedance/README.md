@@ -1,11 +1,7 @@
-# falcon/falconCore/physics/deviceStructures/impedance
+# falconCore/physics/deviceStructures/impedance
 
-Falcon binding for `falcon_core::physics::device_structures::Impedance` — This is the impedance of the connection leading to the fridge.
+Provides `Impedance` and `Impedances` representations for device wiring and lines in Falcon.
 
----
-
-## Installation
-
-```fal
-import "github.com/std-lib/falconCore/physics/deviceStructures/impedance/impedance.fal";
-```
+## Features
+- **Impedance**: Associates a `Connection` with line `Resistance` (ohms) and `Capacitance` (farads).
+- **Impedances**: Container collection for managing multiple `Impedance` records.

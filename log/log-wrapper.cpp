@@ -21,7 +21,10 @@ static void pack_nil(FalconResultSlot *out, int32_t *oc) {
 void initialize_logger() {
   try {
     const char *log_file = std::getenv("LOG_FILE");
-    const char *log_level = std::getenv("LOG_LEVEL");
+    const char *log_level = std::getenv("FALCON_LOG_LEVEL");
+    if (!log_level) {
+      log_level = std::getenv("STDLIB_LOG_LEVEL");
+    }
     const char *log_pattern = std::getenv("LOG_PATTERN");
 
     // Create sinks
@@ -78,7 +81,7 @@ void initialize_logger() {
         g_logger->set_level(spdlog::level::info); // default
       }
     } else {
-      g_logger->set_level(spdlog::level::info); // default
+      g_logger->set_level(spdlog::level::trace); // default to trace to enable all levels
     }
 
     // Flush on trace and above (i.e. all logs)

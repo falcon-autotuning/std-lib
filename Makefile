@@ -9,8 +9,8 @@ PKG_DIRS := $(shell find . -mindepth 2 -name "falcon.yml" -exec dirname {} \;)
 # Compiler settings
 CXX := clang++
 CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
-INCLUDES := -I$(shell pwd)/include -I/opt/falcon/include
-LDFLAGS := -L/opt/falcon/lib -lfalcon_core_cpp -lfmt -lhdf5_cpp -lhdf5
+INCLUDES := -I$(shell pwd)/include -I/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/include -I/home/daniel/work/research/falcon/playground/falcon-routine/vcpkg_installed/x64-linux-dynamic/include
+LDFLAGS := -L/opt/falcon/lib -L/home/daniel/.falcon/opt/lib -L/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/lib -lfalcon-core -lspdlog -lfmt -lhdf5_cpp -lhdf5
 
 help: ## Show available targets
 	@echo "Falcon Standard Library"
@@ -32,6 +32,7 @@ build: ## Build all FFI wrappers
 		 if [ -n "$$cpp_file" ]; then \
 		   so_file=build/$${cpp_file%.cpp}.so; \
 		   $(CXX) $(CXXFLAGS) -shared -o $$so_file $$cpp_file $(INCLUDES) $(LDFLAGS) || exit 1; \
+		   cp $$so_file . 2>/dev/null || true; \
 		   echo "  ✓ Created $$so_file"; \
 		 fi); \
 	done
@@ -46,7 +47,7 @@ test: build ## Run tests for all packages
 	@for dir in $(PKG_DIRS); do \
 		if [ -d "$$dir/tests" ]; then \
 			echo "🧪 Testing $$dir..."; \
-			(cd $$dir/tests && falcon-test ./run_tests.fal --log-level info || exit 1); \
+			(cd $$dir/tests && LD_LIBRARY_PATH=/opt/falcon/lib:/home/daniel/.falcon/opt/lib:$$LD_LIBRARY_PATH falcon-test ./run_tests.fal --log-level info || exit 1); \
 		fi; \
 	done
 

@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/discrete-space-wrapper.so: sha256:397f85958adb7d01d8920b993fd543d628cd69701083cb683cea0f19f7e7ca0b
+  build/discrete-space-wrapper.so: sha256:df6205a0cb07d880381d598ec8383e284234c8a3f2841aaf66994ae31239b84d
