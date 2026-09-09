@@ -5,4 +5,4 @@ github: "falcon-autotuning/std-lib"
 dependencies: []
 
 ffi:
-  build/database-wrapper.so: sha256:08396730fc04049236b7eb2b422a54c982d536365b7b80cad3ac62a9489e631c
+  build/database-wrapper.so: sha256:317748cfefb56bdcbaa4193d61990257834f1d8f6748158dfae45fa378dbe6c2

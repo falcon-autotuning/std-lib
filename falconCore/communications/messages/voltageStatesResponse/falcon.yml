@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/voltage-states-response-wrapper.so: sha256:c4e3ccb930b4f68e8e3278c7387502524e2a4b17fc5448f032fe8d66042f9c60
+  build/voltage-states-response-wrapper.so: sha256:d77babfda1c069dc540a23109cf7f745d0b432a4459a7326cef2aa1098fe4be6

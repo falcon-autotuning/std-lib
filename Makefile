@@ -10,7 +10,7 @@ PKG_DIRS := $(shell find . -mindepth 2 -name "falcon.yml" -exec dirname {} \;)
 CXX := clang++
 CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
 INCLUDES := -I$(shell pwd)/include -I/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/include -I/home/daniel/work/research/falcon/playground/falcon-routine/vcpkg_installed/x64-linux-dynamic/include
-LDFLAGS := -L/opt/falcon/lib -L/home/daniel/.falcon/opt/lib -L/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/lib -lfalcon-core -lspdlog -lfmt -lhdf5_cpp -lhdf5
+LDFLAGS := -L/opt/falcon/lib -L/home/daniel/.falcon/opt/lib -L/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/lib -lfalcon-core -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lfalcon-routine
 
 help: ## Show available targets
 	@echo "Falcon Standard Library"

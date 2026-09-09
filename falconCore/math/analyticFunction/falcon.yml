@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/analytic-function-wrapper.so: sha256:f1fd36f9d849c84b73c432302bffce9469836b71281fbdeed3df40455f71eef4
+  build/analytic-function-wrapper.so: sha256:d735e5eefdb85dd1fb9f3ffb41a0887a5a5648c7f80903ec8443083e103ae3b2

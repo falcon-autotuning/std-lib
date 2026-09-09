@@ -32,4 +32,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/config-wrapper.so: sha256:b417de3390f8da1a049e532dd59a6f2a984947489239a6bace0b3039e1a05a1f
+  build/config-wrapper.so: sha256:093d6edda1fd7f3dfa942ab2fa9c6f4cacebdafc67f87cfcfa02b8f18338921d

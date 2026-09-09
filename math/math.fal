@@ -1,0 +1,45 @@
+import (
+  "../collections/array/array.fal"
+)
+
+ffimport "math-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-L/home/daniel/.falcon/opt/lib" "-lfalcon_core_cpp" "-lfalcon-routine")
+
+// ── Analytical Models ────────────────────────────────────────────────────────
+// Direct evaluation of analytical functions:
+
+// Sigmoid: f(x) = A / (1 + exp(-k * (x - x0))) + b
+routine Sigmoid (float x, float A, float x0, float k, float b) -> (float y)
+
+// PiecewiseLinear: 3-regime linear function with slopes m1, m2
+routine PiecewiseLinear (float x, float x0, float x1, float m1, float m2, float y0) -> (float y)
+
+// ChannelAccumulation2D: 12-parameter 2D transport model
+routine ChannelAccumulation2D (
+    float x, float y,
+    float cx, float cy, float cm, float cr,
+    float m1, float m2, float m3,
+    float bx, float dx, float dy,
+    float dm, float dr
+) -> (float z)
+
+// ── Math Fitting Routines ───────────────────────────────────────────────────
+struct MathUtils {
+    // Sigmoid fitting with automatic initial guesses & default bounds
+    routine FitSigmoid (array::Array<float> x, array::Array<float> y) -> (float A, float x0, float k, float b, float r_squared, bool success)
+
+    // Sigmoid fitting with custom initial guess
+    routine FitSigmoidWithGuess (array::Array<float> x, array::Array<float> y, float guess_A, float guess_x0, float guess_k, float guess_b) -> (float A, float x0, float k, float b, float r_squared, bool success)
+
+    // Piecewise linear fitting with automatic initial guesses
+    routine FitPiecewiseLinear (array::Array<float> x, array::Array<float> y) -> (float x0, float x1, float m1, float m2, float y0, float r_squared, bool success)
+
+    // Piecewise linear fitting with custom initial guess
+    routine FitPiecewiseLinearWithGuess (array::Array<float> x, array::Array<float> y, float guess_x0, float guess_x1, float guess_m1, float guess_m2, float guess_y0) -> (float x0, float x1, float m1, float m2, float y0, float r_squared, bool success)
+
+    // 2D Channel Accumulation fitting
+    routine FitChannelAccumulation2D (
+        array::Array<array::Array<float>> x,
+        array::Array<array::Array<float>> y,
+        array::Array<array::Array<float>> z
+    ) -> (array::Array<float> params, float r_squared, bool success)
+}

@@ -1,0 +1,140 @@
+import (
+  "../../testing/testing.fal"
+  "../../collections/array/array.fal"
+  "../math.fal"
+)
+
+autotuner AnalyticalEvaluationTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_sigmoid_eval (TestRunner runner, TestContext t) {
+        float val = Sigmoid(0.0, 1.0, 0.0, 1.0, 0.0);
+        Error err = t.ExpectFloatEq(0.5, val, 0.0001, "Sigmoid(0) should be 0.5");
+        -> __end(runner, t);
+    }
+
+    state test_piecewise_linear_eval (TestRunner runner, TestContext t) {
+        // x0=0, x1=10, m1=0, m2=1, y0=0
+        float val_left = PiecewiseLinear(-5.0, 0.0, 10.0, 0.0, 1.0, 0.0);
+        float val_mid  = PiecewiseLinear(5.0, 0.0, 10.0, 0.0, 1.0, 0.0);
+        float val_right= PiecewiseLinear(15.0, 0.0, 10.0, 0.0, 1.0, 0.0);
+
+        Error err = t.ExpectFloatEq(0.0, val_left, 0.0001, "PiecewiseLinear left should be 0");
+        err = t.ExpectFloatEq(5.0, val_mid, 0.0001, "PiecewiseLinear mid should be 5");
+        err = t.ExpectFloatEq(10.0, val_right, 0.0001, "PiecewiseLinear right should be 10");
+        -> __end(runner, t);
+    }
+
+    state test_channel_accumulation_2d_eval (TestRunner runner, TestContext t) {
+        float z = ChannelAccumulation2D(
+            0.5, 0.5,
+            0.5, 0.5, 1.0, 10.0,
+            1.0, -1.0, 0.5,
+            0.2, 0.8, 0.5,
+            0.5, 5.0
+        );
+        Error err = t.ExpectTrue(z >= 0.0, "ChannelAccumulation2D should return non-negative value");
+        -> __end(runner, t);
+    }
+}
+
+autotuner SigmoidFittingTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_fit_sigmoid_synthetic (TestRunner runner, TestContext t) {
+        Array<float> x = Array.New();
+        Array<float> y = Array.New();
+
+        x.PushBack(0.0); y.PushBack(Sigmoid(0.0, 1.0, 0.5, 10.0, 0.0));
+        x.PushBack(0.2); y.PushBack(Sigmoid(0.2, 1.0, 0.5, 10.0, 0.0));
+        x.PushBack(0.4); y.PushBack(Sigmoid(0.4, 1.0, 0.5, 10.0, 0.0));
+        x.PushBack(0.5); y.PushBack(Sigmoid(0.5, 1.0, 0.5, 10.0, 0.0));
+        x.PushBack(0.6); y.PushBack(Sigmoid(0.6, 1.0, 0.5, 10.0, 0.0));
+        x.PushBack(0.8); y.PushBack(Sigmoid(0.8, 1.0, 0.5, 10.0, 0.0));
+        x.PushBack(1.0); y.PushBack(Sigmoid(1.0, 1.0, 0.5, 10.0, 0.0));
+
+        float A = 0.0;
+        float x0 = 0.0;
+        float k = 0.0;
+        float b = 0.0;
+        float r_squared = 0.0;
+        bool success = false;
+
+        A, x0, k, b, r_squared, success = MathUtils.FitSigmoid(x, y);
+
+        Error err = t.ExpectTrue(success, "FitSigmoid should succeed");
+        err = t.ExpectFloatEq(1.0, A, 0.05, "Fitted amplitude A should be close to 1.0");
+        err = t.ExpectFloatEq(0.5, x0, 0.05, "Fitted midpoint x0 should be close to 0.5");
+        err = t.ExpectTrue(r_squared > 0.98, "R-squared should be > 0.98");
+
+        -> __end(runner, t);
+    }
+
+    state test_fit_sigmoid_with_guess (TestRunner runner, TestContext t) {
+        Array<float> x = Array.New();
+        Array<float> y = Array.New();
+
+        x.PushBack(0.0); y.PushBack(Sigmoid(0.0, 2.0, 0.3, 5.0, 0.1));
+        x.PushBack(0.1); y.PushBack(Sigmoid(0.1, 2.0, 0.3, 5.0, 0.1));
+        x.PushBack(0.2); y.PushBack(Sigmoid(0.2, 2.0, 0.3, 5.0, 0.1));
+        x.PushBack(0.3); y.PushBack(Sigmoid(0.3, 2.0, 0.3, 5.0, 0.1));
+        x.PushBack(0.4); y.PushBack(Sigmoid(0.4, 2.0, 0.3, 5.0, 0.1));
+        x.PushBack(0.5); y.PushBack(Sigmoid(0.5, 2.0, 0.3, 5.0, 0.1));
+        x.PushBack(0.6); y.PushBack(Sigmoid(0.6, 2.0, 0.3, 5.0, 0.1));
+
+        float A = 0.0;
+        float x0 = 0.0;
+        float k = 0.0;
+        float b = 0.0;
+        float r_squared = 0.0;
+        bool success = false;
+
+        A, x0, k, b, r_squared, success = MathUtils.FitSigmoidWithGuess(x, y, 1.8, 0.25, 4.0, 0.05);
+
+        Error err = t.ExpectTrue(success, "FitSigmoidWithGuess should succeed");
+        err = t.ExpectFloatEq(2.0, A, 0.1, "Fitted amplitude A should be close to 2.0");
+        err = t.ExpectFloatEq(0.3, x0, 0.05, "Fitted midpoint x0 should be close to 0.3");
+        err = t.ExpectTrue(r_squared > 0.98, "R-squared should be > 0.98");
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner PiecewiseLinearFittingTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_fit_piecewise_linear (TestRunner runner, TestContext t) {
+        Array<float> x = Array.New();
+        Array<float> y = Array.New();
+
+        x.PushBack(0.0); y.PushBack(PiecewiseLinear(0.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(1.0); y.PushBack(PiecewiseLinear(1.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(2.0); y.PushBack(PiecewiseLinear(2.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(4.0); y.PushBack(PiecewiseLinear(4.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(6.0); y.PushBack(PiecewiseLinear(6.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(8.0); y.PushBack(PiecewiseLinear(8.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(9.0); y.PushBack(PiecewiseLinear(9.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+        x.PushBack(10.0); y.PushBack(PiecewiseLinear(10.0, 2.0, 8.0, 0.0, 1.5, 0.0));
+
+        float x0 = 0.0;
+        float x1 = 0.0;
+        float m1 = 0.0;
+        float m2 = 0.0;
+        float y0 = 0.0;
+        float r_squared = 0.0;
+        bool success = false;
+
+        x0, x1, m1, m2, y0, r_squared, success = MathUtils.FitPiecewiseLinearWithGuess(x, y, 1.8, 8.2, 0.0, 1.4, 0.0);
+
+        Error err = t.ExpectTrue(success, "FitPiecewiseLinear should succeed");
+        err = t.ExpectFloatEq(2.0, x0, 0.2, "Fitted x0 should be close to 2.0");
+        err = t.ExpectFloatEq(8.0, x1, 0.2, "Fitted x1 should be close to 8.0");
+        err = t.ExpectFloatEq(1.5, m2, 0.1, "Fitted m2 should be close to 1.5");
+        err = t.ExpectTrue(r_squared > 0.98, "R-squared should be > 0.98");
+
+        -> __end(runner, t);
+    }
+}

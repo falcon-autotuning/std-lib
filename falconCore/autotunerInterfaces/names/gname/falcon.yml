@@ -8,4 +8,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/gname-wrapper.so: sha256:b19f21c575d2ecda3573b770fd7ce872a8308eacdea93da1b4335c86f280a91c
+  build/gname-wrapper.so: sha256:bb9253377e4bf24833033e4121f0bb7ca2cca3a963199c4c76f25078421780d2

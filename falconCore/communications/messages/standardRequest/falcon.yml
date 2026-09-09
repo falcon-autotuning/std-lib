@@ -8,4 +8,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/standard-request-wrapper.so: sha256:6f7a194e0afa8982738748b4c54ca4f2a3a84934b4556331351993c4cbce0943
+  build/standard-request-wrapper.so: sha256:8e4a5702bfa202d247e744b43e44623d98ec0469092a553f57967114a1fbe013
