@@ -2,7 +2,7 @@ import (
   "../collections/array/array.fal"
 )
 
-ffimport "math-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-L/home/daniel/.falcon/opt/lib" "-lfalcon_core_cpp" "-lfalcon-routine")
+ffimport "math-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp" "-lfalcon-routine")
 
 // ── Analytical Models ────────────────────────────────────────────────────────
 // Direct evaluation of analytical functions:

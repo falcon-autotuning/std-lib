@@ -14,7 +14,7 @@ PRESET ?= linux-gcc-release
 CXX := clang++
 CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
 INCLUDES := -I$(VCPKG_DIR)/include
-LDFLAGS := -L$(VCPKG_DIR)/lib -L/opt/falcon/lib -L/home/daniel/.falcon/opt/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
+LDFLAGS := -L$(VCPKG_DIR)/lib -L/opt/falcon/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
 
 
 help: ## Show available targets
@@ -57,7 +57,7 @@ test: build ## Run tests for all packages
 	@for dir in $(PKG_DIRS); do \
 		if [ -d "$$dir/tests" ]; then \
 			echo "🧪 Testing $$dir..."; \
-			(cd $$dir/tests && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:/home/daniel/.falcon/opt/lib:$$LD_LIBRARY_PATH falcon-test ./run_tests.fal --log-level info || exit 1); \
+			(cd $$dir/tests && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH falcon-test ./run_tests.fal --log-level info || exit 1); \
 		fi; \
 	done
 
