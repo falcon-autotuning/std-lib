@@ -26,11 +26,9 @@ help: ## Show available targets
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
-vcpkg-bootstrap: ## Install C++ dependencies via vcpkg
-	@if [ ! -d "$(VCPKG_DIR)" ]; then \
-		echo "📦 Bootstrapping and installing vcpkg dependencies..."; \
-		PRESET=$(PRESET) cmake -P cmake/bootstrap/bootstrap-vcpkg.cmake || exit 1; \
-	fi
+vcpkg-bootstrap:
+	@echo "Bootstrapping vcpkg..."
+	cmake -P cmake/bootstrap/bootstrap-vcpkg.cmake
 
 all: build ## Build all packages
 
