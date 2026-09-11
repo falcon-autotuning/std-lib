@@ -237,16 +237,14 @@ void STRUCTAdjacencyFromJSON(const FalconParamEntry *params, int32_t param_count
 
 // ── VoltageConstraints ─────────────────────────────────────────────────────
 
-void STRUCTVoltageConstraintsMatrix(const FalconParamEntry *params, int32_t param_count,
-                                    FalconResultSlot *out, int32_t *oc) {
-  auto self = get_opaque<VoltageConstraints>(params, param_count, "this");
-  pack_opaque_farray(std::make_shared<FArray>(self->matrix()), out, oc);
+void STRUCTVoltageConstraintsMatrix(const FalconParamEntry *, int32_t,
+                                    FalconResultSlot *, int32_t *) {
+  throw std::runtime_error("VoltageConstraints::matrix is not implemented");
 }
 
-void STRUCTVoltageConstraintsLimits(const FalconParamEntry *params, int32_t param_count,
-                                    FalconResultSlot *out, int32_t *oc) {
-  auto self = get_opaque<VoltageConstraints>(params, param_count, "this");
-  pack_opaque_farray(std::make_shared<FArray>(self->limits()), out, oc);
+void STRUCTVoltageConstraintsLimits(const FalconParamEntry *, int32_t,
+                                    FalconResultSlot *, int32_t *) {
+  throw std::runtime_error("VoltageConstraints::limits is not implemented");
 }
 
 void STRUCTVoltageConstraintsAdjacency(const FalconParamEntry *params, int32_t param_count,
@@ -578,7 +576,11 @@ void STRUCTConfigGetImpedance(const FalconParamEntry *params, int32_t param_coun
 void STRUCTConfigVoltageConstraints(const FalconParamEntry *params, int32_t param_count,
                                     FalconResultSlot *out, int32_t *oc) {
   auto self = get_opaque<Config>(params, param_count, "this");
-  pack_opaque_vc(self->voltage_constraints(), out, oc);
+  auto vc = std::make_shared<VoltageConstraints>(
+      self->adjacency(),
+      self->max_safe_diff(),
+      std::make_pair(self->min_bound(), self->max_bound()));
+  pack_opaque_vc(vc, out, oc);
 }
 
 void STRUCTConfigWiringDC(const FalconParamEntry *params, int32_t param_count,

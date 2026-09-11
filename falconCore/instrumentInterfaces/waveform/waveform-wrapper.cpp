@@ -181,11 +181,10 @@ void STRUCTWaveformPushBack(const FalconParamEntry *params, int32_t param_count,
 void STRUCTWaveformPopBack(const FalconParamEntry *params, int32_t param_count,
                             FalconResultSlot *out, int32_t *oc) {
   auto self = get_opaque<Waveform>(params, param_count, "this");
-  auto list = self->transforms();
-  if (list->empty())
+  if (self->empty())
     throw std::runtime_error("STRUCTWaveformPopBack: container is empty");
-  auto last = list->back();
-  self->pop_back();
+  auto last = self->back();
+  self->erase_at(self->size() - 1);
   pack_opaque_pt(last, out, oc);
 }
 
@@ -196,7 +195,10 @@ void STRUCTWaveformInsert(const FalconParamEntry *params, int32_t param_count,
   auto pm   = unpack_params(params, param_count);
   int32_t idx = static_cast<int32_t>(std::get<int64_t>(pm.at("index")));
   auto val  = get_opaque<PortTransform>(params, param_count, "value");
-  self->insert(idx, std::make_shared<PortTransform>(*val));
+  auto it = self->begin() + idx;
+  std::vector<std::shared_ptr<PortTransform>> temp{
+      std::make_shared<PortTransform>(*val)};
+  self->insert(it, temp.begin(), temp.end());
   *oc = 0;
 }
 
@@ -206,7 +208,7 @@ void STRUCTWaveformErase(const FalconParamEntry *params, int32_t param_count,
   auto self = get_opaque<Waveform>(params, param_count, "this");
   auto pm   = unpack_params(params, param_count);
   int32_t idx = static_cast<int32_t>(std::get<int64_t>(pm.at("index")));
-  self->erase(idx);
+  self->erase_at(idx);
   *oc = 0;
 }
 
@@ -223,7 +225,7 @@ void STRUCTWaveformContains(const FalconParamEntry *params, int32_t param_count,
                              FalconResultSlot *out, int32_t *oc) {
   auto self = get_opaque<Waveform>(params, param_count, "this");
   auto val  = get_opaque<PortTransform>(params, param_count, "value");
-  pack_results(FunctionResult{self->contains(*val)}, out, 16, oc);
+  pack_results(FunctionResult{self->contains(val)}, out, 16, oc);
 }
 
 // IndexOf(this: Waveform, value: PortTransform) -> (int index)
@@ -231,7 +233,7 @@ void STRUCTWaveformIndexOf(const FalconParamEntry *params, int32_t param_count,
                             FalconResultSlot *out, int32_t *oc) {
   auto self = get_opaque<Waveform>(params, param_count, "this");
   auto val  = get_opaque<PortTransform>(params, param_count, "value");
-  pack_results(FunctionResult{static_cast<int64_t>(self->index_of(*val))}, out, 16, oc);
+  pack_results(FunctionResult{static_cast<int64_t>(self->index(val))}, out, 16, oc);
 }
 
 // Equal(this: Waveform, other: Waveform) -> (bool equal)

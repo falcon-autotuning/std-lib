@@ -15,3 +15,6 @@ dependencies:
   - name: testing
     version: 1.0.0
     local_path: "../../../testing/"
+
+ffi:
+  build/waveform-wrapper.so: sha256:e344db7fe428df4586ffe294ffeed39ca1d53ade30b788898c0a6545484642db

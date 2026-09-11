@@ -1,4 +1,5 @@
 #include "falcon-core/physics/units/SymbolUnit.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;
