@@ -1,7 +1,7 @@
-#include "falcon_core/math/domains/CoupledLabelledDomain.hpp"
-#include "falcon_core/math/domains/LabelledDomain.hpp"
-#include "falcon_core/instrument_interfaces/names/Ports.hpp"
-#include "falcon_core/instrument_interfaces/names/InstrumentPort.hpp"
+#include "falcon-core/math/domains/CoupledLabelledDomain.hpp"
+#include "falcon-core/math/domains/LabelledDomain.hpp"
+#include "falcon-core/instrument_interfaces/names/Ports.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>
 #include <stdexcept>

@@ -1,4 +1,4 @@
-#include "falcon_core/autotuner_interfaces/names/Gname.hpp"
+#include "falcon-core/autotuner_interfaces/names/Gname.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

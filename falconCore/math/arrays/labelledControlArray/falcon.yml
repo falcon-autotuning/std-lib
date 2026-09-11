@@ -17,4 +17,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/labelled-control-array-wrapper.so: sha256:be87e668f7000027dc2707ade8ca1ebe9fb0f699774b4dbd0e1577c457725beb
+  build/labelled-control-array-wrapper.so: sha256:c41c3568b09d205b5a983b76456a4878751c379aff3f7436216a9ec06832e285

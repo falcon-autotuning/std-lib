@@ -1,7 +1,7 @@
-#include "falcon_core/math/UnitSpace.hpp"
-#include "falcon_core/math/domains/Domain.hpp"
-#include "falcon_core/math/discrete_spaces/Discretizer.hpp"
-#include "falcon_core/generic/FArray.hpp"
+#include "falcon-core/math/UnitSpace.hpp"
+#include "falcon-core/math/domains/Domain.hpp"
+#include "falcon-core/math/discrete_spaces/Discretizer.hpp"
+#include "falcon-core/generic/FArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

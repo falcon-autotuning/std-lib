@@ -1,5 +1,5 @@
 
-#include "falcon_core/physics/device_structures/Connection.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

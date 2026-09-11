@@ -1,7 +1,7 @@
-#include "falcon_core/math/arrays/ControlArray1D.hpp"
-#include "falcon_core/math/arrays/ControlArray.hpp"
-#include "falcon_core/math/arrays/IncreasingAlignment.hpp"
-#include "falcon_core/generic/FArray.hpp"
+#include "falcon-core/math/arrays/ControlArray1D.hpp"
+#include "falcon-core/math/arrays/ControlArray.hpp"
+#include "falcon-core/math/arrays/IncreasingAlignment.hpp"
+#include "falcon-core/generic/FArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

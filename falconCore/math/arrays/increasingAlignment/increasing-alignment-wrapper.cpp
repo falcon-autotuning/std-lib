@@ -1,4 +1,4 @@
-#include "falcon_core/math/arrays/IncreasingAlignment.hpp"
+#include "falcon-core/math/arrays/IncreasingAlignment.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

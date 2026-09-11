@@ -1,4 +1,4 @@
-#include "falcon_core/math/domains/Domain.hpp"
+#include "falcon-core/math/domains/Domain.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

@@ -8,4 +8,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/domain-wrapper.so: sha256:f58df90edf85dc3a655eb76888f60478656606a901c7f03dbf2ae41035ecbd4d
+  build/domain-wrapper.so: sha256:aca48d407b757e34189578eaf9b9bcf1a6f7e5321e61bdb686efe9a3691a6a53

@@ -1,4 +1,4 @@
-#include "falcon_core/generic/FArray.hpp"
+#include "falcon-core/generic/FArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>
 #include <xtensor/xadapt.hpp>

@@ -1,5 +1,5 @@
-#include "falcon_core/instrument_interfaces/names/Instrument.hpp"
-#include "falcon_core/instrument_interfaces/names/InstrumentTypes.hpp"
+#include "falcon-core/instrument_interfaces/names/Instrument.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentTypes.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

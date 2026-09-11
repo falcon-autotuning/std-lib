@@ -1,6 +1,6 @@
-#include "falcon_core/instrument_interfaces/port_transforms/PortTransform.hpp"
-#include "falcon_core/instrument_interfaces/names/InstrumentPort.hpp"
-#include "falcon_core/math/AnalyticFunction.hpp"
+#include "falcon-core/instrument_interfaces/port_transforms/PortTransform.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
+#include "falcon-core/math/AnalyticFunction.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>
 #include <stdexcept>

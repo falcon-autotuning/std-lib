@@ -1,11 +1,11 @@
-#include "falcon_core/communications/messages/MeasurementRequest.hpp"
-#include "falcon_core/instrument_interfaces/Waveform.hpp"
-#include "falcon_core/instrument_interfaces/names/Ports.hpp"
-#include "falcon_core/instrument_interfaces/names/InstrumentPort.hpp"
-#include "falcon_core/instrument_interfaces/port_transforms/PortTransform.hpp"
-#include "falcon_core/math/domains/LabelledDomain.hpp"
-#include "falcon_core/generic/Map.hpp"
-#include "falcon_core/generic/List.hpp"
+#include "falcon-core/communications/messages/MeasurementRequest.hpp"
+#include "falcon-core/instrument_interfaces/Waveform.hpp"
+#include "falcon-core/instrument_interfaces/names/Ports.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
+#include "falcon-core/instrument_interfaces/port_transforms/PortTransform.hpp"
+#include "falcon-core/math/domains/LabelledDomain.hpp"
+#include "falcon-core/generic/Map.hpp"
+#include "falcon-core/generic/List.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <stdexcept>
 

@@ -2,7 +2,7 @@
 #include <falcon-database/DatabaseConnection.hpp>
 #include <falcon-database/SnapshotManager.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
-#include <falcon_core/physics/device_structures/Connection.hpp>
+#include <falcon-core/physics/device_structures/Connection.hpp>
 #include <mutex>
 
 using namespace falcon::typing;

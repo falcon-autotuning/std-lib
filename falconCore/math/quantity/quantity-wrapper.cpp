@@ -1,5 +1,5 @@
-#include "falcon_core/math/Quantity.hpp"
-#include "falcon_core/physics/units/SymbolUnit.hpp"
+#include "falcon-core/math/Quantity.hpp"
+#include "falcon-core/physics/units/SymbolUnit.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

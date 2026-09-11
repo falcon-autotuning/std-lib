@@ -1,12 +1,12 @@
-#include "falcon_core/math/arrays/LabelledControlArray1D.hpp"
-#include "falcon_core/math/arrays/LabelledControlArray.hpp"
-#include "falcon_core/math/arrays/ControlArray.hpp"
-#include "falcon_core/math/arrays/IncreasingAlignment.hpp"
-#include "falcon_core/generic/FArray.hpp"
-#include "falcon_core/autotuner_interfaces/contexts/AcquisitionContext.hpp"
-#include "falcon_core/instrument_interfaces/names/InstrumentPort.hpp"
-#include "falcon_core/physics/device_structures/Connection.hpp"
-#include "falcon_core/physics/units/SymbolUnit.hpp"
+#include "falcon-core/math/arrays/LabelledControlArray1D.hpp"
+#include "falcon-core/math/arrays/LabelledControlArray.hpp"
+#include "falcon-core/math/arrays/ControlArray.hpp"
+#include "falcon-core/math/arrays/IncreasingAlignment.hpp"
+#include "falcon-core/generic/FArray.hpp"
+#include "falcon-core/autotuner_interfaces/contexts/AcquisitionContext.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
+#include "falcon-core/physics/units/SymbolUnit.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

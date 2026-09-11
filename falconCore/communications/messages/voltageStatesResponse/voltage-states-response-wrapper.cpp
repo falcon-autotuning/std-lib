@@ -1,5 +1,5 @@
-#include "falcon_core/communications/messages/VoltageStatesResponse.hpp"
-#include "falcon_core/communications/voltage_states/DeviceVoltageStates.hpp"
+#include "falcon-core/communications/messages/VoltageStatesResponse.hpp"
+#include "falcon-core/communications/voltage_states/DeviceVoltageStates.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

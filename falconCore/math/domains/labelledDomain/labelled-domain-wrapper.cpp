@@ -1,8 +1,8 @@
-#include "falcon_core/instrument_interfaces/names/InstrumentPort.hpp"
-#include "falcon_core/math/domains/Domain.hpp"
-#include "falcon_core/math/domains/LabelledDomain.hpp"
-#include "falcon_core/physics/device_structures/Connection.hpp"
-#include "falcon_core/physics/units/SymbolUnit.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
+#include "falcon-core/math/domains/Domain.hpp"
+#include "falcon-core/math/domains/LabelledDomain.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
+#include "falcon-core/physics/units/SymbolUnit.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

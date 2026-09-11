@@ -1,7 +1,7 @@
-#include "falcon_core/communications/voltage_states/DeviceVoltageState.hpp"
-#include "falcon_core/communications/voltage_states/DeviceVoltageStates.hpp"
-#include "falcon_core/math/Point.hpp"
-#include "falcon_core/physics/device_structures/Connection.hpp"
+#include "falcon-core/communications/voltage_states/DeviceVoltageState.hpp"
+#include "falcon-core/communications/voltage_states/DeviceVoltageStates.hpp"
+#include "falcon-core/math/Point.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>
 

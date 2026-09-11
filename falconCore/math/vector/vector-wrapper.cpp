@@ -1,8 +1,8 @@
-#include "falcon_core/communications/voltage_states/DeviceVoltageStates.hpp"
-#include "falcon_core/math/Point.hpp"
-#include "falcon_core/math/Vector.hpp"
-#include "falcon_core/physics/device_structures/Connection.hpp"
-#include "falcon_core/physics/units/SymbolUnit.hpp"
+#include "falcon-core/communications/voltage_states/DeviceVoltageStates.hpp"
+#include "falcon-core/math/Point.hpp"
+#include "falcon-core/math/Vector.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
+#include "falcon-core/physics/units/SymbolUnit.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

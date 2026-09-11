@@ -1,6 +1,6 @@
-#include "falcon_core/physics/device_structures/Connection.hpp"
-#include "falcon_core/physics/device_structures/Impedance.hpp"
-#include "falcon_core/physics/device_structures/Impedances.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
+#include "falcon-core/physics/device_structures/Impedance.hpp"
+#include "falcon-core/physics/device_structures/Impedances.hpp"
 #include <falcon-core/CerealRegistry.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
 #include <stdexcept>

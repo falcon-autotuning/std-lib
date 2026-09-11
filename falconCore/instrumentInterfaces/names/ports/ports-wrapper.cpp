@@ -1,6 +1,6 @@
-#include "falcon_core/instrument_interfaces/names/InstrumentPort.hpp"
-#include "falcon_core/instrument_interfaces/names/Ports.hpp"
-#include "falcon_core/physics/device_structures/Connection.hpp"
+#include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
+#include "falcon-core/instrument_interfaces/names/Ports.hpp"
+#include "falcon-core/physics/device_structures/Connection.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <stdexcept>
 #include <vector>

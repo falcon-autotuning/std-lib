@@ -1,6 +1,6 @@
-#include "falcon_core/instrument_interfaces/Waveform.hpp"
-#include "falcon_core/instrument_interfaces/port_transforms/PortTransform.hpp"
-#include "falcon_core/math/discrete_spaces/DiscreteSpace.hpp"
+#include "falcon-core/instrument_interfaces/Waveform.hpp"
+#include "falcon-core/instrument_interfaces/port_transforms/PortTransform.hpp"
+#include "falcon-core/math/discrete_spaces/DiscreteSpace.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <stdexcept>
 

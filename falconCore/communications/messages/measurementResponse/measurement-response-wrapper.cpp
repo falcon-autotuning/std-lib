@@ -1,6 +1,6 @@
-#include "falcon_core/communications/messages/MeasurementResponse.hpp"
-#include "falcon_core/math/arrays/LabelledArrays.hpp"
-#include "falcon_core/math/arrays/LabelledMeasuredArray.hpp"
+#include "falcon-core/communications/messages/MeasurementResponse.hpp"
+#include "falcon-core/math/arrays/LabelledArrays.hpp"
+#include "falcon-core/math/arrays/LabelledMeasuredArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <stdexcept>
 

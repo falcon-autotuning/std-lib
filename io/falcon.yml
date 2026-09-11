@@ -4,7 +4,7 @@ maintainer: falcon-devs
 github: falcon-autotuning/std-lib
 license: ""
 ffi:
-  build/io-wrapper.so: sha256:618d8858527ade2968b102b8af0159fe6e8c5feee1698f5531502c5344666cad
+  build/io-wrapper.so: sha256:6c8f0fe7955db837a23a86100c5f033ea9ee54d96896ddc93f1a276891ce6d75
 dependencies:
   - name: testing
     version: 1.0.0

@@ -1,5 +1,5 @@
-#include "falcon_core/math/AnalyticFunction.hpp"
-#include "falcon_core/generic/List.hpp"
+#include "falcon-core/math/AnalyticFunction.hpp"
+#include "falcon-core/generic/List.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>
 #include <stdexcept>

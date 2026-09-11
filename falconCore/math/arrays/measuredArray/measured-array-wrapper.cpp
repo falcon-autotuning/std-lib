@@ -1,5 +1,5 @@
-#include "falcon_core/math/arrays/MeasuredArray.hpp"
-#include "falcon_core/generic/FArray.hpp"
+#include "falcon-core/math/arrays/MeasuredArray.hpp"
+#include "falcon-core/generic/FArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

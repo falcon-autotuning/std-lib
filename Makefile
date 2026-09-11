@@ -1,16 +1,21 @@
 # Falcon Standard Library Makefile
 # Supports multi-package structure with independent builds and releases
 
-.PHONY: all build test release clean help update-hashes
+.PHONY: all build test release clean help update-hashes vcpkg-bootstrap
 
 # Find all directories containing a falcon.yml (excluding root)
 PKG_DIRS := $(shell find . -mindepth 2 -name "falcon.yml" -exec dirname {} \;)
 
+# Vcpkg settings
+VCPKG_DIR ?= $(CURDIR)/vcpkg_installed/x64-linux-dynamic
+PRESET ?= linux-gcc-release
+
 # Compiler settings
 CXX := clang++
 CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
-INCLUDES := -I$(shell pwd)/include -I/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/include -I/home/daniel/work/research/falcon/playground/falcon-routine/vcpkg_installed/x64-linux-dynamic/include
-LDFLAGS := -L/opt/falcon/lib -L/home/daniel/.falcon/opt/lib -L/home/daniel/work/research/falcon/playground/falcon-dsl/vcpkg_installed/x64-linux-dynamic/lib -lfalcon-core -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lfalcon-routine
+INCLUDES := -I$(VCPKG_DIR)/include
+LDFLAGS := -L$(VCPKG_DIR)/lib -L/opt/falcon/lib -L/home/daniel/.falcon/opt/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
+
 
 help: ## Show available targets
 	@echo "Falcon Standard Library"
@@ -21,9 +26,15 @@ help: ## Show available targets
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
+vcpkg-bootstrap: ## Install C++ dependencies via vcpkg
+	@if [ ! -d "$(VCPKG_DIR)" ]; then \
+		echo "📦 Bootstrapping and installing vcpkg dependencies..."; \
+		PRESET=$(PRESET) cmake -P cmake/bootstrap/bootstrap-vcpkg.cmake || exit 1; \
+	fi
+
 all: build ## Build all packages
 
-build: ## Build all FFI wrappers
+build: vcpkg-bootstrap ## Build all FFI wrappers
 	@for dir in $(PKG_DIRS); do \
 		echo "🔨 Building $$dir..."; \
 		(cd $$dir && \
@@ -32,7 +43,6 @@ build: ## Build all FFI wrappers
 		 if [ -n "$$cpp_file" ]; then \
 		   so_file=build/$${cpp_file%.cpp}.so; \
 		   $(CXX) $(CXXFLAGS) -shared -o $$so_file $$cpp_file $(INCLUDES) $(LDFLAGS) || exit 1; \
-		   cp $$so_file . 2>/dev/null || true; \
 		   echo "  ✓ Created $$so_file"; \
 		 fi); \
 	done
@@ -47,7 +57,7 @@ test: build ## Run tests for all packages
 	@for dir in $(PKG_DIRS); do \
 		if [ -d "$$dir/tests" ]; then \
 			echo "🧪 Testing $$dir..."; \
-			(cd $$dir/tests && LD_LIBRARY_PATH=/opt/falcon/lib:/home/daniel/.falcon/opt/lib:$$LD_LIBRARY_PATH falcon-test ./run_tests.fal --log-level info || exit 1); \
+			(cd $$dir/tests && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:/home/daniel/.falcon/opt/lib:$$LD_LIBRARY_PATH falcon-test ./run_tests.fal --log-level info || exit 1); \
 		fi; \
 	done
 
@@ -74,6 +84,7 @@ release: dist ## Create releases for all packages (monolithic and individual)
 clean: ## Remove build artifacts
 	@echo "Cleaning up..."
 	@find . -type d -name "build" -exec rm -rf {} +
+	@find . -name "*.so" -exec rm -f {} +
 	@rm -rf dist
 	@rm -f *.tar.gz
 	@echo "✓ Clean complete"
