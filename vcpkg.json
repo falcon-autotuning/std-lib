@@ -40,6 +40,10 @@
   "builtin-baseline": "e5a1490e1409d175932ef6014519e9ae149ddb7c",
   "overrides": [
     {
+      "name": "libpqxx",
+      "version": "7.10.5"
+    },
+    {
       "name": "xtensor",
       "version": "0.25.0"
     },
