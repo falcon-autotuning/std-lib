@@ -3,8 +3,8 @@
 
 .PHONY: all build test release clean help update-hashes vcpkg-bootstrap
 
-# Find all directories containing a falcon.yml (excluding root)
-PKG_DIRS := $(shell find . -mindepth 2 -name "falcon.yml" -exec dirname {} \;)
+# Find all directories containing a falcon.yml (excluding root and vcpkg)
+PKG_DIRS := $(shell find . -mindepth 2 -path "./vcpkg" -prune -o -name falcon.yml -exec dirname {} \;)
 
 # Vcpkg settings
 VCPKG_DIR ?= $(CURDIR)/vcpkg_installed/x64-linux-dynamic
@@ -55,7 +55,7 @@ test: build ## Run tests for all packages
 	@for dir in $(PKG_DIRS); do \
 		if [ -d "$$dir/tests" ]; then \
 			echo "🧪 Testing $$dir..."; \
-			(cd $$dir/tests && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH falcon-test ./run_tests.fal --log-level info || exit 1); \
+			(cd $$dir/tests && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1); \
 		fi; \
 	done
 
