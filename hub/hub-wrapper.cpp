@@ -204,4 +204,16 @@ void Ramp(const FalconParamEntry *param_entries, int32_t param_count,
   *out_count = 1;
 }
 
+// ── 13. HasDatabaseConnection ───────────────────────────────────────────────
+void HasDatabaseConnection(const FalconParamEntry *param_entries, int32_t param_count,
+                           FalconResultSlot *out_slots, int32_t *out_count) {
+  (void)param_entries;
+  (void)param_count;
+  const char *url = std::getenv("FALCON_DATABASE_URL");
+  bool has_db = (url != nullptr && url[0] != '\0');
+  out_slots[0].tag = FALCON_TYPE_BOOL;
+  out_slots[0].value.bool_val = has_db ? 1 : 0;
+  *out_count = 1;
+}
+
 } // extern "C"

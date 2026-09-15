@@ -53,3 +53,6 @@ routine SafeVoltageChange (point::Point proposed_voltages, int timeout_ms) -> (b
 
 // Execute a dedicated ramp to an endpoint voltage state
 routine Ramp (point::Point end_point, float max_ramp_rate, int timeout_ms) -> (bool success)
+
+// Check if a database connection URL is configured in the environment
+routine HasDatabaseConnection -> (bool connected)

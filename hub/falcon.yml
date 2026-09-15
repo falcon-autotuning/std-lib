@@ -4,7 +4,7 @@ maintainer: Falcon Team
 github: falcon-autotuning/std-lib
 license: "MPL-2.0"
 ffi:
-  build/hub-wrapper.so: sha256:e4074d41f9d4f0f97e549d71aee103d40f76684637c178460743f3640109e90e
+  build/hub-wrapper.so: sha256:04f7fed6ad743fa499cdcf2ce44bbfec3aecfd022b9255a30e97112f56d95f2d
 dependencies:
   - name: measurementRequest
     version: 1.0.0

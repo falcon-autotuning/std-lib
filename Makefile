@@ -14,7 +14,7 @@ PRESET ?= linux-gcc-release
 CXX := clang++
 CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
 INCLUDES := -I$(VCPKG_DIR)/include
-LDFLAGS := -L$(VCPKG_DIR)/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
+LDFLAGS := -L$(VCPKG_DIR)/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lfalcon-comms -lnats -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
 
 
 help: ## Show available targets
