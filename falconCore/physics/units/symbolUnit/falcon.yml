@@ -4,7 +4,7 @@ maintainer: "falcon-devs"
 github: falcon-autotuning/std-lib
 
 ffi:
-  build/symbol-unit-wrapper.so: sha256:cc2e208fecd71f10be1b074f71a8a7645e4af264b0e63c3d9660299556367aaa
+  build/symbol-unit-wrapper.so: sha256:3331f8a1e4d19aa7f20a9e5dccc2e81c42f10be0db0ad39197ba76136d5d9450
 dependencies:
   - name: testing
     version: 1.0.0

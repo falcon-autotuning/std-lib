@@ -11,7 +11,7 @@ dependencies:
     local_path: "../labelledControlArray/"
   - name: acquisitionContext
     version: 1.0.0
-    local_path: "../../../autotunerInterfaces/acquisitionContext/"
+    local_path: "../../../autotunerInterfaces/contexts/acquisitionContext/"
   - name: array
     version: 1.0.0
     local_path: "../../../../collections/array/"

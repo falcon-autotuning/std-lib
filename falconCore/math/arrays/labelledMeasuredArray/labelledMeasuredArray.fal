@@ -1,16 +1,21 @@
 import (
 "../../../generic/farray/farray.fal"
+"../measuredArray/measuredArray.fal"
 "../../../autotunerInterfaces/contexts/acquisitionContext/acquisitionContext.fal"
+"../../../physics/deviceStructures/connection/connection.fal"
+"../../../instrumentInterfaces/names/instrument/instrument.fal"
+"../../../physics/units/symbolUnit/symbolUnit.fal"
+"../../../../collections/array/array.fal"
 )
 ffimport "labelled-measured-array-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct LabelledMeasuredArray {
-    routine New (FArray arr) -> (LabelledMeasuredArray carray)
-    routine Add (MeasuredArray other) -> (LabelledMeasuredArray carray)
-    routine Add (FArray other) -> (LabelledMeasuredArray carray)
+    routine New (farray::FArray arr) -> (LabelledMeasuredArray carray)
+    routine Add (measuredArray::MeasuredArray other) -> (LabelledMeasuredArray carray)
+    routine Add (farray::FArray other) -> (LabelledMeasuredArray carray)
     routine Add (int other) -> (LabelledMeasuredArray carray)
     routine Add (float other) -> (LabelledMeasuredArray carray)
-    routine Minus (MeasuredArray other) -> (LabelledMeasuredArray carray)
-    routine Minus (FArray other) -> (LabelledMeasuredArray carray)
+    routine Minus (measuredArray::MeasuredArray other) -> (LabelledMeasuredArray carray)
+    routine Minus (farray::FArray other) -> (LabelledMeasuredArray carray)
     routine Minus (int other) -> (LabelledMeasuredArray carray)
     routine Minus (float other) -> (LabelledMeasuredArray carray)
     routine Negate -> (LabelledMeasuredArray carray)
@@ -27,12 +32,12 @@ struct LabelledMeasuredArray {
     routine Units -> (symbolUnit::SymbolUnit unit)
     // TODO: arraywise min and max
     routine Max -> (float max)
-    routine Reshape (Array<int> shape) -> (LabelledMeasuredArray carray)
+    routine Reshape (array::Array<int> shape) -> (LabelledMeasuredArray carray)
     routine Flip (int axis) -> (LabelledMeasuredArray carray)
     routine Gradient (int axis) -> (farray::FArray gradient)
-    routine FullGradient -> (Array<farray::FArray> gradients)
-    routine Equal (FArray other) -> (bool equal)
-    routine NotEqual (FArray other) -> (bool notequal)
-    routine FromJSON (string json) -> (FArray farray)
+    routine FullGradient -> (array::Array<farray::FArray> gradients)
+    routine Equal (farray::FArray other) -> (bool equal)
+    routine NotEqual (farray::FArray other) -> (bool notequal)
+    routine FromJSON (string json) -> (farray::FArray farray)
     routine ToJSON () -> (string json)
 }

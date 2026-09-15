@@ -11,7 +11,7 @@ dependencies:
     local_path: "../increasingAlignment/"
   - name: acquisitionContext
     version: 1.0.0
-    local_path: "../../../autotunerInterfaces/acquisitionContext/"
+    local_path: "../../../autotunerInterfaces/contexts/acquisitionContext/"
   - name: testing
     version: 1.0.0
     local_path: "../../../../testing/"

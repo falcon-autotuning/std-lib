@@ -6,12 +6,27 @@ dependencies:
   - name: portTransforms
     version: 1.0.0
     local_path: "../portTransforms/portTransforms/"
+  - name: portTransform
+    version: 1.0.0
+    local_path: "../portTransforms/portTransform/"
   - name: discreteSpace
     version: 1.0.0
     local_path: "../../math/discreteSpaces/discreteSpace/"
+  - name: axes
+    version: 1.0.0
+    local_path: "../../math/axes/"
+  - name: domain
+    version: 1.0.0
+    local_path: "../../math/domains/domain/"
   - name: coupledLabelledDomain
     version: 1.0.0
     local_path: "../../math/domains/coupledLabelledDomain/"
+  - name: map
+    version: 1.0.0
+    local_path: "../../../collections/map/"
+  - name: array
+    version: 1.0.0
+    local_path: "../../../collections/array/"
   - name: testing
     version: 1.0.0
     local_path: "../../../testing/"

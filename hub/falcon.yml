@@ -1,0 +1,38 @@
+name: hub
+version: 1.0.0
+maintainer: Falcon Team
+github: falcon-autotuning/std-lib
+license: "MPL-2.0"
+ffi:
+  build/hub-wrapper.so: sha256:e4074d41f9d4f0f97e549d71aee103d40f76684637c178460743f3640109e90e
+dependencies:
+  - name: measurementRequest
+    version: 1.0.0
+    local_path: "../falconCore/communications/messages/measurementRequest/"
+  - name: measurementResponse
+    version: 1.0.0
+    local_path: "../falconCore/communications/messages/measurementResponse/"
+  - name: voltageStatesResponse
+    version: 1.0.0
+    local_path: "../falconCore/communications/messages/voltageStatesResponse/"
+  - name: deviceVoltageStates
+    version: 1.0.0
+    local_path: "../falconCore/communications/voltageStates/deviceVoltageStates/"
+  - name: ports
+    version: 1.0.0
+    local_path: "../falconCore/instrumentInterfaces/names/ports/"
+  - name: config
+    version: 1.0.0
+    local_path: "../falconCore/physics/config/"
+  - name: connections
+    version: 1.0.0
+    local_path: "../falconCore/physics/deviceStructures/connections/"
+  - name: coupledLabelledDomain
+    version: 1.0.0
+    local_path: "../falconCore/math/domains/coupledLabelledDomain/"
+  - name: point
+    version: 1.0.0
+    local_path: "../falconCore/math/point/"
+  - name: testing
+    version: 1.0.0
+    local_path: "../testing/"

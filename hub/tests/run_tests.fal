@@ -1,0 +1,55 @@
+import (
+  "../../testing/testing.fal"
+  "../../falconCore/physics/config/config.fal"
+  "../../falconCore/communications/voltageStates/deviceVoltageStates/deviceVoltageStates.fal"
+  "../../falconCore/communications/voltageStates/deviceVoltageState/deviceVoltageState.fal"
+  "../../falconCore/physics/deviceStructures/connection/connection.fal"
+  "../../falconCore/physics/units/symbolUnit/symbolUnit.fal"
+  "../../falconCore/math/point/point.fal"
+  "../../collections/map/map.fal"
+  "../../collections/array/array.fal"
+  "../hub.fal"
+)
+
+autotuner HubCachingTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_cache_and_read_config (TestRunner runner, TestContext t) {
+        config::Config cfg = config::Config.Load("device_config.yaml");
+        CacheConfig(cfg);
+        config::Config read_cfg = ReadConfig(100);
+        Error err = t.ExpectIntEq(read_cfg.NumUniqueChannels(), cfg.NumUniqueChannels(), "Cached and read config channels match");
+        -> __end(runner, t);
+    }
+
+    state test_cache_and_read_voltages (TestRunner runner, TestContext t) {
+        connection::Connection conn = connection::Connection.NewPlungerGate("P1");
+        symbolUnit::SymbolUnit u = symbolUnit::SymbolUnit.Volt();
+        deviceVoltageState::DeviceVoltageState s1 = deviceVoltageState::DeviceVoltageState.New(conn, -0.5, u);
+        
+        Array<deviceVoltageState::DeviceVoltageState> arr = Array.New();
+        arr.PushBack(s1);
+        deviceVoltageStates::DeviceVoltageStates states = deviceVoltageStates::DeviceVoltageStates.New(arr);
+
+        CacheDeviceVoltages(states);
+        deviceVoltageStates::DeviceVoltageStates read_states = ReadDeviceVoltages(100);
+        Error err = t.ExpectIntEq(read_states.Size(), 1, "Cached and read voltages size matches");
+        -> __end(runner, t);
+    }
+
+    state test_safe_voltage_change (TestRunner runner, TestContext t) {
+        config::Config cfg = config::Config.Load("device_config.yaml");
+        CacheConfig(cfg);
+
+        connection::Connection conn = connection::Connection.NewPlungerGate("P1");
+        symbolUnit::SymbolUnit u = symbolUnit::SymbolUnit.Volt();
+        Map<connection::Connection, float> raw_map = Map.New();
+        raw_map.Set(conn, -0.5);
+        point::Point pt = point::Point.NewFromRaw(raw_map, u);
+
+        bool is_safe = SafeVoltageChange(pt, 100);
+        Error err = t.ExpectTrue(is_safe, "Voltage -0.5 on P1 should be safe within bounds");
+        -> __end(runner, t);
+    }
+}

@@ -1,7 +1,7 @@
 import (
 "../labelledMeasuredArray/labelledMeasuredArray.fal"
 "../labelledControlArray/labelledControlArray.fal"
-"../../../autotunerInterfaces/acquisitionContext/acquisitionContext.fal"
+"../../../autotunerInterfaces/contexts/acquisitionContext/acquisitionContext.fal"
 )
 ffimport "labelled-arrays-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct LabelledArrays <T> { // T can by LabelledMeasuredArray or LabelledControlArray

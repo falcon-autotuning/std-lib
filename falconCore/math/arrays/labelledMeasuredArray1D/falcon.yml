@@ -8,7 +8,7 @@ dependencies:
     local_path: "../measuredArray/"
   - name: acquisitionContext
     version: 1.0.0
-    local_path: "../../../autotunerInterfaces/acquisitionContext/"
+    local_path: "../../../autotunerInterfaces/contexts/acquisitionContext/"
   - name: testing
     version: 1.0.0
     local_path: "../../../../testing/"

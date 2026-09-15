@@ -6,12 +6,27 @@ dependencies:
   - name: farray
     version: 1.0.0
     local_path: "../../../generic/farray/"
+  - name: measuredArray
+    version: 1.0.0
+    local_path: "../measuredArray/"
   - name: increasingAlignment
     version: 1.0.0
     local_path: "../increasingAlignment/"
   - name: acquisitionContext
     version: 1.0.0
-    local_path: "../../../autotunerInterfaces/acquisitionContext/"
+    local_path: "../../../autotunerInterfaces/contexts/acquisitionContext/"
+  - name: connection
+    version: 1.0.0
+    local_path: "../../../physics/deviceStructures/connection/"
+  - name: instrument
+    version: 1.0.0
+    local_path: "../../../instrumentInterfaces/names/instrument/"
+  - name: symbolUnit
+    version: 1.0.0
+    local_path: "../../../physics/units/symbolUnit/"
+  - name: array
+    version: 1.0.0
+    local_path: "../../../../collections/array/"
   - name: testing
     version: 1.0.0
     local_path: "../../../../testing/"

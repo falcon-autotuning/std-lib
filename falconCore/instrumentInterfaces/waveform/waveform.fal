@@ -1,7 +1,12 @@
 import (
-"../../collections/map/map.fal"
-"../instrumentInterfaces/portTransforms/portTransforms/portTransforms.fal"
-"../math/domains/coupledLabelledDomain/coupledLabelledDomain.fal"
+"../../../collections/map/map.fal"
+"../../../collections/array/array.fal"
+"../portTransforms/portTransform/portTransform.fal"
+"../portTransforms/portTransforms/portTransforms.fal"
+"../../math/discreteSpaces/discreteSpace/discreteSpace.fal"
+"../../math/axes/axes.fal"
+"../../math/domains/domain/domain.fal"
+"../../math/domains/coupledLabelledDomain/coupledLabelledDomain.fal"
 )
 ffimport "waveform-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct Waveform  { 
