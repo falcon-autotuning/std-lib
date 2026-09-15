@@ -4,7 +4,7 @@ maintainer: Falcon Team
 github: falcon-autotuning/std-lib
 license: "MPL-2.0"
 ffi:
-  build/math-wrapper.so: sha256:f67545d8b2cfbc20f8971384b94e9581c11edf1b8dcba710f75b729e23a71e9e
+  build/math-wrapper.so: sha256:e53fc1a7711c1a2173e214acf0f64bd991534dd533cde0b78df615e677910ae3
 dependencies:
   - name: array
     version: 1.0.0

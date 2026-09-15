@@ -4,7 +4,7 @@ maintainer: falcon-devs
 github: ""
 license: ""
 ffi:
-  build/config-wrapper.so: sha256:d643392d38c0447f93e880f6918dbe543bed47e66cf3126bdc35506cb0d53756
+  build/config-wrapper.so: sha256:bb127ee26f43c29d58bef872f0b73c409766241ee41bdfc5294f8dd748cba096
 dependencies:
   - name: connection
     version: 1.0.0
