@@ -1,4 +1,5 @@
 #include "falcon-core/instrument_interfaces/port_transforms/PortTransform.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
 #include "falcon-core/math/AnalyticFunction.hpp"
 #include <falcon-typing/FFIHelpers.hpp>

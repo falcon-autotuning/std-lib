@@ -162,6 +162,8 @@ autotuner DiscreteSpaceGetProjection -> (int passed, int failed) {
         arr.PushBack(ld);
         CoupledLabelledDomain cld = CoupledLabelledDomain.New(arr);
         Map<string, bool>  inc = Map.New();
+        inc.Set("freq", true);
+        inc.Set("P1", true);
         DiscreteSpace      ds  = DiscreteSpace.CartesianDiscreteSpace1D(10, cld, inc, dom);
         Axes<InstrumentPort> portProjection = Axes.New();
         portProjection.PushBack(ip);

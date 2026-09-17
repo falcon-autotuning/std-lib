@@ -1,4 +1,5 @@
 #include "falcon-core/generic/Map.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
 #include "falcon-core/instrument_interfaces/names/Ports.hpp"
 #include "falcon-core/math/UnitSpace.hpp"
@@ -46,14 +47,10 @@ static void pack_ds(DiscreteSpaceSP ds, FalconResultSlot *out, int32_t *oc) {
   *oc = 1;
 }
 
-// ---------------------------------------------------------------------------
-// get_array_from_params
-//   Retrieves a DSL Array<T> / Axes<T> parameter by name.
-//   The DSL Array is stored as:
-//     FALCON_TYPE_OPAQUE  type_name="Array"
-//     ptr = new shared_ptr<void>  (aliasing an ArrayValue)
-//   This matches the convention in array-wrapper.cpp / pack_array.
-// ---------------------------------------------------------------------------
+static std::shared_ptr<ArrayValue>
+get_struct_field_array(const std::shared_ptr<StructInstance> &inst,
+                       const char *field_name);
+
 static std::shared_ptr<ArrayValue>
 get_array_from_params(const FalconParamEntry *entries, int32_t count,
                       const char *key) {
@@ -74,6 +71,15 @@ get_array_from_params(const FalconParamEntry *entries, int32_t count,
     }
     if (tn == "ArrayValue")
       return *static_cast<std::shared_ptr<ArrayValue> *>(e.value.opaque.ptr);
+    if (tn == "StructInstance" || tn == "Axes") {
+      auto inst = *static_cast<std::shared_ptr<StructInstance> *>(e.value.opaque.ptr);
+      if (inst->fields && inst->fields->count("arr_")) {
+        return get_struct_field_array(inst, "arr_");
+      }
+      if (inst->native_handle.has_value()) {
+        return std::static_pointer_cast<ArrayValue>(inst->native_handle.value());
+      }
+    }
     throw std::runtime_error(std::string("get_array_from_params: parameter '") +
                              key + "' has unexpected opaque type_name='" + tn +
                              "'");

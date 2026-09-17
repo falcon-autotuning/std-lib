@@ -490,6 +490,10 @@ autotuner InsertNewConstructorTests -> (int passed, int failed) {
     start -> __init;
 
     state test_insert_newly_constructed_characteristic (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         dchar = dchar.SetName("insert_test_001")
                      .SetScope("insert_scope_001")
@@ -501,6 +505,10 @@ autotuner InsertNewConstructorTests -> (int passed, int failed) {
     }
 
     state test_insert_with_all_attributes_set (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         dchar = dchar.SetScope("complete_scope_001")
                      .SetName("complete_device_001")
@@ -516,6 +524,10 @@ autotuner InsertNewConstructorTests -> (int passed, int failed) {
     }
 
     state test_insert_with_extra_and_uncertainty (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         dchar = dchar.SetName("complete_device_with_extra_001")
                      .SetScope("complete_scope_with_extra_001")
@@ -532,6 +544,10 @@ autotuner InsertNewConstructorTests -> (int passed, int failed) {
     }
 
     state test_insert_with_all_connections (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         Connection c1 = Connection.NewBarrierGate("B1");
         Connection c2 = Connection.NewPlungerGate("P1");
@@ -553,6 +569,10 @@ autotuner InsertNewConstructorTests -> (int passed, int failed) {
     }
 
     state test_insert_minimal_characteristic (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         dchar = dchar.SetName("minimal_insert_002");
         
@@ -562,6 +582,10 @@ autotuner InsertNewConstructorTests -> (int passed, int failed) {
     }
 
     state test_insert_multiple_characteristics (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristic dchar1 = DeviceCharacteristic.New();
         dchar1 = dchar1.SetName("bulk_insert_001")
                        .SetScope("bulk_scope")
@@ -587,12 +611,20 @@ autotuner ReadTests -> (int passed, int failed) {
     start -> __init;
 
     state test_get_all_returns_list (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetAll();
         Error err = t.ExpectTrue(true, "GetAll returns DeviceCharacteristicList");
         -> __end(runner, t);
     }
 
     state test_get_all_list_size (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetAll();
         int size = list.Size();
         Error err = t.ExpectIntGt(size, -1, "List size is non-negative");
@@ -600,12 +632,20 @@ autotuner ReadTests -> (int passed, int failed) {
     }
 
     state test_count_returns_non_negative (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         int count = database::Count();
         Error err = t.ExpectIntGt(count, -1, "Count returns non-negative integer");
         -> __end(runner, t);
     }
 
     state test_get_by_name_not_found (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         string nonexistent_name = "definitely_does_not_exist_12345";
         bool found = false;
         DeviceCharacteristic dchar;
@@ -615,12 +655,20 @@ autotuner ReadTests -> (int passed, int failed) {
     }
 
     state test_get_by_hash_range_returns_list (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetByHashRange("00000000", "1111");
         Error err = t.ExpectTrue(true, "GetByHashRange returns DeviceCharacteristicList");
         -> __end(runner, t);
     }
 
     state test_get_by_hash_range_list_size (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetByHashRange("00000000", "111");
         int size = list.Size();
         Error err = t.ExpectIntGt(size, -1, "Hash range query returns non-negative list size");
@@ -628,6 +676,10 @@ autotuner ReadTests -> (int passed, int failed) {
     }
 
     state test_get_by_query_returns_list (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicQuery q = DeviceCharacteristicQuery.New();
         q = q.SetScope("test_query_scope");
         DeviceCharacteristicList list = database::GetByQuery(q);
@@ -636,6 +688,10 @@ autotuner ReadTests -> (int passed, int failed) {
     }
 
     state test_get_by_query_empty_results (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicQuery q = DeviceCharacteristicQuery.New();
         q = q.SetScope("nonexistent_scope_xyz_999");
         DeviceCharacteristicList list = database::GetByQuery(q);
@@ -653,6 +709,10 @@ autotuner FullLifecycleTests -> (int passed, int failed) {
     start -> __init;
 
     state test_create_set_insert_retrieve_by_name (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create a new characteristic with all attributes set
         DeviceCharacteristic created = DeviceCharacteristic.New();
         created = created.SetScope("lifecycle_scope_001")
@@ -693,6 +753,10 @@ autotuner FullLifecycleTests -> (int passed, int failed) {
     }
 
     state test_create_set_insert_query_by_scope (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create and insert first characteristic
         DeviceCharacteristic dchar1 = DeviceCharacteristic.New();
         dchar1 = dchar1.SetScope("shared_query_scope")
@@ -720,6 +784,10 @@ autotuner FullLifecycleTests -> (int passed, int failed) {
     }
 
     state test_create_set_insert_retrieve_from_list (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create and insert a new characteristic
         DeviceCharacteristic created = DeviceCharacteristic.New();
         created = created.SetScope("list_retrieve_scope")
@@ -894,6 +962,10 @@ autotuner DeviceCharacteristicListTests -> (int passed, int failed) {
     start -> __init;
 
     state test_list_size (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetAll();
         int size = list.Size();
         Error err = t.ExpectIntGt(size, -1, "List.Size() returns non-negative value");
@@ -901,6 +973,10 @@ autotuner DeviceCharacteristicListTests -> (int passed, int failed) {
     }
 
     state test_list_get_first_element (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetAll();
         int size = list.Size();
         
@@ -914,6 +990,10 @@ autotuner DeviceCharacteristicListTests -> (int passed, int failed) {
     }
 
     state test_list_get_with_valid_index (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetAll();
         int size = list.Size();
         
@@ -927,6 +1007,10 @@ autotuner DeviceCharacteristicListTests -> (int passed, int failed) {
     }
 
     state test_list_get_element_attributes (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         DeviceCharacteristicList list = database::GetAll();
         int size = list.Size();
         
@@ -962,6 +1046,10 @@ autotuner DeleteTests -> (int passed, int failed) {
     start -> __init;
 
     state test_delete_by_name_nonexistent (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         string nonexistent = "delete_test_nonexistent_name_xyz123";
         bool deleted = database::DeleteByName(nonexistent);
         Error err = t.ExpectFalse(deleted, "DeleteByName returns false for nonexistent name");
@@ -969,6 +1057,10 @@ autotuner DeleteTests -> (int passed, int failed) {
     }
 
     state test_delete_by_hash_nonexistent (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         string nonexistent_hash = "999";
         int deleted_count = database::DeleteByHash(nonexistent_hash);
         Error err = t.ExpectIntEq(deleted_count, 0, "DeleteByHash returns 0 for nonexistent hash");
@@ -976,6 +1068,10 @@ autotuner DeleteTests -> (int passed, int failed) {
     }
 
     state test_delete_by_name_created_characteristic (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create, insert, then delete
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         dchar = dchar.SetName("delete_me_001")
@@ -997,6 +1093,10 @@ autotuner DeleteTests -> (int passed, int failed) {
     }
 
     state test_delete_by_hash_created_characteristic (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create, insert, then delete by hash
         DeviceCharacteristic dchar = DeviceCharacteristic.New();
         dchar = dchar.SetName("delete_by_hash_001")
@@ -1019,18 +1119,30 @@ autotuner AdminTests -> (int passed, int failed) {
     start -> __init;
 
     state test_initialize_schema (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         database::InitializeSchema();
         Error err = t.ExpectTrue(true, "InitializeSchema completes without error");
         -> __end(runner, t);
     }
 
     state test_initialize_schema_idempotent (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         database::InitializeSchema();
         Error err = t.ExpectTrue(true, "InitializeSchema is idempotent");
         -> __end(runner, t);
     }
 
     state test_clear_all_warning (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         Error err = t.Log("ClearAll test skipped - destructive operation");
         err = t.ExpectTrue(true, "ClearAll would delete all database records");
         -> __end(runner, t);
@@ -1045,6 +1157,10 @@ autotuner SnapshotTests -> (int passed, int failed) {
     start -> __init;
 
     state test_export_to_json (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         string test_file = "/tmp/falcon_test_export.json";
         database::ExportToJson(test_file);
         Error err = t.ExpectTrue(true, "ExportToJson completes without error");
@@ -1052,6 +1168,10 @@ autotuner SnapshotTests -> (int passed, int failed) {
     }
 
     state test_import_from_json_without_clear (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         string test_file = "/tmp/falcon_test_export.json";
         database::ExportToJson(test_file);
         database::ImportFromJson(test_file, false);
@@ -1060,6 +1180,10 @@ autotuner SnapshotTests -> (int passed, int failed) {
     }
 
     state test_import_from_json_with_clear (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         string test_file = "/tmp/falcon_test_import_clear.json";
         database::ExportToJson(test_file);
         
@@ -1069,6 +1193,10 @@ autotuner SnapshotTests -> (int passed, int failed) {
     }
 
     state test_export_then_count_unchanged (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         int count_before = database::Count();
         string test_file = "/tmp/falcon_test_count.json";
         database::ExportToJson(test_file);
@@ -1086,12 +1214,20 @@ autotuner IntegrationTests -> (int passed, int failed) {
     start -> __init;
 
     state test_connection_then_count (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         int count = database::Count();
         Error err = t.ExpectIntGt(count, -1, "Count returns valid result after connection");
         -> __end(runner, t);
     }
 
     state test_multiple_database_instances (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         
         int count1 = database::Count();
         int count2 = database::Count();
@@ -1101,6 +1237,10 @@ autotuner IntegrationTests -> (int passed, int failed) {
     }
 
     state test_query_builder_with_getbyquery (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         
         // Get a reference entry first
         DeviceCharacteristicList all_list = database::GetAll();
@@ -1124,6 +1264,10 @@ autotuner IntegrationTests -> (int passed, int failed) {
     }
 
     state test_export_import_roundtrip (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         int count_original = database::Count();
         
         string export_file = "/tmp/falcon_test_roundtrip.json";
@@ -1138,6 +1282,10 @@ autotuner IntegrationTests -> (int passed, int failed) {
     }
 
     state test_complete_workflow_create_insert_query_delete (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create multiple characteristics with extra and uncertainty
         DeviceCharacteristic wf_char1 = DeviceCharacteristic.New();
         wf_char1 = wf_char1.SetScope("workflow_scope")
@@ -1181,6 +1329,10 @@ autotuner IntegrationTests -> (int passed, int failed) {
     }
 
     state test_query_with_extra_and_uncertainty_filters (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         // Create characteristics with various extra and uncertainty values
         DeviceCharacteristic dchar1 = DeviceCharacteristic.New();
         dchar1 = dchar1.SetName("filter_test_001")
@@ -1208,6 +1360,10 @@ autotuner IntegrationTests -> (int passed, int failed) {
     }
 
     state test_connections_in_full_workflow (TestRunner runner, TestContext t) {
+        bool conn = database::IsConnected();
+        if (!conn) {
+            -> __end(runner, t);
+        }
         Connection c1 = Connection.NewBarrierGate("B1");
         Connection c2 = Connection.NewPlungerGate("P1");
         

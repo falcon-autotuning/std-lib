@@ -1,4 +1,5 @@
 import (
+"../../../../collections/array/array.fal"
 "../labelledMeasuredArray/labelledMeasuredArray.fal"
 "../labelledControlArray/labelledControlArray.fal"
 "../../../autotunerInterfaces/contexts/acquisitionContext/acquisitionContext.fal"
@@ -7,7 +8,7 @@ ffimport "labelled-arrays-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falco
 struct LabelledArrays <T> { // T can by LabelledMeasuredArray or LabelledControlArray
     routine NewLabelledMeasuredArrays (array::Array<T> arr) -> (LabelledArrays<T> arrays)
     routine NewLabelledControlArrays (array::Array<T> arr) -> (LabelledArrays<T> arrays)
-    routine Arrays -> (Array<T> arrays)
+    routine Arrays -> (array::Array<T> arrays)
     routine Labels -> (array::Array<acquisitionContext::AcquisitionContext> labels) 
     routine IsControlArrays -> (bool IsControl)
     routine IsMeasuredArrays -> (bool IsMeasured)
@@ -19,6 +20,6 @@ struct LabelledArrays <T> { // T can by LabelledMeasuredArray or LabelledControl
         size = this.Labels().Size();
     }
     routine IsEmpty  -> (bool empty) {
-        empty = this.Labels().Empty();
+        empty = this.Labels().IsEmpty();
     }
 }

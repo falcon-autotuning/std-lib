@@ -1,4 +1,5 @@
 #include "falcon-core/math/domains/CoupledLabelledDomain.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/domains/LabelledDomain.hpp"
 #include "falcon-core/instrument_interfaces/names/Ports.hpp"
 #include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"

@@ -1,4 +1,5 @@
 #include "falcon-core/math/domains/Domain.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

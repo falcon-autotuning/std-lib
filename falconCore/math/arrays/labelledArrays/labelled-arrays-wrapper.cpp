@@ -1,4 +1,5 @@
 #include "falcon-core/math/arrays/LabelledArrays.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/arrays/LabelledMeasuredArray.hpp"
 #include "falcon-core/math/arrays/LabelledControlArray.hpp"
 #include "falcon-core/autotuner_interfaces/contexts/AcquisitionContext.hpp"

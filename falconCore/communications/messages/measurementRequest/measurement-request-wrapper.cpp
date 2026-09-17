@@ -1,4 +1,5 @@
 #include "falcon-core/communications/messages/MeasurementRequest.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/instrument_interfaces/Waveform.hpp"
 #include "falcon-core/instrument_interfaces/names/Ports.hpp"
 #include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
@@ -55,6 +56,22 @@ get_array_from_params(const FalconParamEntry *entries, int32_t count,
 }
 
 extern "C" {
+
+void SampleJSON(const FalconParamEntry *, int32_t,
+                FalconResultSlot *out, int32_t *oc) {
+  auto wlist = std::make_shared<falcon_core::generic::List<Waveform>>();
+  auto getters = std::make_shared<falcon_core::instrument_interfaces::names::Ports>();
+  auto meter_transforms = std::make_shared<
+      falcon_core::generic::Map<InstrumentPort, PortTransform>>();
+  auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("P1");
+  auto unit = falcon_core::physics::units::SymbolUnit::Volt();
+  auto time_domain = std::make_shared<falcon_core::math::domains::LabelledDomain>(
+      "P1", std::make_pair(0.0, 1.0), conn,
+      falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE,
+      true, true, unit, "test");
+  MeasurementRequest req("", "", wlist, getters, meter_transforms, time_domain);
+  pack_results(FunctionResult{req.to_json_string()}, out, 16, oc);
+}
 
 // New(message, measurement_name, waveforms, getters, meterTransforms, timeDomain) -> MeasurementRequest
 void STRUCTMeasurementRequestNew(const FalconParamEntry *params, int32_t param_count,

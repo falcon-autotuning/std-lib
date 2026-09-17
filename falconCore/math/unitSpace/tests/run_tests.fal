@@ -38,7 +38,7 @@ autotuner UnitSpaceAccessors -> (int passed, int failed) {
         Domain d = Domain.New(0.0, 2.0, true, true);
         UnitSpace us = UnitSpace.Cartesian1DSpace(0.1, d);
         Domain got = us.Domain();
-        Error err = t.ExpectFloatEq(2.0, got.GreaterBound(), "Domain GreaterBound matches");
+        Error err = t.ExpectFloatEq(2.0, got.GreaterBound(), 1.0e-9, "Domain GreaterBound matches");
         -> __end(runner, t);
     }
 }

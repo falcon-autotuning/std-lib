@@ -1,4 +1,5 @@
 #include "falcon-core/math/arrays/LabelledControlArray1D.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/arrays/LabelledControlArray.hpp"
 #include "falcon-core/math/arrays/ControlArray.hpp"
 #include "falcon-core/math/arrays/IncreasingAlignment.hpp"
@@ -96,7 +97,8 @@ static void pack_farray_list(
 }
 
 static InstrumentPortSP make_default_port() {
-  return std::make_shared<InstrumentPort>("default");
+  auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("default");
+  return std::make_shared<InstrumentPort>("default", conn);
 }
 
 extern "C" {

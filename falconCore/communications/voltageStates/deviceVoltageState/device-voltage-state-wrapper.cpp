@@ -1,4 +1,5 @@
 #include "falcon-core/communications/voltage_states/DeviceVoltageState.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/physics/device_structures/Connection.hpp"
 #include "falcon-core/physics/units/SymbolUnit.hpp"
 #include <falcon-typing/FFIHelpers.hpp>

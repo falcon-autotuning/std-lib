@@ -3,6 +3,7 @@ import (
 "../../../math/domains/labelledDomain/labelledDomain.fal"
 )
 ffimport "measurement-request-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
+routine SampleJSON () -> (string json)
 struct MeasurementRequest { 
     routine New (string message, string measurement_name, array::Array<waveform::Waveform> waveforms, ports::Ports getters, map::Map<instrumentPort::InstrumentPort, portTransform::PortTransform> meterTransforms, labelledDomain::LabelledDomain timeDomain) -> (MeasurementRequest request)
     routine MeasurementName -> (string name)
@@ -10,9 +11,9 @@ struct MeasurementRequest {
     routine Waveforms -> (array::Array<waveform::Waveform> waveforms)
     routine MeterTransforms -> (map::Map<instrumentPort::InstrumentPort, portTransform::PortTransform> map)
     routine TimeDomain -> (labelledDomain::LabelledDomain domain)
-    routine Equal (PortTransforms other) -> (bool equal)
-    routine NotEqual (PortTransforms other) -> (bool notequal)
-    routine FromJSON (string json) -> (PortTransforms transforms)
+    routine Equal (MeasurementRequest other) -> (bool equal)
+    routine NotEqual (MeasurementRequest other) -> (bool notequal)
+    routine FromJSON (string json) -> (MeasurementRequest request)
     routine ToJSON -> (string json)
     routine Message -> (string message)
 }

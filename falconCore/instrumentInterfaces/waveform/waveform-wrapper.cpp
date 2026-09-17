@@ -1,4 +1,5 @@
 #include "falcon-core/instrument_interfaces/Waveform.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/instrument_interfaces/port_transforms/PortTransform.hpp"
 #include "falcon-core/math/discrete_spaces/DiscreteSpace.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
@@ -59,6 +60,29 @@ get_array_from_params(const FalconParamEntry *entries, int32_t count,
 }
 
 extern "C" {
+
+void SampleJSON(const FalconParamEntry *, int32_t,
+                FalconResultSlot *out, int32_t *oc) {
+  auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("P1");
+  auto port = falcon_core::instrument_interfaces::names::InstrumentPort::Knob("P1", conn);
+  auto pt = falcon_core::instrument_interfaces::port_transforms::PortTransform::IdentityTransform(port);
+  auto list = std::make_shared<falcon_core::generic::List<PortTransform>>();
+  list->push_back(pt);
+
+  auto ld = falcon_core::math::domains::LabelledDomain::from_port(
+      std::make_pair(0.0, 1.0), port);
+  auto cld = std::make_shared<falcon_core::math::domains::CoupledLabelledDomain>(
+      std::vector<falcon_core::math::domains::LabelledDomainSP>{ld});
+  auto cld_axes = std::make_shared<falcon_core::math::Axes<falcon_core::math::domains::CoupledLabelledDomain>>();
+  cld_axes->push_back(cld);
+
+  auto space = falcon_core::math::discrete_spaces::DiscreteSpace::CartesianDiscreteSpace1D(
+      10, cld,
+      std::make_shared<falcon_core::generic::Map<std::string, bool>>(),
+      std::make_shared<falcon_core::math::domains::Domain>(0.0, 1.0));
+  Waveform w(space, list);
+  pack_results(FunctionResult{w.to_json_string()}, out, 16, oc);
+}
 
 // New(space: DiscreteSpace, transforms: Array<PortTransform>) -> (Waveform waveform)
 void STRUCTWaveformNew(const FalconParamEntry *params, int32_t param_count,

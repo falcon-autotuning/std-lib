@@ -1,4 +1,5 @@
 #include "falcon-core/math/UnitSpace.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/domains/Domain.hpp"
 #include "falcon-core/math/discrete_spaces/Discretizer.hpp"
 #include "falcon-core/generic/FArray.hpp"

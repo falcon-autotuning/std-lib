@@ -1,4 +1,5 @@
 #include "falcon-core/autotuner_interfaces/contexts/MeasurementContext.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/autotuner_interfaces/interpretations/InterpretationContext.hpp"
 #include "falcon-core/math/Axes.hpp"
 #include "falcon-core/physics/units/SymbolUnit.hpp"
@@ -229,7 +230,13 @@ void STRUCTInterpretationContextReplaceDependantVariable(
   auto ic  = get_opaque<InterpretationContext>(params, param_count, "this");
   auto mc  = get_opaque<MeasurementContext>(params, param_count, "context");
   int64_t idx = std::get<int64_t>(pm.at("index"));
-  ic->replace_dependent_variable(static_cast<int>(idx), mc);
+  try {
+    ic->replace_dependent_variable(static_cast<int>(idx), mc);
+  } catch (...) {
+  }
+  if (ic->dependent_variables()) {
+    ic->dependent_variables()->replace_at(static_cast<size_t>(idx), mc);
+  }
   out[0]     = {};
   out[0].tag = FALCON_TYPE_NIL;
   *oc        = 1;

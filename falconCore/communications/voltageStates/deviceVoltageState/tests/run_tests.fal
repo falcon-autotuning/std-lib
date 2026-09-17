@@ -207,7 +207,7 @@ autotuner DeviceVoltageStateUnitConversion -> (int passed, int failed) {
     state test_convert_volt_to_millivolt (TestRunner runner, TestContext t) {
         Connection p1          = Connection.NewPlungerGate("P1");
         SymbolUnit volt        = SymbolUnit.Volt();
-        SymbolUnit mv          = SymbolUnit.Miilivolt();
+        SymbolUnit mv          = SymbolUnit.Millivolt();
         DeviceVoltageState dvs = DeviceVoltageState.New(p1, 1.0, volt);
         DeviceVoltageState res = dvs.ConvertToUnit(mv);
         Error err = t.ExpectFloatEq(1000.0, res.Voltage(), 1e-6, "1.0 V = 1000.0 mV");
@@ -217,7 +217,7 @@ autotuner DeviceVoltageStateUnitConversion -> (int passed, int failed) {
     state test_converted_unit_symbol (TestRunner runner, TestContext t) {
         Connection p1          = Connection.NewPlungerGate("P1");
         SymbolUnit volt        = SymbolUnit.Volt();
-        SymbolUnit mv          = SymbolUnit.Miilivolt();
+        SymbolUnit mv          = SymbolUnit.Millivolt();
         DeviceVoltageState dvs = DeviceVoltageState.New(p1, 0.5, volt);
         DeviceVoltageState res = dvs.ConvertToUnit(mv);
         SymbolUnit got_unit    = res.Unit();

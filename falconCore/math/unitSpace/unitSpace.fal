@@ -1,7 +1,11 @@
 import (
+"../domains/domain/domain.fal"
 "../axes/axes.fal"
 "../arrays/controlArray1D/controlArray1D.fal"
+"../arrays/controlArray/controlArray.fal"
 "../discreteSpaces/discretizer/discretizer.fal"
+"../../generic/farray/farray.fal"
+"../../../collections/array/array.fal"
 )
 ffimport "unit-space-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct UnitSpace {

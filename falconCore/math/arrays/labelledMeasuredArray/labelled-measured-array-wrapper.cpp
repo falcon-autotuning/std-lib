@@ -1,4 +1,5 @@
 #include "falcon-core/math/arrays/LabelledMeasuredArray.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/arrays/MeasuredArray.hpp"
 #include "falcon-core/generic/FArray.hpp"
 #include "falcon-core/autotuner_interfaces/contexts/AcquisitionContext.hpp"
@@ -83,7 +84,8 @@ static void pack_farray_list(
 
 // Create a minimal InstrumentPort for use when only an FArray is given.
 static InstrumentPortSP make_default_port() {
-  return std::make_shared<InstrumentPort>("default");
+  auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("default");
+  return std::make_shared<InstrumentPort>("default", conn);
 }
 
 extern "C" {

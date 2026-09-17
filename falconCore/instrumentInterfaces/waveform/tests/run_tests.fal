@@ -6,8 +6,9 @@ autotuner WaveformJSON -> (int passed, int failed) {
     start -> __init;
 
     state test_roundtrip (TestRunner runner, TestContext t) {
-        Waveform orig     = Waveform.FromJSON("{\"polymorphic_id\":2147483649,\"polymorphic_name\":\"falcon_core::instrument_interfaces::Waveform\",\"ptr_wrapper\":{\"valid\":1,\"data\":{\"value0\":{\"ptr_wrapper\":{\"valid\":1,\"data\":{\"value0\":[],\"value1\":{\"ptr_wrapper\":{\"valid\":1,\"data\":{\"value0\":0,\"value1\":1}}},\"value2\":[]}}},\"value1\":[]}}}");
-        string          json     = orig.ToJSON();
+        string sample     = SampleJSON();
+        Waveform orig     = Waveform.FromJSON(sample);
+        string   json     = orig.ToJSON();
         Waveform restored = Waveform.FromJSON(json);
         Error err = t.ExpectTrue(orig.Equal(restored), "Waveform JSON roundtrip preserves equality");
         -> __end(runner, t);
@@ -19,8 +20,10 @@ autotuner WaveformListOps -> (int passed, int failed) {
     start -> __init;
 
     state test_size_and_empty (TestRunner runner, TestContext t) {
-        Waveform w = Waveform.FromJSON("{\"polymorphic_id\":2147483649,\"polymorphic_name\":\"falcon_core::instrument_interfaces::Waveform\",\"ptr_wrapper\":{\"valid\":1,\"data\":{\"value0\":{\"ptr_wrapper\":{\"valid\":1,\"data\":{\"value0\":[],\"value1\":{\"ptr_wrapper\":{\"valid\":1,\"data\":{\"value0\":0,\"value1\":1}}},\"value2\":[]}}},\"value1\":[]}}}");
-        Error err = t.ExpectTrue(w.IsEmpty(), "Waveform with no transforms is empty");
+        string sample = SampleJSON();
+        Waveform w = Waveform.FromJSON(sample);
+        Error err = t.ExpectFalse(w.IsEmpty(), "Waveform with transforms is not empty");
+        err = t.ExpectIntEq(1, w.Size(), "Waveform size is 1");
         -> __end(runner, t);
     }
 }

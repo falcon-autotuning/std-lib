@@ -15,9 +15,14 @@ std::shared_ptr<AdminDatabaseConnection> g_db_conn;
 std::once_flag g_db_init_flag;
 
 void initialize_database() {
-  const char *env_url = std::getenv("FALCON_DATABASE_URL");
-  std::string connection_string = env_url ? env_url : "";
-  g_db_conn = std::make_shared<AdminDatabaseConnection>(connection_string);
+  try {
+    const char *env_url = std::getenv("FALCON_DATABASE_URL");
+    if (env_url && env_url[0] != '\0') {
+      g_db_conn = std::make_shared<AdminDatabaseConnection>(env_url);
+    }
+  } catch (...) {
+    g_db_conn = nullptr;
+  }
 }
 
 std::shared_ptr<AdminDatabaseConnection> get_global_database() {
@@ -25,12 +30,20 @@ std::shared_ptr<AdminDatabaseConnection> get_global_database() {
   return g_db_conn;
 }
 
+std::shared_ptr<AdminDatabaseConnection> require_database() {
+  auto db = get_global_database();
+  if (!db) {
+    throw std::runtime_error("No database connection string provided. Either pass a connection string explicitly or set FALCON_DATABASE_URL environment variable.");
+  }
+  return db;
+}
+
 std::shared_ptr<SnapshotManager> g_snapshot_mgr;
 std::once_flag g_snap_init_flag;
 
 std::shared_ptr<SnapshotManager> get_global_snapshot_manager() {
   std::call_once(g_snap_init_flag, [] {
-    g_snapshot_mgr = std::make_shared<SnapshotManager>(get_global_database());
+    g_snapshot_mgr = std::make_shared<SnapshotManager>(require_database());
   });
   return g_snapshot_mgr;
 }
@@ -401,12 +414,12 @@ void GetByName(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
                int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto name = std::get<std::string>(pm.at("name"));
-  pack_dchar_opt(get_global_database()->get_by_name(name), out, oc);
+  pack_dchar_opt(require_database()->get_by_name(name), out, oc);
 }
 
 void GetAll(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
             int32_t *oc) {
-  pack_dchar_list(get_global_database()->get_all(), out, oc);
+  pack_dchar_list(require_database()->get_all(), out, oc);
 }
 
 void GetByHashRange(const FalconParamEntry *p, int32_t pc,
@@ -414,24 +427,33 @@ void GetByHashRange(const FalconParamEntry *p, int32_t pc,
   auto pm = unpack_params(p, pc);
   auto h1 = std::get<std::string>(pm.at("hash_start"));
   auto h2 = std::get<std::string>(pm.at("hash_end"));
-  pack_dchar_list(get_global_database()->get_by_hash_range(h1, h2), out, oc);
+  pack_dchar_list(require_database()->get_by_hash_range(h1, h2), out, oc);
 }
 
 void GetByQuery(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
                 int32_t *oc) {
   auto q = get_opaque<DeviceCharacteristicQuery>(p, pc, "query");
-  pack_dchar_list(get_global_database()->get_by_query(*q), out, oc);
+  pack_dchar_list(require_database()->get_by_query(*q), out, oc);
 }
 
 void Count(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
            int32_t *oc) {
-  pack_results(FunctionResult{(int64_t)get_global_database()->count()}, out, 16,
+  pack_results(FunctionResult{(int64_t)require_database()->count()}, out, 16,
                oc);
 }
 
 void IsConnected(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
                  int32_t *oc) {
-  pack_results(FunctionResult{get_global_database()->is_connected()}, out, 16,
+  auto db = get_global_database();
+  bool connected = false;
+  if (db) {
+    try {
+      connected = db->is_connected();
+    } catch (...) {
+      connected = false;
+    }
+  }
+  pack_results(FunctionResult{connected}, out, 16,
                oc);
 }
 
@@ -439,7 +461,7 @@ void IsConnected(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
 void Insert(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
             int32_t *oc) {
   auto dchar = get_opaque<DeviceCharacteristic>(p, pc, "dchar");
-  get_global_database()->insert(*dchar);
+  require_database()->insert(*dchar);
   pack_results(FunctionResult{}, out, 16, oc);
 }
 
@@ -447,7 +469,7 @@ void DeleteByName(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
                   int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto name = std::get<std::string>(pm.at("name"));
-  pack_results(FunctionResult{get_global_database()->delete_by_name(name)}, out,
+  pack_results(FunctionResult{require_database()->delete_by_name(name)}, out,
                16, oc);
 }
 
@@ -456,20 +478,20 @@ void DeleteByHash(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
   auto pm = unpack_params(p, pc);
   auto hash = std::get<std::string>(pm.at("hash"));
   pack_results(
-      FunctionResult{(int64_t)get_global_database()->delete_by_hash(hash)}, out,
+      FunctionResult{(int64_t)require_database()->delete_by_hash(hash)}, out,
       16, oc);
 }
 
 // Admin methods
 void InitializeSchema(const FalconParamEntry *p, int32_t pc,
                       FalconResultSlot *out, int32_t *oc) {
-  get_global_database()->initialize_schema();
+  require_database()->initialize_schema();
   pack_results(FunctionResult{}, out, 16, oc);
 }
 
 void ClearAll(const FalconParamEntry *p, int32_t pc, FalconResultSlot *out,
               int32_t *oc) {
-  get_global_database()->clear_all();
+  require_database()->clear_all();
   pack_results(FunctionResult{}, out, 16, oc);
 }
 

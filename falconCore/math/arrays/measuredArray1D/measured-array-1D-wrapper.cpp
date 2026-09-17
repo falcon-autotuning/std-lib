@@ -1,4 +1,5 @@
 #include "falcon-core/math/arrays/MeasuredArray1D.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/arrays/MeasuredArray.hpp"
 #include "falcon-core/generic/FArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>

@@ -1,4 +1,5 @@
 #include "falcon-core/autotuner_interfaces/contexts/MeasurementContext.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/physics/device_structures/Connection.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 

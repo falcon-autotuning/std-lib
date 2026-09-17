@@ -1,6 +1,5 @@
-// Tests for falconCore/communications/messages/voltageStatesResponse
-// Run with: falcon-test run_tests.fal
 import "../../../../../testing/testing.fal";
+import "../../../../../collections/array/array.fal";
 import "../voltageStatesResponse.fal";
 import "../../../voltageStates/deviceVoltageStates/deviceVoltageStates.fal";
 import "../../../voltageStates/deviceVoltageState/deviceVoltageState.fal";
@@ -15,7 +14,8 @@ routine MakeDVS (string name, float voltage) -> (DeviceVoltageState dvs) {
 
 routine MakeStates (string name, float voltage) -> (DeviceVoltageStates states) {
     DeviceVoltageState dvs    = MakeDVS(name, voltage);
-    Array<DeviceVoltageState> arr = [dvs];
+    Array<DeviceVoltageState> arr = Array.New();
+    arr.PushBack(dvs);
     states = DeviceVoltageStates.New(arr);
 }
 
@@ -60,7 +60,9 @@ autotuner VoltageStatesResponseAccessors -> (int passed, int failed) {
     state test_states_size (TestRunner runner, TestContext t) {
         DeviceVoltageState d1      = MakeDVS("P1", 1.0);
         DeviceVoltageState d2      = MakeDVS("P2", 2.0);
-        Array<DeviceVoltageState> arr = [d1, d2];
+        Array<DeviceVoltageState> arr = Array.New();
+        arr.PushBack(d1);
+        arr.PushBack(d2);
         DeviceVoltageStates states = DeviceVoltageStates.New(arr);
         VoltageStatesResponse resp = VoltageStatesResponse.New("ok", states);
         DeviceVoltageStates got    = resp.States();
@@ -69,7 +71,7 @@ autotuner VoltageStatesResponseAccessors -> (int passed, int failed) {
     }
 
     state test_states_empty_collection (TestRunner runner, TestContext t) {
-        Array<DeviceVoltageState> arr = [];
+        Array<DeviceVoltageState> arr = Array.New();
         DeviceVoltageStates states = DeviceVoltageStates.New(arr);
         VoltageStatesResponse resp = VoltageStatesResponse.New("empty", states);
         DeviceVoltageStates got    = resp.States();
@@ -155,7 +157,7 @@ autotuner VoltageStatesResponseJSON -> (int passed, int failed) {
     }
 
     state test_roundtrip_empty_states (TestRunner runner, TestContext t) {
-        Array<DeviceVoltageState> arr = [];
+        Array<DeviceVoltageState> arr = Array.New();
         DeviceVoltageStates states = DeviceVoltageStates.New(arr);
         VoltageStatesResponse orig = VoltageStatesResponse.New("empty", states);
         string json                = orig.ToJSON();

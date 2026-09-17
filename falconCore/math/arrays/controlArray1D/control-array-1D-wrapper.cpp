@@ -1,4 +1,5 @@
 #include "falcon-core/math/arrays/ControlArray1D.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/arrays/ControlArray.hpp"
 #include "falcon-core/math/arrays/IncreasingAlignment.hpp"
 #include "falcon-core/generic/FArray.hpp"

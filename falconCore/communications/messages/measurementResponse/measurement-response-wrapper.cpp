@@ -1,4 +1,5 @@
 #include "falcon-core/communications/messages/MeasurementResponse.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/arrays/LabelledArrays.hpp"
 #include "falcon-core/math/arrays/LabelledMeasuredArray.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
@@ -25,6 +26,13 @@ static void pack_mr(MeasurementResponseSP resp, FalconResultSlot *out, int32_t *
 }
 
 extern "C" {
+
+void SampleJSON(const FalconParamEntry *, int32_t,
+                FalconResultSlot *out, int32_t *oc) {
+  auto arr = std::make_shared<falcon_core::math::arrays::LabelledArrays<falcon_core::math::arrays::LabelledMeasuredArray>>();
+  MeasurementResponse resp(arr);
+  pack_results(FunctionResult{resp.to_json_string()}, out, 16, oc);
+}
 
 // New(arrays: LabelledArrays<LabelledMeasuredArray>) -> (MeasurementResponse response)
 void STRUCTMeasurementResponseNew(const FalconParamEntry *params, int32_t param_count,

@@ -1,4 +1,5 @@
 #include <falcon-typing/FFIHelpers.hpp>
+#include <falcon-core/CerealRegistry.hpp>
 
 using namespace falcon::typing;
 using namespace falcon::typing::ffi::wrapper;

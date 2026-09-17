@@ -9,6 +9,7 @@ import (
 "../../math/domains/coupledLabelledDomain/coupledLabelledDomain.fal"
 )
 ffimport "waveform-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
+routine SampleJSON () -> (string json)
 struct Waveform  { 
     routine New (discreteSpace::DiscreteSpace space, array::Array<portTransform::PortTransform> transforms) -> (Waveform waveform)
     routine NewCartesianWaveform (axes::Axes<int> divisions, axes::Axes<coupledLabelledDomain::CoupledLabelledDomain> axes, axes::Axes<map::Map<string, bool>> increasing, array::Array<portTransform::PortTransform> transforms, domain::Domain domain) -> (Waveform waveform)

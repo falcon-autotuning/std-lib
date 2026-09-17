@@ -4,7 +4,7 @@ import (
 )
 ffimport "channels-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct Channels {
-    routine New (array::Array<Channel> array) -> (Channels channels)
+    routine New (array::Array<channel::Channel> array) -> (Channels channels)
     routine Equal (Channels other) -> (bool equal)
     routine NotEqual (Channels other) -> (bool notequal)
     routine FromJSON (string json) -> (Channels channel)

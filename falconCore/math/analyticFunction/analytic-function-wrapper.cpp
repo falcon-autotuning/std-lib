@@ -1,4 +1,5 @@
 #include "falcon-core/math/AnalyticFunction.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/generic/List.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>

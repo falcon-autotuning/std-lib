@@ -1,12 +1,10 @@
-// Tests for falconCore/generic/farray
-// Run with: falcon-test run_tests.fal
 import "../../../../testing/testing.fal";
+import "../../../../collections/array/array.fal";
 import "../farray.fal";
-import "./farray-test-helpers.fal";
 
 // Convenience: build an FArray from a float list.
 routine FA (Array<float> vals) -> (farray::FArray arr) {
-    arr = FArrayTestHelpers.NewFromFloats(vals);
+    arr = farray::FArrayTestHelpers.NewFromFloats(vals);
 }
 
 // ── Equality ──────────────────────────────────────────────────────────────────

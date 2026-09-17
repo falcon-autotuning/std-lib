@@ -1,4 +1,5 @@
 #include "falcon-core/instrument_interfaces/names/Instrument.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/instrument_interfaces/names/InstrumentTypes.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 
@@ -37,6 +38,12 @@ void STRUCTInstrumentDCVoltageSource(const FalconParamEntry *, int32_t,
 // Amnmeter() -> (string type)
 void STRUCTInstrumentAmnmeter(const FalconParamEntry *, int32_t,
                                FalconResultSlot *out, int32_t *oc) {
+  pack_results(FunctionResult{std::string(InstrumentTypes::AMNMETER)}, out, 16, oc);
+}
+
+// Ammeter() -> (string type)
+void STRUCTInstrumentAmmeter(const FalconParamEntry *, int32_t,
+                              FalconResultSlot *out, int32_t *oc) {
   pack_results(FunctionResult{std::string(InstrumentTypes::AMNMETER)}, out, 16, oc);
 }
 

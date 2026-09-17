@@ -2,6 +2,7 @@ ffimport "instrument-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib
 struct Instrument {
     routine DCVoltageSource -> (string type)
     routine Amnmeter -> (string type)
+    routine Ammeter -> (string type)
     routine Magnet -> (string type)
     routine VoltageSource -> (string type)
     routine Clock -> (string type)

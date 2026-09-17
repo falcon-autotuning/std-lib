@@ -1,4 +1,5 @@
 import "../../../../../testing/testing.fal";
+import "../../../../../collections/array/array.fal";
 import "../increasingAlignment.fal";
 
 autotuner IncreasingAlignmentConstructors -> (int passed, int failed) {

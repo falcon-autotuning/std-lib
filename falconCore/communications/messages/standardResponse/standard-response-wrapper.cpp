@@ -1,4 +1,5 @@
 #include "falcon-core/communications/messages/StandardResponse.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;

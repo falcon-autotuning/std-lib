@@ -1,4 +1,4 @@
-// import "../../math/quantity/quantity.fal";
+import "../../../collections/array/array.fal";
 ffimport "farray-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct FArray {
     routine Equal (FArray other) -> (bool equal)
@@ -20,4 +20,8 @@ struct FArray {
     routine Abs -> (FArray farray)
     routine FromJSON (string json) -> (FArray farray)
     routine ToJSON () -> (string json)
+}
+
+struct FArrayTestHelpers {
+    routine NewFromFloats (array::Array<float> values) -> (FArray arr)
 }

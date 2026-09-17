@@ -2,8 +2,8 @@
 // Run with: falcon-test run_tests.fal
 import "../../../../../testing/testing.fal";
 import "../interpretationContainer.fal";
-import "../interpretationContext/interpretationContext.fal";
-import "../../contexts/measurementContext/measurementContext.fal";
+import "../../interpretationContext/interpretationContext.fal";
+import "../../../contexts/measurementContext/measurementContext.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
 import "../../../../instrumentInterfaces/names/instrument/instrument.fal";
@@ -22,10 +22,10 @@ routine MakeCtx () -> (InterpretationContext ctx) {
     MeasurementContext indep = MakeMC("P1", Instrument.DCVoltageSource());
     MeasurementContext dep   = MakeMC("S1", Instrument.Ammeter());
     SymbolUnit volt          = SymbolUnit.Volt();
-    Axes<MeasurementContext> axes = Axes<MeasurementContext>.New();
+    Axes axes = Axes.New();
     axes.PushBack(indep);
-    Array<MeasurementContext> deps;
-    deps.pushback(dep);
+    Array deps = Array.New();
+    deps.PushBack(dep);
     ctx = InterpretationContext.New(axes, deps, volt);
 }
 
@@ -37,7 +37,7 @@ autotuner InterpretationContainerConstruction -> (int passed, int failed) {
 
     state test_new_from_map (TestRunner runner, TestContext t) {
         InterpretationContext ctx = MakeCtx();
-        Map<InterpretationContext, float> contextMap = Map.New();
+        Map contextMap = Map.New();
         contextMap.Set(ctx, 0.5);
         InterpretationContainer ic = InterpretationContainer.New(contextMap);
         string json = ic.ToJSON();
@@ -54,7 +54,7 @@ autotuner InterpretationContainerEquality -> (int passed, int failed) {
 
     state test_equal_same_map (TestRunner runner, TestContext t) {
         InterpretationContext ctx = MakeCtx();
-        Map<InterpretationContext, float> contextMap = Map.New();
+        Map contextMap = Map.New();
         contextMap.Set(ctx, 0.5);
         InterpretationContainer a = InterpretationContainer.New(contextMap);
         InterpretationContainer b = InterpretationContainer.New(contextMap);
@@ -64,8 +64,8 @@ autotuner InterpretationContainerEquality -> (int passed, int failed) {
 
     state test_not_equal_different_values (TestRunner runner, TestContext t) {
         InterpretationContext ctx = MakeCtx();
-        Map<InterpretationContext, float> mapWithLowerValue  = Map.New();
-        Map<InterpretationContext, float> mapWithHigherValue = Map.New();
+        Map mapWithLowerValue  = Map.New();
+        Map mapWithHigherValue = Map.New();
         mapWithLowerValue.Set(ctx, 0.5);
         mapWithHigherValue.Set(ctx, 1.5);
         InterpretationContainer a = InterpretationContainer.New(mapWithLowerValue);
@@ -83,7 +83,7 @@ autotuner InterpretationContainerJSON -> (int passed, int failed) {
 
     state test_to_json_non_empty (TestRunner runner, TestContext t) {
         InterpretationContext ctx = MakeCtx();
-        Map<InterpretationContext, float> contextMap = Map.New();
+        Map contextMap = Map.New();
         contextMap.Set(ctx, 1.0);
         InterpretationContainer ic = InterpretationContainer.New(contextMap);
         string json = ic.ToJSON();
@@ -93,7 +93,7 @@ autotuner InterpretationContainerJSON -> (int passed, int failed) {
 
     state test_roundtrip (TestRunner runner, TestContext t) {
         InterpretationContext ctx = MakeCtx();
-        Map<InterpretationContext, float> contextMap = Map.New();
+        Map contextMap = Map.New();
         contextMap.Set(ctx, 1.0);
         InterpretationContainer orig = InterpretationContainer.New(contextMap);
         string json                  = orig.ToJSON();

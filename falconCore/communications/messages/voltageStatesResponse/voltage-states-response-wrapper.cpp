@@ -1,4 +1,5 @@
 #include "falcon-core/communications/messages/VoltageStatesResponse.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/communications/voltage_states/DeviceVoltageStates.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 

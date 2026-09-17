@@ -1,4 +1,5 @@
 #include "falcon-core/autotuner_interfaces/names/Channels.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/autotuner_interfaces/names/Channel.hpp"
 #include <falcon-typing/FFIHelpers.hpp>
 #include <vector>

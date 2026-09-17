@@ -1,4 +1,5 @@
 #include "falcon-core/generic/Map.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/Point.hpp"
 #include "falcon-core/math/Quantity.hpp"
 #include "falcon-core/physics/device_structures/Connection.hpp"

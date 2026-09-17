@@ -1,4 +1,5 @@
 #include "falcon-core/autotuner_interfaces/interpretations/InterpretationContainer.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/autotuner_interfaces/interpretations/InterpretationContext.hpp"
 #include "falcon-core/autotuner_interfaces/contexts/MeasurementContext.hpp"
 #include "falcon-core/physics/device_structures/Connection.hpp"
@@ -46,12 +47,14 @@ static void pack_ic_ctx(InterpretationContextSP ctx, FalconResultSlot *out, int3
 static void pack_ctx_array(
     falcon_core::generic::ListSP<InterpretationContext> list,
     FalconResultSlot *out, int32_t *oc) {
-  auto arr = std::make_shared<ArrayValue>();
-  for (const auto &ctx : list->items()) {
-    auto inst = std::make_shared<StructInstance>("InterpretationContext");
-    auto sp   = std::make_shared<InterpretationContextSP>(ctx);
-    inst->native_handle = std::static_pointer_cast<void>(sp);
-    arr->items.push_back(inst);
+  auto arr = std::make_shared<ArrayValue>("InterpretationContext");
+  if (list) {
+    for (size_t i = 0; i < list->size(); ++i) {
+      auto ctx = list->operator[](i);
+      auto inst = std::make_shared<StructInstance>("InterpretationContext");
+      inst->native_handle = std::static_pointer_cast<void>(ctx);
+      arr->elements.push_back(inst);
+    }
   }
   out[0]                        = {};
   out[0].tag                    = FALCON_TYPE_OPAQUE;
@@ -67,14 +70,40 @@ static void pack_ctx_array(
 extern "C" {
 
 // New(map: Map<InterpretationContext, T>) -> (InterpretationContainer cont)
-// For simplicity, build an empty IC (map extraction from opaque Map is complex)
 void STRUCTInterpretationContainerNew(const FalconParamEntry *params,
                                       int32_t param_count,
                                       FalconResultSlot *out, int32_t *oc) {
-  // Build a minimal Map<InterpretationContext, double> with no entries
-  // (full map extraction requires deep DSL Map internals)
-  auto map_sp = std::make_shared<falcon_core::generic::Map<InterpretationContext, double>>();
-  auto ic     = std::make_shared<IC>(map_sp);
+  auto pm = unpack_params(params, param_count);
+  auto map_inst = std::get<std::shared_ptr<StructInstance>>(pm.at("map"));
+
+  auto keys_field = map_inst->fields->at("keys_");
+  auto vals_field = map_inst->fields->at("values_");
+
+  auto keys_inst = std::get<std::shared_ptr<StructInstance>>(keys_field);
+  auto vals_inst = std::get<std::shared_ptr<StructInstance>>(vals_field);
+
+  auto keys_arr =
+      std::static_pointer_cast<ArrayValue>(keys_inst->native_handle.value());
+  auto vals_arr =
+      std::static_pointer_cast<ArrayValue>(vals_inst->native_handle.value());
+
+  auto map_sp =
+      std::make_shared<falcon_core::generic::Map<InterpretationContext, double>>();
+  for (size_t i = 0; i < keys_arr->elements.size(); ++i) {
+    auto k_inst =
+        std::get<std::shared_ptr<StructInstance>>(keys_arr->elements[i]);
+    auto k_ctx = std::static_pointer_cast<InterpretationContext>(
+        k_inst->native_handle.value());
+    double v = 0.0;
+    if (std::holds_alternative<double>(vals_arr->elements[i])) {
+      v = std::get<double>(vals_arr->elements[i]);
+    } else if (std::holds_alternative<int64_t>(vals_arr->elements[i])) {
+      v = static_cast<double>(std::get<int64_t>(vals_arr->elements[i]));
+    }
+    map_sp->insert(k_ctx, v);
+  }
+
+  auto ic = std::make_shared<IC>(map_sp);
   pack_ic(std::move(ic), out, oc);
 }
 

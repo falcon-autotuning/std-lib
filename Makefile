@@ -17,6 +17,24 @@ INCLUDES := -I$(VCPKG_DIR)/include
 LDFLAGS := -L$(VCPKG_DIR)/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lfalcon-comms -lnats -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
 
 
+# Find all wrapper sources and target shared libraries
+WRAPPER_SRCS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -name "*-wrapper.cpp" -print)
+WRAPPER_SOS := $(foreach src,$(WRAPPER_SRCS),$(dir $(src))build/$(notdir $(src:%.cpp=%.so)))
+
+# Find test directories
+TEST_DIRS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -name "run_tests.fal" -exec dirname {} \;)
+TEST_TARGETS := $(addprefix run-test-,$(TEST_DIRS))
+
+# Build rule template for each wrapper .so
+define WRAPPER_RULE
+$(1): $(2)
+	@mkdir -p $$(dir $$@)
+	@echo "🔨 Building $(2)..."
+	@$$(CXX) $$(CXXFLAGS) -shared -o $$@ $$< $$(INCLUDES) $$(LDFLAGS)
+endef
+
+$(foreach src,$(WRAPPER_SRCS),$(eval $(call WRAPPER_RULE,$(dir $(src))build/$(notdir $(src:%.cpp=%.so)),$(src))))
+
 help: ## Show available targets
 	@echo "Falcon Standard Library"
 	@echo "========================"
@@ -28,22 +46,11 @@ help: ## Show available targets
 
 vcpkg-bootstrap:
 	@echo "Bootstrapping vcpkg..."
-	cmake -P cmake/bootstrap/bootstrap-vcpkg.cmake
+	@cmake -P cmake/bootstrap/bootstrap-vcpkg.cmake
 
 all: build ## Build all packages
 
-build: vcpkg-bootstrap ## Build all FFI wrappers
-	@for dir in $(PKG_DIRS); do \
-		echo "🔨 Building $$dir..."; \
-		(cd $$dir && \
-		 mkdir -p build && \
-		 cpp_file=$$(ls *-wrapper.cpp 2>/dev/null) && \
-		 if [ -n "$$cpp_file" ]; then \
-		   so_file=build/$${cpp_file%.cpp}.so; \
-		   $(CXX) $(CXXFLAGS) -shared -o $$so_file $$cpp_file $(INCLUDES) $(LDFLAGS) || exit 1; \
-		   echo "  ✓ Created $$so_file"; \
-		 fi); \
-	done
+build: vcpkg-bootstrap $(WRAPPER_SOS) ## Build all FFI wrappers in parallel
 
 update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 	@for dir in $(PKG_DIRS); do \
@@ -51,13 +58,11 @@ update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 		python3 scripts/update_hashes.py $$dir; \
 	done
 
-test: build ## Run tests for all packages
-	@for dir in $(PKG_DIRS); do \
-		if [ -d "$$dir/tests" ]; then \
-			echo "🧪 Testing $$dir..."; \
-			(cd $$dir/tests && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1); \
-		fi; \
-	done
+$(TEST_TARGETS): run-test-%: build
+	@echo "🧪 Testing $*..."
+	@(cd $* && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
+
+test: build $(TEST_TARGETS) ## Run tests for all packages
 
 dist: build update-hashes ## Create a monolithic release tarball
 	@VERSION=$$(grep "version:" falcon.yml | cut -d' ' -f2 | tr -d '"') && \
