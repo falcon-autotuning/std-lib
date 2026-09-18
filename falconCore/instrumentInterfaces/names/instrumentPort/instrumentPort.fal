@@ -11,7 +11,7 @@ struct InstrumentPort {
     routine NewExecutionClock -> ()
     routine DefaultName -> (string default_name)
     routine PsuedoName -> (connection::Connection conn)
-    routine InstrumentType -> (instrument::Instrument type)
+    // routine InstrumentType -> (instrument::Instrument type) InstrumentType is not relevant for hub
     routine Units -> (symbolUnit::SymbolUnit units)
     routine Description -> (string description)
     routine InstrumentFacingName -> (string facing_name)
