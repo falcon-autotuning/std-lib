@@ -13,7 +13,7 @@ import (
   "../../collections/map/map.fal"
   "../../collections/array/array.fal"
   "../hub.fal"
-  "mockHub/mockHub.fal"
+  "../../../mock-hub/mockHub.fal"
 )
 
 autotuner HubCachingTests -> (int passed, int failed) {

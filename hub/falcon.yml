@@ -36,3 +36,6 @@ dependencies:
   - name: testing
     version: 1.0.0
     local_path: "../testing/"
+  - name: mockHub
+    version: 1.0.0
+    local_path: "../../mock-hub/"
