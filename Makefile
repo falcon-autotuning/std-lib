@@ -58,21 +58,9 @@ update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 		python3 scripts/update_hashes.py $$dir; \
 	done
 
-OTHER_TEST_TARGETS := $(addprefix run-test-,$(filter-out ./hub/tests,$(TEST_DIRS)))
-
-run-test-./hub/tests: build
-	@echo "🧪 Preparing dependencies and testing ./hub/tests..."
-	@if [ ! -d "hub/tests/mockHub" ]; then \
-		echo "⬇️  Fetching mock-hub v0.0.1 from falcon-autotuning/mock-hub..."; \
-		gh release download v0.0.1 --repo falcon-autotuning/mock-hub --pattern "mock-hub.tar.gz" --dir hub/tests; \
-		mkdir -p hub/tests/mockHub; \
-		tar -xzf hub/tests/mock-hub.tar.gz -C hub/tests/mockHub; \
-	fi
-	@(cd hub/tests && FALCON_LIBRARY_PATH=$(CURDIR) LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
-
-$(OTHER_TEST_TARGETS): run-test-%: build
+$(TEST_TARGETS): run-test-%: build
 	@echo "🧪 Testing $*..."
-	@(cd $* && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
+	@(cd $* && FALCON_LIBRARY_PATH=$(CURDIR) LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
 
 test: build $(TEST_TARGETS) ## Run tests for all packages
 
