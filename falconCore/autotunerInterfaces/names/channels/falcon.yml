@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/channels-wrapper.so: sha256:dac060bac1f77c50d2e265bdbecaf2c2b0b2eb80265e801f2f64ed3a8feeca38
+  build/channels-wrapper.so: sha256:de6931249702b06a1797090267b4f1eb3d3214ce91e7e5d4dcf4c3da7a594422

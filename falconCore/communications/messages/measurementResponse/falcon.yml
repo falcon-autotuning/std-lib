@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/measurement-response-wrapper.so: sha256:acbd919ab665c28faff0ac0e1ba09062438c98bc19b477f4cf38436e92577238
+  build/measurement-response-wrapper.so: sha256:80b446cba74f076129b9252d072ca84847ff9998cf1bbfc220e4a00d3edd4f6b

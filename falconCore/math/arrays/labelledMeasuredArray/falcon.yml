@@ -32,4 +32,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/labelled-measured-array-wrapper.so: sha256:51f13548df6e7619116116742f919b0a07f7ddd1c1b88a3eae32dc4b3b2a362b
+  build/labelled-measured-array-wrapper.so: sha256:3eddb20942206a41f9d6cbbc1b4801608e986d551753622c6c3b6f2fbfd74c1c

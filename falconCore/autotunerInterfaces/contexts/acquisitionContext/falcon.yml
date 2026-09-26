@@ -23,4 +23,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/acquisition-context-wrapper.so: sha256:01f3de4c18f33778c264951fcd03eaee33a256010cc05feab7aa776accefef3a
+  build/acquisition-context-wrapper.so: sha256:4f4398e6a19948f0012c65e0aaaa9c12cf2912fb58c39cf23b44e90db11539dd

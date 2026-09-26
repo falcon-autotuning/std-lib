@@ -15,15 +15,13 @@ import "../../../../../strings/strings.fal";
 routine MakeKnob (string name) -> (InstrumentPort port) {
     Connection c  = Connection.NewPlungerGate(name);
     SymbolUnit v  = SymbolUnit.Volt();
-    string dc     = Instrument.DCVoltageSource();
-    port          = InstrumentPort.NewKnob(name, c, dc, v, name);
+    port          = InstrumentPort.NewKnob(name, c, v, name);
 }
 
 routine MakeMeter (string name) -> (InstrumentPort port) {
     Connection c  = Connection.NewOhmic(name);
     SymbolUnit a  = SymbolUnit.Ampere();
-    string amm    = Instrument.Amnmeter();
-    port          = InstrumentPort.NewMeter(name, c, amm, a, name);
+    port          = InstrumentPort.NewMeter(name, c, a, name);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

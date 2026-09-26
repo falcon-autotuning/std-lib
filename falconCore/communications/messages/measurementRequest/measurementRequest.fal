@@ -1,6 +1,11 @@
 import (
 "../../../instrumentInterfaces/waveform/waveform.fal"
+"../../../instrumentInterfaces/names/ports/ports.fal"
+"../../../instrumentInterfaces/names/instrumentPort/instrumentPort.fal"
+"../../../instrumentInterfaces/portTransforms/portTransform/portTransform.fal"
 "../../../math/domains/labelledDomain/labelledDomain.fal"
+"../../../../collections/array/array.fal"
+"../../../../collections/map/map.fal"
 )
 ffimport "measurement-request-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 routine SampleJSON () -> (string json)

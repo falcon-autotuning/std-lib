@@ -21,9 +21,8 @@ autotuner PortTransformsConstruction -> (int passed, int failed) {
 
     state test_new_with_one (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, inst, v, "test");
+        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
         PortTransform pt = PortTransform.IdentityTranform(port);
         Array<PortTransform> arr = Array.New();
         arr.PushBack(pt);
@@ -39,9 +38,8 @@ autotuner PortTransformsListOps -> (int passed, int failed) {
 
     state test_push_back (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, inst, v, "test");
+        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
         PortTransform pt = PortTransform.IdentityTranform(port);
         Array<PortTransform> arr = Array.New();
         PortTransforms pts = PortTransforms.New(arr);
@@ -52,9 +50,8 @@ autotuner PortTransformsListOps -> (int passed, int failed) {
 
     state test_get_index (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, inst, v, "test");
+        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
         PortTransform pt = PortTransform.ConstantTransform(port, 1.5);
         Array<PortTransform> arr = Array.New();
         arr.PushBack(pt);
@@ -79,9 +76,8 @@ autotuner PortTransformsEquality -> (int passed, int failed) {
 
     state test_not_equal (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, inst, v, "test");
+        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
         PortTransform pt = PortTransform.ConstantTransform(port, 1.0);
         Array<PortTransform> arr1 = Array.New();
         arr1.PushBack(pt);

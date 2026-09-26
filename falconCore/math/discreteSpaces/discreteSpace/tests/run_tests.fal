@@ -103,9 +103,8 @@ autotuner DiscreteSpaceGetAxis -> (int passed, int failed) {
         // Build a 1-D space with a named knob so we can look it up.
         Domain             dom = Domain.New(0.0, 1.0, true, true);
         Connection conn = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit volt = SymbolUnit.Volt();
-        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, inst, volt, "");
+        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "");
         LabelledDomain     ld  = LabelledDomain.FromPortAndDomain(ip, Domain.New(0.0, 1.0, true, true));
         Array<LabelledDomain> arr = Array.New();
         arr.PushBack(ld);
@@ -128,9 +127,8 @@ autotuner DiscreteSpaceGetDomain -> (int passed, int failed) {
     state test_get_domain_known_knob (TestRunner runner, TestContext t) {
         Domain             dom = Domain.New(0.0, 1.0, true, true);
         Connection conn = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit volt = SymbolUnit.Volt();
-        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, inst, volt, "");
+        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "");
         LabelledDomain     ld  = LabelledDomain.FromPortAndDomain(ip, dom);
         Array<LabelledDomain> arr = Array.New();
         arr.PushBack(ld);
@@ -154,9 +152,8 @@ autotuner DiscreteSpaceGetProjection -> (int passed, int failed) {
     state test_get_projection_1d (TestRunner runner, TestContext t) {
         Domain             dom = Domain.New(0.0, 1.0, true, true);
         Connection conn = Connection.NewPlungerGate("P1");
-        Instrument inst = Instrument.DCVoltageSource();
         SymbolUnit volt = SymbolUnit.Volt();
-        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, inst, volt, "");
+        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "");
         LabelledDomain     ld  = LabelledDomain.FromPortAndDomain(ip, dom);
         Array<LabelledDomain> arr = Array.New();
         arr.PushBack(ld);

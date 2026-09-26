@@ -3,8 +3,8 @@
 
 .PHONY: all build test release clean help update-hashes vcpkg-bootstrap
 
-# Find all directories containing a falcon.yml (excluding root and vcpkg)
-PKG_DIRS := $(shell find . -mindepth 2 -path "./vcpkg" -prune -o -name falcon.yml -exec dirname {} \;)
+# Find all directories containing a falcon.yml (excluding root, vcpkg, and test caches)
+PKG_DIRS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -path "*/.falcon/*" -prune -o -name falcon.yml -exec dirname {} \;)
 
 # Vcpkg settings
 VCPKG_DIR ?= $(CURDIR)/vcpkg_installed/x64-linux-dynamic
@@ -18,11 +18,11 @@ LDFLAGS := -L$(VCPKG_DIR)/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lf
 
 
 # Find all wrapper sources and target shared libraries
-WRAPPER_SRCS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -name "*-wrapper.cpp" -print)
+WRAPPER_SRCS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -path "*/.falcon/*" -prune -o -name "*-wrapper.cpp" -print)
 WRAPPER_SOS := $(foreach src,$(WRAPPER_SRCS),$(dir $(src))build/$(notdir $(src:%.cpp=%.so)))
 
 # Find test directories
-TEST_DIRS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -name "run_tests.fal" -exec dirname {} \;)
+TEST_DIRS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -path "*/.falcon/*" -prune -o -name "run_tests.fal" -exec dirname {} \;)
 TEST_TARGETS := $(addprefix run-test-,$(TEST_DIRS))
 
 # Build rule template for each wrapper .so
@@ -58,7 +58,19 @@ update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 		python3 scripts/update_hashes.py $$dir; \
 	done
 
-$(TEST_TARGETS): run-test-%: build
+OTHER_TEST_TARGETS := $(addprefix run-test-,$(filter-out ./hub/tests,$(TEST_DIRS)))
+
+run-test-./hub/tests: build
+	@echo "🧪 Preparing dependencies and testing ./hub/tests..."
+	@if [ ! -d "hub/tests/mockHub" ]; then \
+		echo "⬇️  Fetching mock-hub v0.0.1 from falcon-autotuning/mock-hub..."; \
+		gh release download v0.0.1 --repo falcon-autotuning/mock-hub --pattern "mock-hub.tar.gz" --dir hub/tests; \
+		mkdir -p hub/tests/mockHub; \
+		tar -xzf hub/tests/mock-hub.tar.gz -C hub/tests/mockHub; \
+	fi
+	@(cd hub/tests && FALCON_LIBRARY_PATH=$(CURDIR) LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
+
+$(OTHER_TEST_TARGETS): run-test-%: build
 	@echo "🧪 Testing $*..."
 	@(cd $* && LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
 
@@ -69,7 +81,7 @@ dist: build update-hashes ## Create a monolithic release tarball
 	 TARBALL="std-lib-$$VERSION.tar.gz" && \
 	 mkdir -p dist && \
 	 echo "📦 Creating monolithic release dist/$$TARBALL..." && \
-	 tar -czf dist/$$TARBALL --exclude='.git*' --exclude="dist" --exclude='scripts' --exclude='Makefile' --exclude='dist' . && \
+	 tar -czf dist/$$TARBALL --exclude='.git*' --exclude="dist" --exclude='scripts' --exclude='Makefile' --exclude='vcpkg*' --exclude='.falcon' . && \
 	 echo "  ✓ Created dist/$$TARBALL"
 
 release: dist ## Create releases for all packages (monolithic and individual)

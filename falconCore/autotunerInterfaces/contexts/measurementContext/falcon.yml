@@ -17,4 +17,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/measurement-context-wrapper.so: sha256:08588406b72ba1e36b8ee28a65eb00414571466e71c0a38f6934a8b6d5b7aad5
+  build/measurement-context-wrapper.so: sha256:afad0688e15511890fd847cb7bb3b84820f54629a86e80b5a44a20fa13e169b8

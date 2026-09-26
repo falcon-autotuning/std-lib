@@ -2,40 +2,40 @@ name: hub
 version: 1.0.0
 maintainer: Falcon Team
 github: falcon-autotuning/std-lib
-license: "MPL-2.0"
+license: MPL-2.0
 ffi:
   build/hub-wrapper.so: sha256:5016923f0ade917bfc468bfa035d90521ad5981a97be575747cd9b29e8823534
 dependencies:
   - name: measurementRequest
     version: 1.0.0
-    local_path: "../falconCore/communications/messages/measurementRequest/"
+    local_path: ../falconCore/communications/messages/measurementRequest/
   - name: measurementResponse
     version: 1.0.0
-    local_path: "../falconCore/communications/messages/measurementResponse/"
+    local_path: ../falconCore/communications/messages/measurementResponse/
   - name: voltageStatesResponse
     version: 1.0.0
-    local_path: "../falconCore/communications/messages/voltageStatesResponse/"
+    local_path: ../falconCore/communications/messages/voltageStatesResponse/
   - name: deviceVoltageStates
     version: 1.0.0
-    local_path: "../falconCore/communications/voltageStates/deviceVoltageStates/"
+    local_path: ../falconCore/communications/voltageStates/deviceVoltageStates/
   - name: ports
     version: 1.0.0
-    local_path: "../falconCore/instrumentInterfaces/names/ports/"
+    local_path: ../falconCore/instrumentInterfaces/names/ports/
   - name: config
     version: 1.0.0
-    local_path: "../falconCore/physics/config/"
+    local_path: ../falconCore/physics/config/
   - name: connections
     version: 1.0.0
-    local_path: "../falconCore/physics/deviceStructures/connections/"
+    local_path: ../falconCore/physics/deviceStructures/connections/
   - name: coupledLabelledDomain
     version: 1.0.0
-    local_path: "../falconCore/math/domains/coupledLabelledDomain/"
+    local_path: ../falconCore/math/domains/coupledLabelledDomain/
   - name: point
     version: 1.0.0
-    local_path: "../falconCore/math/point/"
+    local_path: ../falconCore/math/point/
   - name: testing
     version: 1.0.0
-    local_path: "../testing/"
+    local_path: ../testing/
   - name: mockHub
-    version: 1.0.0
-    local_path: "../../mock-hub/"
+    version: 0.0.1
+    github: falcon-autotuning/mock-hub

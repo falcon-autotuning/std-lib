@@ -32,7 +32,7 @@ extern "C" {
 
 // ── Constructors ──────���───────────────────────────────────────────────────────
 
-// NewKnob(default_name: string, conn: Connection, type: Instrument,
+// NewKnob(default_name: string, conn: Connection,
 //         units: SymbolUnit, description: string) -> (InstrumentPort port)
 void STRUCTInstrumentPortNewKnob(const FalconParamEntry *params,
                                   int32_t param_count, FalconResultSlot *out,
@@ -40,14 +40,13 @@ void STRUCTInstrumentPortNewKnob(const FalconParamEntry *params,
   auto pm          = unpack_params(params, param_count);
   auto default_name = std::get<std::string>(pm.at("default_name"));
   auto conn        = get_opaque<Connection>(params, param_count, "conn");
-  auto type_str    = std::get<std::string>(pm.at("type"));
   auto unit        = get_opaque<SymbolUnit>(params, param_count, "units");
   auto description = std::get<std::string>(pm.at("description"));
-  auto port = InstrumentPort::Knob(default_name, conn, type_str, unit, description);
+  auto port = InstrumentPort::Knob(default_name, conn, falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE, unit, description);
   pack_opaque_port(std::move(port), out, oc);
 }
 
-// NewMeter(default_name: string, conn: Connection, type: Instrument,
+// NewMeter(default_name: string, conn: Connection,
 //          units: SymbolUnit, description: string) -> (InstrumentPort port)
 void STRUCTInstrumentPortNewMeter(const FalconParamEntry *params,
                                    int32_t param_count, FalconResultSlot *out,
@@ -55,10 +54,9 @@ void STRUCTInstrumentPortNewMeter(const FalconParamEntry *params,
   auto pm           = unpack_params(params, param_count);
   auto default_name = std::get<std::string>(pm.at("default_name"));
   auto conn         = get_opaque<Connection>(params, param_count, "conn");
-  auto type_str     = std::get<std::string>(pm.at("type"));
   auto unit         = get_opaque<SymbolUnit>(params, param_count, "units");
   auto description  = std::get<std::string>(pm.at("description"));
-  auto port = InstrumentPort::Meter(default_name, conn, type_str, unit, description);
+  auto port = InstrumentPort::Meter(default_name, conn, falcon_core::INSTRUMENT_TYPES::AMNMETER, unit, description);
   pack_opaque_port(std::move(port), out, oc);
 }
 
