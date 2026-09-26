@@ -2,6 +2,7 @@
 **/build/
 *.so
 dist/
+**/.falcon/
 .falcon/
 
 # Python artifacts

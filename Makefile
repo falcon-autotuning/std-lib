@@ -87,6 +87,7 @@ release: dist ## Create releases for all packages (monolithic and individual)
 clean: ## Remove build artifacts
 	@echo "Cleaning up..."
 	@find . -maxdepth 5 -type d -name "build" -not -path "*/vcpkg*" -exec rm -rf {} +
+	@find . -maxdepth 5 -type d -name ".falcon" -not -path "*/vcpkg*" -exec rm -rf {} +
 	@find . -maxdepth 5 -name "*-wrapper.so" -not -path "*/vcpkg*" -exec rm -f {} +
 	@rm -rf dist
 	@rm -f *.tar.gz
