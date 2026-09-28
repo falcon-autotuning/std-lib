@@ -250,14 +250,6 @@ void STRUCTLabelledMeasuredArrayConnection(const FalconParamEntry *params,
   *oc = 1;
 }
 
-void STRUCTLabelledMeasuredArrayInstrumentType(const FalconParamEntry *params,
-                                                int32_t param_count,
-                                                FalconResultSlot *out,
-                                                int32_t *oc) {
-  auto self = get_opaque<LabelledMeasuredArray>(params, param_count, "this");
-  auto inst = self->label()->instrument_type();
-  pack_results(FunctionResult{inst}, out, 16, oc);
-}
 
 void STRUCTLabelledMeasuredArrayUnits(const FalconParamEntry *params,
                                        int32_t param_count,

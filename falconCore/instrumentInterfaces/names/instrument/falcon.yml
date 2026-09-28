@@ -1,8 +1,0 @@
-name: instrument
-version: 1.0.0
-maintainer: "falcon-devs"
-github: ""
-dependencies: []
-
-ffi:
-  build/instrument-wrapper.so: sha256:20329912df4bcbea966dc65b607d9da39b43ff569d6c7a711608a508f6f3a7ad

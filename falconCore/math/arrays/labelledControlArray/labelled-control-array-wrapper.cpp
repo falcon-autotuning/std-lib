@@ -273,14 +273,6 @@ void STRUCTLabelledControlArrayConnection(const FalconParamEntry *params,
   *oc = 1;
 }
 
-void STRUCTLabelledControlArrayInstrumentType(const FalconParamEntry *params,
-                                               int32_t param_count,
-                                               FalconResultSlot *out,
-                                               int32_t *oc) {
-  auto self = get_opaque<LabelledControlArray>(params, param_count, "this");
-  auto inst = self->label()->instrument_type();
-  pack_results(FunctionResult{inst}, out, 16, oc);
-}
 
 void STRUCTLabelledControlArrayUnits(const FalconParamEntry *params,
                                       int32_t param_count,

@@ -1,12 +1,9 @@
-// Tests for falconCore/instrumentInterfaces/names/ports
-// Run with: falcon-test run_tests.fal
 import "../../../../../testing/testing.fal";
 import "../../../../../collections/array/array.fal";
 import "../ports.fal";
 import "../../instrumentPort/instrumentPort.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
-import "../../instrument/instrument.fal";
 import "../../../../../io/io.fal";
 import "../../../../../strings/strings.fal";
 

@@ -4,11 +4,10 @@ import (
 "../increasingAlignment/increasingAlignment.fal"
 "../../../autotunerInterfaces/contexts/acquisitionContext/acquisitionContext.fal"
 "../../../physics/deviceStructures/connection/connection.fal"
-"../../../instrumentInterfaces/names/instrument/instrument.fal"
 "../../../physics/units/symbolUnit/symbolUnit.fal"
 "../../../../collections/array/array.fal"
 )
-ffimport "labelled-control-array-1D-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
+ffimport "labelled-control-array-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct LabelledControlArray1D {
     routine New (farray::FArray arr) -> (LabelledControlArray1D carray)
     routine Add (controlArray::ControlArray other) -> (LabelledControlArray1D carray)
@@ -31,7 +30,6 @@ struct LabelledControlArray1D {
     routine Alignment -> (increasingAlignment::IncreasingAlignment alignment)
     routine Label -> (acquisitionContext::AcquisitionContext ac)
     routine Connection -> (connection::Connection conn)
-    routine InstrumentType -> (instrument::Instrument it)
     routine Units -> (symbolUnit::SymbolUnit unit)
     routine GetStart -> (float s)
     routine GetEnd -> (float end)

@@ -5,13 +5,11 @@ import "../coupledLabelledDomain.fal";
 import "../../labelledDomain/labelledDomain.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
-import "../../../../instrumentInterfaces/names/instrument/instrument.fal";
 
 routine MakeLD () -> (LabelledDomain ld) {
     Connection p1   = Connection.NewPlungerGate("P1");
     SymbolUnit volt = SymbolUnit.Volt();
-    string dc       = Instrument.DCVoltageSource();
-    ld = LabelledDomain.NewFromKnob("P1", -0.5, 0.5, p1, dc, true, true, volt, "plunger gate");
+    ld = LabelledDomain.NewFromKnob("P1", -0.5, 0.5, p1, true, true, volt, "plunger gate");
 }
 
 // ── Construction ──────────────────────────────────────────────────────────────

@@ -1,10 +1,7 @@
-// Tests for falconCore/instrumentInterfaces/names/instrumentPort
-// Run with: falcon-test run_tests.fal
 import "../../../../../testing/testing.fal";
 import "../instrumentPort.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
-import "../../instrument/instrument.fal";
 
 autotuner InstrumentPortKnobConstruction -> (int passed, int failed) {
     passed = 0; failed = 0;
@@ -57,15 +54,6 @@ autotuner InstrumentPortKnobConstruction -> (int passed, int failed) {
         SymbolUnit volt       = SymbolUnit.Volt();
         InstrumentPort port   = InstrumentPort.NewKnob("P1", p1, volt, "plunger gate");
         Error err = t.ExpectStrEq("plunger gate", port.Description(), "Knob description matches");
-        -> __end(runner, t);
-    }
-
-    state test_knob_instrument_type (TestRunner runner, TestContext t) {
-        Connection p1         = Connection.NewPlungerGate("P1");
-        SymbolUnit volt       = SymbolUnit.Volt();
-        InstrumentPort port   = InstrumentPort.NewKnob("P1", p1, volt, "plunger gate");
-        string itype          = port.InstrumentType();
-        Error err = t.ExpectStrNe("", itype, "Knob instrument type is non-empty");
         -> __end(runner, t);
     }
 }

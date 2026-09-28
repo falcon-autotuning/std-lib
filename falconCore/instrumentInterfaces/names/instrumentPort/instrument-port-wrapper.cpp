@@ -100,15 +100,6 @@ void STRUCTInstrumentPortPsuedoName(const FalconParamEntry *params,
   *oc = 1;
 }
 
-// InstrumentType(this: InstrumentPort) -> (string type)
-void STRUCTInstrumentPortInstrumentType(const FalconParamEntry *params,
-                                         int32_t param_count,
-                                         FalconResultSlot *out, int32_t *oc) {
-  auto port = get_opaque<InstrumentPort>(params, param_count, "this");
-  pack_results(FunctionResult{std::string(port->instrument_type())}, out, 16,
-               oc);
-}
-
 // Units(this: InstrumentPort) -> (SymbolUnit units)
 void STRUCTInstrumentPortUnits(const FalconParamEntry *params,
                                 int32_t param_count, FalconResultSlot *out,

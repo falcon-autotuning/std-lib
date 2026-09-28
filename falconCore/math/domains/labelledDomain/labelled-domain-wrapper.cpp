@@ -50,7 +50,7 @@ static void pack_domain(DomainSP d, FalconResultSlot *out, int32_t *oc) {
 extern "C" {
 
 // NewFromKnob(defaultName: string, min: float, max: float,
-//             psuedoName: Connection, instrumentType: Instrument,
+//             psuedoName: Connection,
 //             lesserBoundContained: bool, greaterBoundContained: bool,
 //             units: SymbolUnit, description: string) -> (LabelledDomain d)
 void STRUCTLabelledDomainNewFromKnob(const FalconParamEntry *params,
@@ -61,13 +61,13 @@ void STRUCTLabelledDomainNewFromKnob(const FalconParamEntry *params,
   double min = std::get<double>(pm.at("min"));
   double max = std::get<double>(pm.at("max"));
   auto conn = get_opaque<Connection>(params, param_count, "psuedoName");
-  std::string inst_type = std::get<std::string>(pm.at("instrumentType"));
   bool lesser = std::get<bool>(pm.at("lesserBoundContained"));
   bool greater = std::get<bool>(pm.at("greaterBoundContained"));
   auto unit = get_opaque<SymbolUnit>(params, param_count, "units");
   std::string desc = std::get<std::string>(pm.at("description"));
   auto ld = std::make_shared<LabelledDomain>(
-      default_name, std::make_pair(min, max), conn, inst_type, lesser, greater,
+      default_name, std::make_pair(min, max), conn,
+      falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE, lesser, greater,
       unit, desc);
   pack_labelled_domain(std::move(ld), out, oc);
 }
@@ -100,8 +100,7 @@ void STRUCTLabelledDomainFromPortAndDomain(const FalconParamEntry *params,
 }
 
 // FromDomain(domain: Domain, defaultName: string, psuedoName: Connection,
-//            instrumentType: Instrument, units: SymbolUnit,
-//            description: string) -> (LabelledDomain d)
+//            units: SymbolUnit, description: string) -> (LabelledDomain d)
 void STRUCTLabelledDomainFromDomain(const FalconParamEntry *params,
                                     int32_t param_count, FalconResultSlot *out,
                                     int32_t *oc) {
@@ -109,10 +108,10 @@ void STRUCTLabelledDomainFromDomain(const FalconParamEntry *params,
   auto domain = get_opaque<Domain>(params, param_count, "domain");
   std::string default_name = std::get<std::string>(pm.at("defaultName"));
   auto conn = get_opaque<Connection>(params, param_count, "psuedoName");
-  std::string inst_type = std::get<std::string>(pm.at("instrumentType"));
   auto unit = get_opaque<SymbolUnit>(params, param_count, "units");
   std::string desc = std::get<std::string>(pm.at("description"));
-  auto ld = LabelledDomain::from_domain(domain, default_name, conn, inst_type,
+  auto ld = LabelledDomain::from_domain(domain, default_name, conn,
+                                        falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE,
                                         unit, desc);
   pack_labelled_domain(std::make_shared<LabelledDomain>(*ld), out, oc);
 }

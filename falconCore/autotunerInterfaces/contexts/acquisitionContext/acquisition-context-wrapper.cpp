@@ -38,15 +38,13 @@ extern "C" {
 
 // ── Constructors ──────────────────────────────────────────────────────────────
 
-// New(conn: Connection, inst: Instrument, unit: SymbolUnit) -> (AcquisitionContext context)
+// New(conn: Connection, unit: SymbolUnit) -> (AcquisitionContext context)
 void STRUCTAcquisitionContextNew(const FalconParamEntry *params,
                                   int32_t param_count, FalconResultSlot *out,
                                   int32_t *oc) {
-  auto pm   = unpack_params(params, param_count);
   auto conn = get_opaque<Connection>(params, param_count, "conn");
-  auto inst = std::get<std::string>(pm.at("inst"));
   auto unit = get_opaque<SymbolUnit>(params, param_count, "unit");
-  auto ac   = std::make_shared<AcquisitionContext>(conn, inst, unit);
+  auto ac   = std::make_shared<AcquisitionContext>(conn, "", unit);
   pack_ac(std::move(ac), out, oc);
 }
 
@@ -77,14 +75,6 @@ void STRUCTAcquisitionContextConnection(const FalconParamEntry *params,
     delete static_cast<ConnectionSP *>(p);
   };
   *oc = 1;
-}
-
-// Instrument(this: AcquisitionContext) -> (Instrument inst)
-void STRUCTAcquisitionContextInstrument(const FalconParamEntry *params,
-                                         int32_t param_count,
-                                         FalconResultSlot *out, int32_t *oc) {
-  auto ac = get_opaque<AcquisitionContext>(params, param_count, "this");
-  pack_results(FunctionResult{std::string(ac->instrument_type())}, out, 16, oc);
 }
 
 // Units(this: AcquisitionContext) -> (SymbolUnit unit)
@@ -135,17 +125,6 @@ void STRUCTAcquisitionContextMatchConnection(const FalconParamEntry *params,
   auto ac    = get_opaque<AcquisitionContext>(params, param_count, "this");
   auto other = get_opaque<Connection>(params, param_count, "other");
   pack_results(FunctionResult{ac->match_connection(other)}, out, 16, oc);
-}
-
-// MatchInstrumentType(this: AcquisitionContext, other: Instrument) -> (bool match)
-void STRUCTAcquisitionContextMatchInstrumentType(const FalconParamEntry *params,
-                                                  int32_t param_count,
-                                                  FalconResultSlot *out,
-                                                  int32_t *oc) {
-  auto pm    = unpack_params(params, param_count);
-  auto ac    = get_opaque<AcquisitionContext>(params, param_count, "this");
-  auto other = std::get<std::string>(pm.at("other"));
-  pack_results(FunctionResult{ac->match_instrument_type(other)}, out, 16, oc);
 }
 
 // ── Equality ──────────────────────────────────────────────────────────────────

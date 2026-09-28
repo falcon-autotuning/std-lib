@@ -9,9 +9,6 @@ dependencies:
   - name: symbolUnit
     version: 1.0.0
     local_path: "../../../physics/units/symbolUnit/"
-  - name: instrument
-    version: 1.0.0
-    local_path: "../../../instrumentInterfaces/names/instrument"
 
 ffi:
-  build/instrument-port-wrapper.so: sha256:74d391ea0a14f32c5a3ef396074d92ce427afaeb94e5f13adcfc5a93b6501a42
+  build/instrument-port-wrapper.so: sha256:65ae2bc724bb80aca4c4e60874fdd0203d6c4dcb120044c9ba5fd61c4505a588

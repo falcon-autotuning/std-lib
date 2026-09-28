@@ -30,14 +30,12 @@ extern "C" {
 
 // ── Constructor ───────────────────────────────────────────────────────────────
 
-// New(conn: Connection, inst: Instrument) -> (MeasurementContext context)
+// New(conn: Connection) -> (MeasurementContext context)
 void STRUCTMeasurementContextNew(const FalconParamEntry *params,
                                   int32_t param_count, FalconResultSlot *out,
                                   int32_t *oc) {
-  auto pm      = unpack_params(params, param_count);
   auto conn    = get_opaque<Connection>(params, param_count, "conn");
-  auto inst    = std::get<std::string>(pm.at("inst"));
-  auto mc      = std::make_shared<MeasurementContext>(conn, inst);
+  auto mc      = std::make_shared<MeasurementContext>(conn, "");
   pack_mc(std::move(mc), out, oc);
 }
 
@@ -57,14 +55,6 @@ void STRUCTMeasurementContextConnection(const FalconParamEntry *params,
     delete static_cast<ConnectionSP *>(p);
   };
   *oc = 1;
-}
-
-// Instrument(this: MeasurementContext) -> (Instrument inst)
-void STRUCTMeasurementContextInstrument(const FalconParamEntry *params,
-                                         int32_t param_count,
-                                         FalconResultSlot *out, int32_t *oc) {
-  auto mc = get_opaque<MeasurementContext>(params, param_count, "this");
-  pack_results(FunctionResult{std::string(mc->instrument_type())}, out, 16, oc);
 }
 
 // ── Equality ──────────────────────────────────────────────────────────────────

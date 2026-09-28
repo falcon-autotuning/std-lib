@@ -5,7 +5,6 @@ import "../../../names/instrumentPort/instrumentPort.fal";
 import "../../portTransform/portTransform.fal";
 import "../../../../math/analyticFunction/analyticFunction.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
-import "../../../names/instrument/instrument.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
 
 autotuner PortTransformsConstruction -> (int passed, int failed) {

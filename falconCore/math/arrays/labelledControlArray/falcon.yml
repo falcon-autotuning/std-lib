@@ -18,9 +18,6 @@ dependencies:
   - name: connection
     version: 1.0.0
     local_path: "../../../physics/deviceStructures/connection/"
-  - name: instrument
-    version: 1.0.0
-    local_path: "../../../instrumentInterfaces/names/instrument/"
   - name: symbolUnit
     version: 1.0.0
     local_path: "../../../physics/units/symbolUnit/"
@@ -32,4 +29,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/labelled-control-array-wrapper.so: sha256:46161ec2148251ed889cb754b60a356c01833b20091e53286834b01cc0265947
+  build/labelled-control-array-wrapper.so: sha256:7e11379ba59480f78da88278438869cd5d198e663b63a9b769b5c009b78cdbfb

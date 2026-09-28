@@ -6,7 +6,6 @@ import (
   "../../falconCore/communications/messages/voltageStatesResponse/voltageStatesResponse.fal"
   "../../falconCore/instrumentInterfaces/names/ports/ports.fal"
   "../../falconCore/instrumentInterfaces/names/instrumentPort/instrumentPort.fal"
-  "../../falconCore/instrumentInterfaces/names/instrument/instrument.fal"
   "../../falconCore/physics/deviceStructures/connection/connection.fal"
   "../../falconCore/physics/units/symbolUnit/symbolUnit.fal"
   "../../falconCore/math/point/point.fal"

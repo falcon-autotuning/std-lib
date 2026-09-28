@@ -1,7 +1,6 @@
 import (
 "../../../physics/deviceStructures/connection/connection.fal"
 "../../../physics/units/symbolUnit/symbolUnit.fal"
-"../instrument/instrument.fal"
 )
 ffimport "instrument-port-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 struct InstrumentPort {
@@ -11,7 +10,6 @@ struct InstrumentPort {
     routine NewExecutionClock -> (InstrumentPort port)
     routine DefaultName -> (string default_name)
     routine PsuedoName -> (connection::Connection conn)
-    routine InstrumentType -> (string type)
     routine Units -> (symbolUnit::SymbolUnit units)
     routine Description -> (string description)
     routine InstrumentFacingName -> (string facing_name)

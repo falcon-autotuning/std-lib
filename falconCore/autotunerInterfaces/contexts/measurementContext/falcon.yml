@@ -6,9 +6,6 @@ dependencies:
   - name: connection
     version: 1.0.0
     local_path: "../../../physics/deviceStructures/connection/"
-  - name: instrument
-    version: 1.0.0
-    local_path: "../../../instrumentInterfaces/names/instrument/"
   - name: instrumentPort
     version: 1.0.0
     local_path: "../../../instrumentInterfaces/names/instrumentPort/"
@@ -17,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/measurement-context-wrapper.so: sha256:afad0688e15511890fd847cb7bb3b84820f54629a86e80b5a44a20fa13e169b8
+  build/measurement-context-wrapper.so: sha256:85d89f6917fed01de30c64129973f18c363d61800569ddeb4bf6102d6fd8eca8

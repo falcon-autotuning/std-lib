@@ -6,21 +6,20 @@ import "../../interpretationContext/interpretationContext.fal";
 import "../../../contexts/measurementContext/measurementContext.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
-import "../../../../instrumentInterfaces/names/instrument/instrument.fal";
 import "../../../../math/axes/axes.fal";
 import "../../../../../collections/map/map.fal";
 import "../../../../../collections/array/array.fal";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-routine MakeMC (string connName, string instType) -> (MeasurementContext mc) {
+routine MakeMC (string connName) -> (MeasurementContext mc) {
     Connection conn = Connection.NewPlungerGate(connName);
-    mc = MeasurementContext.New(conn, instType);
+    mc = MeasurementContext.New(conn);
 }
 
 routine MakeCtx () -> (InterpretationContext ctx) {
-    MeasurementContext indep = MakeMC("P1", Instrument.DCVoltageSource());
-    MeasurementContext dep   = MakeMC("S1", Instrument.Ammeter());
+    MeasurementContext indep = MakeMC("P1");
+    MeasurementContext dep   = MakeMC("S1");
     SymbolUnit volt          = SymbolUnit.Volt();
     Axes axes = Axes.New();
     axes.PushBack(indep);

@@ -3,7 +3,6 @@ import (
 "../measuredArray/measuredArray.fal"
 "../../../autotunerInterfaces/contexts/acquisitionContext/acquisitionContext.fal"
 "../../../physics/deviceStructures/connection/connection.fal"
-"../../../instrumentInterfaces/names/instrument/instrument.fal"
 "../../../physics/units/symbolUnit/symbolUnit.fal"
 "../../../../collections/array/array.fal"
 )
@@ -28,7 +27,6 @@ struct LabelledMeasuredArray {
     routine Min -> (float min)
     routine Label -> (acquisitionContext::AcquisitionContext ac)
     routine Connection -> (connection::Connection conn)
-    routine InstrumentType -> (instrument::Instrument it)
     routine Units -> (symbolUnit::SymbolUnit unit)
     // TODO: arraywise min and max
     routine Max -> (float max)
