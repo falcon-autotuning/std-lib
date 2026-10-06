@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/impedance-wrapper.so: sha256:33b2d343792984bd57ae6aff6cdd1a4db6005f12eadbadc79b58ffc814b353c5
+  build/impedance-wrapper.so: sha256:e8c0d8dda61e3477cc27c8074aeaaa56cde55f9df84e878d05cd03111e16acdb

@@ -20,4 +20,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/interpretation-context-wrapper.so: sha256:ce088d95a00317ded9c82c3ae2821dc06b1e40d0811ecfb8157c54ffe208bb74
+  build/interpretation-context-wrapper.so: sha256:e119874035750d38ec1e06f560fc12f4a362eb74db368c4363c321c4acbd8a20

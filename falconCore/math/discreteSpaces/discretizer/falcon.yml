@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/discretizer-wrapper.so: sha256:76e44b9d4d98b9f87ff1d54e891fb521bd0c274724de5d2ab548629fdd858eee
+  build/discretizer-wrapper.so: sha256:3d203446839e662b6e1f7e6fb1fe84bd6beed066339df54f52ef82d5df924aaf

@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../collections/array/"
 
 ffi:
-  build/ports-wrapper.so: sha256:99ebbe4a62b46a149ec3ae68f6902b8b99eb0f34f9fc69cd0342923b3b8ba062
+  build/ports-wrapper.so: sha256:280b12a9533ca0b9df04e7dc6c3a2f374440465431eff6150abee6472bae2c36

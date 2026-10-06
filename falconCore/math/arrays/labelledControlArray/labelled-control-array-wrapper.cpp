@@ -100,7 +100,7 @@ static void pack_farray_list(
 // Create a minimal InstrumentPort for use when only an FArray is given.
 static InstrumentPortSP make_default_port() {
   auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("default");
-  return std::make_shared<InstrumentPort>("default", conn);
+  return InstrumentPort::Knob("default", "", conn);
 }
 
 extern "C" {

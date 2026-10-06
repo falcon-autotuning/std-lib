@@ -35,7 +35,7 @@ void STRUCTMeasurementContextNew(const FalconParamEntry *params,
                                   int32_t param_count, FalconResultSlot *out,
                                   int32_t *oc) {
   auto conn    = get_opaque<Connection>(params, param_count, "conn");
-  auto mc      = std::make_shared<MeasurementContext>(conn, "");
+  auto mc      = std::make_shared<MeasurementContext>(conn, Instrument::DC_Voltage_Source);
   pack_mc(std::move(mc), out, oc);
 }
 

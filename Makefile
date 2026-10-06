@@ -8,13 +8,25 @@ PKG_DIRS := $(shell find . -mindepth 2 -path "./vcpkg*" -prune -o -path "*/.falc
 
 # Vcpkg settings
 VCPKG_DIR ?= $(CURDIR)/vcpkg_installed/x64-linux-dynamic
-PRESET ?= linux-gcc-release
+PRESET ?= linux-clang-release
 
-# Compiler settings
-CXX := clang++
-CXXFLAGS := -std=c++20 -O3 -fPIC -Wall -Wextra -Delements=items
+# Compiler selection based on PRESET
+ifeq ($(findstring gcc,$(PRESET)),gcc)
+  CXX := ccache g++
+else
+  CXX := ccache clang++
+endif
+
+# Optimization / debug flags based on PRESET
+ifeq ($(findstring debug,$(PRESET)),debug)
+  OPT_FLAGS := -O0 -g
+else
+  OPT_FLAGS := -O3
+endif
+
+CXXFLAGS := -std=c++20 $(OPT_FLAGS) -fPIC -Wall -Wextra -Delements=items
 INCLUDES := -I$(VCPKG_DIR)/include
-LDFLAGS := -L$(VCPKG_DIR)/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lfalcon-comms -lnats -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
+LDFLAGS := -fuse-ld=lld -L$(VCPKG_DIR)/lib -lfalcon-core -lfalcon-typing -lfalcon-routine -lfalcon-database -lfalcon-comms -lnats -lspdlog -lfmt -lhdf5_cpp -lhdf5 -lyaml-cpp
 
 
 # Find all wrapper sources and target shared libraries
@@ -44,13 +56,16 @@ help: ## Show available targets
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 
-vcpkg-bootstrap:
+vcpkg-bootstrap: $(VCPKG_DIR)
+$(VCPKG_DIR):
 	@echo "Bootstrapping vcpkg..."
 	@cmake -P cmake/bootstrap/bootstrap-vcpkg.cmake
 
 all: build ## Build all packages
 
-build: vcpkg-bootstrap $(WRAPPER_SOS) ## Build all FFI wrappers in parallel
+build: $(VCPKG_DIR) ## Build all FFI wrappers via CMake with PCH
+	@cmake --preset $(PRESET)
+	@cmake --build build/$(PRESET) -j4
 
 update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 	@for dir in $(PKG_DIRS); do \
@@ -58,11 +73,14 @@ update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 		python3 scripts/update_hashes.py $$dir; \
 	done
 
-$(TEST_TARGETS): run-test-%: build
+$(TEST_TARGETS): run-test-%:
 	@echo "🧪 Testing $*..."
 	@(cd $* && FALCON_LIBRARY_PATH=$(CURDIR) LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
 
 test: build $(TEST_TARGETS) ## Run tests for all packages
+
+test-core: build ## Run tests for all packages excluding hub
+	@./scripts/run_core_tests.sh
 
 dist: build update-hashes ## Create a monolithic release tarball
 	@VERSION=$$(grep "version:" falcon.yml | cut -d' ' -f2 | tr -d '"') && \
@@ -86,9 +104,9 @@ release: dist ## Create releases for all packages (monolithic and individual)
 
 clean: ## Remove build artifacts
 	@echo "Cleaning up..."
-	@find . -maxdepth 5 -type d -name "build" -not -path "*/vcpkg*" -exec rm -rf {} +
-	@find . -maxdepth 5 -type d -name ".falcon" -not -path "*/vcpkg*" -exec rm -rf {} +
-	@find . -maxdepth 5 -name "*-wrapper.so" -not -path "*/vcpkg*" -exec rm -f {} +
-	@rm -rf dist
-	@rm -f *.tar.gz
+	@find . -maxdepth 5 -type d -name "build" -not -path "*/vcpkg*" -exec rm -rf {} + 2>/dev/null || true
+	@find . -maxdepth 5 -type d -name ".falcon" -not -path "*/vcpkg*" -exec rm -rf {} + 2>/dev/null || true
+	@find . -maxdepth 5 -name "*-wrapper.so" -not -path "*/vcpkg*" -exec rm -f {} + 2>/dev/null || true
+	@rm -rf dist 2>/dev/null || true
+	@rm -f *.tar.gz 2>/dev/null || true
 	@echo "✓ Clean complete"

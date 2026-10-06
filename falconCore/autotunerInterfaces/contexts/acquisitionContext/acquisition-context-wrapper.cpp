@@ -44,7 +44,7 @@ void STRUCTAcquisitionContextNew(const FalconParamEntry *params,
                                   int32_t *oc) {
   auto conn = get_opaque<Connection>(params, param_count, "conn");
   auto unit = get_opaque<SymbolUnit>(params, param_count, "unit");
-  auto ac   = std::make_shared<AcquisitionContext>(conn, "", unit);
+  auto ac   = std::make_shared<AcquisitionContext>(conn, Instrument::DC_Voltage_Source, unit);
   pack_ac(std::move(ac), out, oc);
 }
 

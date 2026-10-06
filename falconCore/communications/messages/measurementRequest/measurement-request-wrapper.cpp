@@ -66,19 +66,24 @@ void SampleJSON(const FalconParamEntry *, int32_t,
   auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("P1");
   auto unit = falcon_core::physics::units::SymbolUnit::Volt();
   auto time_domain = std::make_shared<falcon_core::math::domains::LabelledDomain>(
-      "P1", std::make_pair(0.0, 1.0), conn,
-      falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE,
-      true, true, unit, "test");
-  MeasurementRequest req("", "", wlist, getters, meter_transforms, time_domain);
+      "P1", "",
+      falcon_core::instrument_interfaces::names::Scope::Local,
+      falcon_core::instrument_interfaces::names::Access::ReadWrite,
+      falcon_core::instrument_interfaces::names::InstrumentCharacteristic::None,
+      std::make_pair(0.0, 1.0),
+      falcon_core::instrument_interfaces::names::PortType::Knob,
+      unit, "test", conn,
+      falcon_core::instrument_interfaces::names::Instrument::DC_Voltage_Source,
+      true, true);
+  MeasurementRequest req("", wlist, getters, meter_transforms, time_domain);
   pack_results(FunctionResult{req.to_json_string()}, out, 16, oc);
 }
 
-// New(message, measurement_name, waveforms, getters, meterTransforms, timeDomain) -> MeasurementRequest
+// New(message, waveforms, getters, meterTransforms, timeDomain) -> MeasurementRequest
 void STRUCTMeasurementRequestNew(const FalconParamEntry *params, int32_t param_count,
                                   FalconResultSlot *out, int32_t *oc) {
   auto pm               = unpack_params(params, param_count);
   auto message          = std::get<std::string>(pm.at("message"));
-  auto measurement_name = std::get<std::string>(pm.at("measurement_name"));
 
   auto arr_val = get_array_from_params(params, param_count, "waveforms");
   auto wlist   = std::make_shared<falcon_core::generic::List<Waveform>>();
@@ -99,16 +104,8 @@ void STRUCTMeasurementRequestNew(const FalconParamEntry *params, int32_t param_c
       falcon_core::generic::Map<InstrumentPort, PortTransform>>();
 
   auto req = std::make_shared<MeasurementRequest>(
-      message, measurement_name, wlist, getters, meter_transforms, time_domain);
+      message, wlist, getters, meter_transforms, time_domain);
   pack_mr(std::move(req), out, oc);
-}
-
-// MeasurementName(this: MeasurementRequest) -> (string name)
-void STRUCTMeasurementRequestMeasurementName(const FalconParamEntry *params,
-                                              int32_t param_count,
-                                              FalconResultSlot *out, int32_t *oc) {
-  auto self = get_opaque<MeasurementRequest>(params, param_count, "this");
-  pack_results(FunctionResult{self->measurement_name()}, out, 16, oc);
 }
 
 // Getters(this: MeasurementRequest) -> (Ports ports)

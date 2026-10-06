@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.json.schema.json",
   "name": "falcon-std-lib",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Standard Library for the Falcon autotuning framework",
   "homepage": "https://github.com/falcon-autotuning/std-lib",
   "license": "MPL-2.0",
@@ -32,7 +32,10 @@
     },
     {
       "name": "falcon-core",
-      "version>=": "1.2.12"
+      "version>=": "1.2.18",
+      "features": [
+        "c-api"
+      ]
     },
     {
       "name": "falcon-database",

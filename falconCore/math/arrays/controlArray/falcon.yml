@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/control-array-wrapper.so: sha256:5c97bb8c7c7a1ec365ff997610a9f3eea2c514dd94667f2914628873126a579e
+  build/control-array-wrapper.so: sha256:2303d7bd22262cd4b064cecb5eff62d11f9770cc1c8914dab039e1836c9b2c50

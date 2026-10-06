@@ -66,9 +66,15 @@ void STRUCTLabelledDomainNewFromKnob(const FalconParamEntry *params,
   auto unit = get_opaque<SymbolUnit>(params, param_count, "units");
   std::string desc = std::get<std::string>(pm.at("description"));
   auto ld = std::make_shared<LabelledDomain>(
-      default_name, std::make_pair(min, max), conn,
-      falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE, lesser, greater,
-      unit, desc);
+      default_name, "",
+      falcon_core::instrument_interfaces::names::Scope::Local,
+      falcon_core::instrument_interfaces::names::Access::ReadWrite,
+      falcon_core::instrument_interfaces::names::InstrumentCharacteristic::None,
+      std::make_pair(min, max),
+      falcon_core::instrument_interfaces::names::PortType::Knob,
+      unit, desc, conn,
+      falcon_core::instrument_interfaces::names::Instrument::DC_Voltage_Source,
+      lesser, greater);
   pack_labelled_domain(std::move(ld), out, oc);
 }
 
@@ -110,9 +116,14 @@ void STRUCTLabelledDomainFromDomain(const FalconParamEntry *params,
   auto conn = get_opaque<Connection>(params, param_count, "psuedoName");
   auto unit = get_opaque<SymbolUnit>(params, param_count, "units");
   std::string desc = std::get<std::string>(pm.at("description"));
-  auto ld = LabelledDomain::from_domain(domain, default_name, conn,
-                                        falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE,
-                                        unit, desc);
+  auto ld = LabelledDomain::from_domain(
+      domain, default_name, "",
+      falcon_core::instrument_interfaces::names::Scope::Local,
+      falcon_core::instrument_interfaces::names::Access::ReadWrite,
+      falcon_core::instrument_interfaces::names::InstrumentCharacteristic::None,
+      falcon_core::instrument_interfaces::names::PortType::Knob,
+      unit, desc, conn,
+      falcon_core::instrument_interfaces::names::Instrument::DC_Voltage_Source);
   pack_labelled_domain(std::make_shared<LabelledDomain>(*ld), out, oc);
 }
 

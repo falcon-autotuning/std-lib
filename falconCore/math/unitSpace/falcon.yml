@@ -17,4 +17,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/unit-space-wrapper.so: sha256:ed9020ef78220b4c1dcf9d78fa12e1ae350d70d2316d6a27048697634cb61e01
+  build/unit-space-wrapper.so: sha256:201fe649dde7a66dd33d8b8b057d27b77728dc2725e5c5c7f5006a058ab4ac28

@@ -8,4 +8,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/farray-wrapper.so: sha256:54f847a1e3ad9ff81b041303f83e66ec17cb7a02eb75512773663ac1c5e36330
+  build/farray-wrapper.so: sha256:b56df0c9e65f108a00713e641e1171ca4546c802281cce8b43d737eb30f40c50

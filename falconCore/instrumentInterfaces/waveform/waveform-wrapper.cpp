@@ -64,7 +64,7 @@ extern "C" {
 void SampleJSON(const FalconParamEntry *, int32_t,
                 FalconResultSlot *out, int32_t *oc) {
   auto conn = falcon_core::physics::device_structures::Connection::PlungerGate("P1");
-  auto port = falcon_core::instrument_interfaces::names::InstrumentPort::Knob("P1", conn);
+  auto port = falcon_core::instrument_interfaces::names::InstrumentPort::Knob("P1", "", conn);
   auto pt = falcon_core::instrument_interfaces::port_transforms::PortTransform::IdentityTransform(port);
   auto list = std::make_shared<falcon_core::generic::List<PortTransform>>();
   list->push_back(pt);

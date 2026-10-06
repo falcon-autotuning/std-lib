@@ -244,6 +244,13 @@ void STRUCTPortsIsMeters(const FalconParamEntry *params, int32_t param_count,
   pack_results(FunctionResult{ports_obj->is_meters()}, out, 16, oc);
 }
 
+// IsSettings(this: Ports) -> (bool is_settings)
+void STRUCTPortsIsSettings(const FalconParamEntry *params, int32_t param_count,
+                           FalconResultSlot *out, int32_t *oc) {
+  auto ports_obj = get_opaque<Ports>(params, param_count, "this");
+  pack_results(FunctionResult{ports_obj->is_settings()}, out, 16, oc);
+}
+
 // ── Equality
 // ──────────────────────────────────────────────────────────────────
 

@@ -33,21 +33,30 @@ extern "C" {
 // ── Constructors ──────���───────────────────────────────────────────────────────
 
 // NewKnob(default_name: string, conn: Connection,
-//         units: SymbolUnit, description: string) -> (InstrumentPort port)
+//         units: SymbolUnit, description: string,
+//         instrument_name: string) -> (InstrumentPort port)
 void STRUCTInstrumentPortNewKnob(const FalconParamEntry *params,
                                   int32_t param_count, FalconResultSlot *out,
                                   int32_t *oc) {
-  auto pm          = unpack_params(params, param_count);
+  auto pm           = unpack_params(params, param_count);
   auto default_name = std::get<std::string>(pm.at("default_name"));
-  auto conn        = get_opaque<Connection>(params, param_count, "conn");
-  auto unit        = get_opaque<SymbolUnit>(params, param_count, "units");
-  auto description = std::get<std::string>(pm.at("description"));
-  auto port = InstrumentPort::Knob(default_name, conn, falcon_core::INSTRUMENT_TYPES::DC_VOLTAGE_SOURCE, unit, description);
+  auto conn         = get_opaque<Connection>(params, param_count, "conn");
+  auto unit         = get_opaque<SymbolUnit>(params, param_count, "units");
+  auto description  = std::get<std::string>(pm.at("description"));
+  std::string instrument_name = "";
+  if (pm.find("instrument_name") != pm.end()) {
+    instrument_name = std::get<std::string>(pm.at("instrument_name"));
+  }
+  auto port = InstrumentPort::Knob(
+      default_name, instrument_name, conn,
+      falcon_core::instrument_interfaces::names::Instrument::DC_Voltage_Source,
+      unit, description);
   pack_opaque_port(std::move(port), out, oc);
 }
 
 // NewMeter(default_name: string, conn: Connection,
-//          units: SymbolUnit, description: string) -> (InstrumentPort port)
+//          units: SymbolUnit, description: string,
+//          instrument_name: string) -> (InstrumentPort port)
 void STRUCTInstrumentPortNewMeter(const FalconParamEntry *params,
                                    int32_t param_count, FalconResultSlot *out,
                                    int32_t *oc) {
@@ -56,7 +65,14 @@ void STRUCTInstrumentPortNewMeter(const FalconParamEntry *params,
   auto conn         = get_opaque<Connection>(params, param_count, "conn");
   auto unit         = get_opaque<SymbolUnit>(params, param_count, "units");
   auto description  = std::get<std::string>(pm.at("description"));
-  auto port = InstrumentPort::Meter(default_name, conn, falcon_core::INSTRUMENT_TYPES::AMNMETER, unit, description);
+  std::string instrument_name = "";
+  if (pm.find("instrument_name") != pm.end()) {
+    instrument_name = std::get<std::string>(pm.at("instrument_name"));
+  }
+  auto port = InstrumentPort::Meter(
+      default_name, instrument_name, conn,
+      falcon_core::instrument_interfaces::names::Instrument::Amnmeter,
+      unit, description);
   pack_opaque_port(std::move(port), out, oc);
 }
 
@@ -82,6 +98,14 @@ void STRUCTInstrumentPortDefaultName(const FalconParamEntry *params,
                                       FalconResultSlot *out, int32_t *oc) {
   auto port = get_opaque<InstrumentPort>(params, param_count, "this");
   pack_results(FunctionResult{port->default_name()}, out, 16, oc);
+}
+
+// InstrumentName(this: InstrumentPort) -> (string instrument_name)
+void STRUCTInstrumentPortInstrumentName(const FalconParamEntry *params,
+                                        int32_t param_count,
+                                        FalconResultSlot *out, int32_t *oc) {
+  auto port = get_opaque<InstrumentPort>(params, param_count, "this");
+  pack_results(FunctionResult{port->instrument_name()}, out, 16, oc);
 }
 
 // PsuedoName(this: InstrumentPort) -> (Connection conn)
@@ -147,6 +171,14 @@ void STRUCTInstrumentPortIsMeter(const FalconParamEntry *params,
                                   int32_t *oc) {
   auto port = get_opaque<InstrumentPort>(params, param_count, "this");
   pack_results(FunctionResult{port->is_meter()}, out, 16, oc);
+}
+
+// IsSetting(this: InstrumentPort) -> (bool is_setting)
+void STRUCTInstrumentPortIsSetting(const FalconParamEntry *params,
+                                   int32_t param_count, FalconResultSlot *out,
+                                   int32_t *oc) {
+  auto port = get_opaque<InstrumentPort>(params, param_count, "this");
+  pack_results(FunctionResult{port->is_setting()}, out, 16, oc);
 }
 
 // ── Equality ──────────────────────────────────────────────────────────────────

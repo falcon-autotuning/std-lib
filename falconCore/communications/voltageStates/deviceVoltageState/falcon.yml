@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../physics/units/symbolUnit/"
 
 ffi:
-  build/device-voltage-state-wrapper.so: sha256:612bf09bbeaabc774db027a2b9b34ca6724ff39a14d1dcc8c48dd2d61b14c75e
+  build/device-voltage-state-wrapper.so: sha256:c75d04edbbe83c142412cfcc0f78c03628d2bdc7f2f06dc9271633ef9ade0888
