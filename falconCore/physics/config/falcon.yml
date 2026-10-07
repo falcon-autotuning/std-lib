@@ -29,7 +29,7 @@ dependencies:
     local_path: ../../generic/farray/
   - name: array
     version: 1.0.0
-    local_path: ../../../../collections/array/
+    local_path: ../../../collections/array/
   - name: testing
     version: 1.0.0
-    local_path: ../../../../testing/
+    local_path: ../../../testing/

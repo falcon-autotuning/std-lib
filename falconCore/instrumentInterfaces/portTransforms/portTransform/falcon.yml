@@ -5,10 +5,10 @@ github: ""
 dependencies:
   - name: instrumentPort
     version: 1.0.0
-    local_path: "../../../names/instrumentPort/"
+    local_path: "../../names/instrumentPort/"
   - name: analyticFunction
     version: 1.0.0
-    local_path: "../../../../math/analyticFunction/"
+    local_path: "../../../math/analyticFunction/"
   - name: testing
     version: 1.0.0
     local_path: "../../../../testing/"

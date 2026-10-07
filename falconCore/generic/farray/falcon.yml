@@ -5,7 +5,7 @@ github: ""
 dependencies:
   - name: testing
     version: 1.0.0
-    local_path: "../../../../testing/"
+    local_path: "../../../testing/"
 
 ffi:
   build/farray-wrapper.so: sha256:af3073aacf160c24b1fa6272b6a209f5d6cd7f811f691c1304a21cff10447fd1
