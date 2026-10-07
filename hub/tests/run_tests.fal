@@ -15,7 +15,7 @@ import (
   "../../collections/map/map.fal"
   "../../collections/array/array.fal"
   "../hub.fal"
-  "../../../mock-hub/mockHub.fal"
+  "github.com/falcon-autotuning/mock-hub@v0.0.2"
 )
 
 autotuner HubCachingTests -> (int passed, int failed) {
