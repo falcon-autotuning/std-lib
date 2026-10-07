@@ -4,15 +4,18 @@ import (
   "../../falconCore/communications/voltageStates/deviceVoltageStates/deviceVoltageStates.fal"
   "../../falconCore/communications/voltageStates/deviceVoltageState/deviceVoltageState.fal"
   "../../falconCore/communications/messages/voltageStatesResponse/voltageStatesResponse.fal"
+  "../../falconCore/communications/messages/settingRequest/settingRequest.fal"
+  "../../falconCore/communications/messages/settingResponse/settingResponse.fal"
   "../../falconCore/instrumentInterfaces/names/ports/ports.fal"
   "../../falconCore/instrumentInterfaces/names/instrumentPort/instrumentPort.fal"
   "../../falconCore/physics/deviceStructures/connection/connection.fal"
   "../../falconCore/physics/units/symbolUnit/symbolUnit.fal"
+  "../../falconCore/math/quantity/quantity.fal"
   "../../falconCore/math/point/point.fal"
   "../../collections/map/map.fal"
   "../../collections/array/array.fal"
   "../hub.fal"
-  "github.com/falcon-autotuning/mock-hub@v0.0.1"
+  "../../../mock-hub/mockHub.fal"
 )
 
 autotuner HubCachingTests -> (int passed, int failed) {
@@ -117,6 +120,22 @@ autotuner HubCommsTests -> (int passed, int failed) {
         mock.SetDeviceState(state_resp);
         voltageStatesResponse::VoltageStatesResponse rec_state = RequestDeviceState(3000);
         Error err_state = t.ExpectIntEq(rec_state.States().Size(), 1, "Received device states count matches mock");
+
+        // 4. Test RequestSetting
+        instrumentPort::InstrumentPort setting_port = instrumentPort::InstrumentPort.NewSetting(
+            "P1", connection::Connection.NewPlungerGate("P1"), symbolUnit::SymbolUnit.Volt(), "Plunger 1");
+        quantity::Quantity qty = quantity::Quantity.New(0.5, symbolUnit::SymbolUnit.Volt());
+        Map<instrumentPort::InstrumentPort, quantity::Quantity> set_map = Map.New();
+        set_map.Set(setting_port, qty);
+        settingRequest::SettingRequest set_req = settingRequest::SettingRequest.New("SET_P1", ports::Ports.New(Array.New()), set_map);
+
+        Map<instrumentPort::InstrumentPort, quantity::Quantity> get_map = Map.New();
+        get_map.Set(setting_port, qty);
+        settingResponse::SettingResponse set_resp = settingResponse::SettingResponse.New("OK_SET", get_map);
+        mock.SetSettingResponse(set_resp);
+
+        settingResponse::SettingResponse rec_set_resp = RequestSetting(set_req, 3000);
+        Error err_set_resp = t.ExpectStrEq(rec_set_resp.Message(), "OK_SET", "Received setting response message matches mock");
 
         mock.Stop();
         -> __end(runner, t);

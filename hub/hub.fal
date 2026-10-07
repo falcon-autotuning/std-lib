@@ -1,6 +1,8 @@
 import (
   "../falconCore/communications/messages/measurementRequest/measurementRequest.fal"
   "../falconCore/communications/messages/measurementResponse/measurementResponse.fal"
+  "../falconCore/communications/messages/settingRequest/settingRequest.fal"
+  "../falconCore/communications/messages/settingResponse/settingResponse.fal"
   "../falconCore/communications/messages/voltageStatesResponse/voltageStatesResponse.fal"
   "../falconCore/communications/voltageStates/deviceVoltageStates/deviceVoltageStates.fal"
   "../falconCore/instrumentInterfaces/names/ports/ports.fal"
@@ -19,6 +21,9 @@ routine RequestDeviceState (int timeout_ms) -> (voltageStatesResponse::VoltageSt
 
 // Request a measurement from the instrument hub
 routine RequestMeasurement (measurementRequest::MeasurementRequest req, int timeout_ms) -> (measurementResponse::MeasurementResponse response)
+
+// Request a setting from the instrument hub
+routine RequestSetting (settingRequest::SettingRequest req, int timeout_ms) -> (settingResponse::SettingResponse response)
 
 // Request device config from the instrument hub
 routine RequestConfig (int timeout_ms) -> (config::Config config)

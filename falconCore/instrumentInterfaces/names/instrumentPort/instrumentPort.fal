@@ -6,6 +6,7 @@ ffimport "instrument-port-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falco
 struct InstrumentPort {
     routine NewKnob (string default_name, connection::Connection conn = nil, symbolUnit::SymbolUnit units, string description, string instrument_name = "") -> (InstrumentPort port)
     routine NewMeter (string default_name, connection::Connection conn = nil, symbolUnit::SymbolUnit units, string description, string instrument_name = "") -> (InstrumentPort port)
+    routine NewSetting (string default_name, connection::Connection conn = nil, symbolUnit::SymbolUnit units, string description, string instrument_name = "") -> (InstrumentPort port)
     routine NewTimer -> (InstrumentPort port)
     routine NewExecutionClock -> (InstrumentPort port)
     routine DefaultName -> (string default_name)

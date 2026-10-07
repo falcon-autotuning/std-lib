@@ -8,4 +8,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/increasing-alignment-wrapper.so: sha256:49a05d3a79c227fbfef884bb41287543a8588b07b12ccc1bbdb099b6dabe06de
+  build/increasing-alignment-wrapper.so: sha256:29f32e114bf2c48b265e95ada42b214ba9b16c81fcaa0c3e0e375c903220859f

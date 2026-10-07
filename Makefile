@@ -87,7 +87,7 @@ dist: build update-hashes ## Create a monolithic release tarball
 	 TARBALL="std-lib-$$VERSION.tar.gz" && \
 	 mkdir -p dist && \
 	 echo "📦 Creating monolithic release dist/$$TARBALL..." && \
-	 tar -czf dist/$$TARBALL --exclude='.git*' --exclude="dist" --exclude='scripts' --exclude='Makefile' --exclude='vcpkg*' --exclude='.falcon' . && \
+	 tar -czf dist/$$TARBALL --exclude='./build' --exclude='.git*' --exclude="dist" --exclude='scripts' --exclude='Makefile' --exclude='vcpkg*' --exclude='.falcon' . && \
 	 echo "  ✓ Created dist/$$TARBALL"
 
 release: dist ## Create releases for all packages (monolithic and individual)

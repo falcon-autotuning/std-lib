@@ -14,4 +14,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/connections-wrapper.so: sha256:86c717cd8042beae736b87598b2fcda52dea2f080498c5b4c2830571f826d1fb
+  build/connections-wrapper.so: sha256:5aa5425a859252a631807d7bb2e0b4e311bf788d2b165eb6079d7bbf7a8606be

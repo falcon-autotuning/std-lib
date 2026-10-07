@@ -4,7 +4,7 @@ maintainer: Falcon Team
 github: falcon-autotuning/std-lib
 license: MPL-2.0
 ffi:
-  build/hub-wrapper.so: sha256:d1ddad6b2f9e655e8d0bbeae946735a874235719614c9eb89811200f8bae5a66
+  build/hub-wrapper.so: sha256:62de530ece59daa1cffd720c89a03798fe8a4a22991561100338925e7d877562
 dependencies:
   - name: measurementRequest
     version: 1.0.0
@@ -12,6 +12,12 @@ dependencies:
   - name: measurementResponse
     version: 1.0.0
     local_path: ../falconCore/communications/messages/measurementResponse/
+  - name: settingRequest
+    version: 1.0.0
+    local_path: ../falconCore/communications/messages/settingRequest/
+  - name: settingResponse
+    version: 1.0.0
+    local_path: ../falconCore/communications/messages/settingResponse/
   - name: voltageStatesResponse
     version: 1.0.0
     local_path: ../falconCore/communications/messages/voltageStatesResponse/
@@ -37,5 +43,5 @@ dependencies:
     version: 1.0.0
     local_path: ../testing/
   - name: mockHub
-    version: 0.0.1
+    version: 0.0.2
     github: falcon-autotuning/mock-hub

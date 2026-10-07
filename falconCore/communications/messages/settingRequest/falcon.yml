@@ -1,17 +1,20 @@
-name: coupledLabelledDomain
+name: settingRequest
 version: 1.0.0
 maintainer: "falcon-devs"
 github: ""
 dependencies:
-  - name: labelledDomain
-    version: 1.0.0
-    local_path: "../labelledDomain/"
   - name: ports
     version: 1.0.0
     local_path: "../../../instrumentInterfaces/names/ports/"
   - name: instrumentPort
     version: 1.0.0
     local_path: "../../../instrumentInterfaces/names/instrumentPort/"
+  - name: quantity
+    version: 1.0.0
+    local_path: "../../../math/quantity/"
+  - name: map
+    version: 1.0.0
+    local_path: "../../../../collections/map/"
   - name: array
     version: 1.0.0
     local_path: "../../../../collections/array/"
@@ -20,4 +23,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/coupled-labelled-domain-wrapper.so: sha256:0a42084bc20c4007c0a92668c866b8e6ecf67c121f6219f14fad1111722081b6
+  build/setting-request-wrapper.so: sha256:5756408cdc1239a4df77c93f738ce44fdba82f59cdb72191b1cdfda64847515c

@@ -76,6 +76,32 @@ void STRUCTInstrumentPortNewMeter(const FalconParamEntry *params,
   pack_opaque_port(std::move(port), out, oc);
 }
 
+// NewSetting(default_name: string, conn: Connection,
+//            units: SymbolUnit, description: string,
+//            instrument_name: string) -> (InstrumentPort port)
+void STRUCTInstrumentPortNewSetting(const FalconParamEntry *params,
+                                     int32_t param_count, FalconResultSlot *out,
+                                     int32_t *oc) {
+  auto pm           = unpack_params(params, param_count);
+  auto default_name = std::get<std::string>(pm.at("default_name"));
+  auto conn         = get_opaque<Connection>(params, param_count, "conn");
+  auto unit         = get_opaque<SymbolUnit>(params, param_count, "units");
+  auto description  = std::get<std::string>(pm.at("description"));
+  std::string instrument_name = "";
+  if (pm.find("instrument_name") != pm.end()) {
+    instrument_name = std::get<std::string>(pm.at("instrument_name"));
+  }
+  auto port = InstrumentPort::Setting(
+      default_name, instrument_name,
+      falcon_core::instrument_interfaces::names::Scope::Local,
+      falcon_core::instrument_interfaces::names::Access::ReadWrite,
+      falcon_core::instrument_interfaces::names::InstrumentCharacteristic::None,
+      conn,
+      falcon_core::instrument_interfaces::names::Instrument::DC_Voltage_Source,
+      unit, description);
+  pack_opaque_port(std::move(port), out, oc);
+}
+
 // NewTimer() -> (InstrumentPort port)
 void STRUCTInstrumentPortNewTimer(const FalconParamEntry *, int32_t,
                                    FalconResultSlot *out, int32_t *oc) {

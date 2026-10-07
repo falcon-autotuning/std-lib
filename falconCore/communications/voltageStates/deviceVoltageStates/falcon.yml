@@ -20,4 +20,4 @@ dependencies:
     local_path: "../../../math/point/"
 
 ffi:
-  build/device-voltage-states-wrapper.so: sha256:53a5af17be8d680a0f7951ce88c457523ed714639823769dd518f774f667738e
+  build/device-voltage-states-wrapper.so: sha256:cabc9c12fbbadb90d35441f2f2c2b3932b7ffc1037871e1a576433b26277c375

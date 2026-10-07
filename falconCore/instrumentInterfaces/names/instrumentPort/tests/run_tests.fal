@@ -178,6 +178,36 @@ autotuner InstrumentPortEquality -> (int passed, int failed) {
     }
 }
 
+autotuner InstrumentPortSettingConstruction -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_setting_default_name (TestRunner runner, TestContext t) {
+        Connection p1         = Connection.NewPlungerGate("P1");
+        SymbolUnit volt       = SymbolUnit.Volt();
+        InstrumentPort port   = InstrumentPort.NewSetting("P1", p1, volt, "setting port");
+        Error err = t.ExpectStrEq("P1", port.DefaultName(), "Setting default name is P1");
+        -> __end(runner, t);
+    }
+
+    state test_setting_is_setting (TestRunner runner, TestContext t) {
+        Connection p1         = Connection.NewPlungerGate("P1");
+        SymbolUnit volt       = SymbolUnit.Volt();
+        InstrumentPort port   = InstrumentPort.NewSetting("P1", p1, volt, "setting port");
+        Error err = t.ExpectTrue(port.IsSetting(), "NewSetting port is a setting");
+        -> __end(runner, t);
+    }
+
+    state test_setting_is_not_knob_nor_meter (TestRunner runner, TestContext t) {
+        Connection p1         = Connection.NewPlungerGate("P1");
+        SymbolUnit volt       = SymbolUnit.Volt();
+        InstrumentPort port   = InstrumentPort.NewSetting("P1", p1, volt, "setting port");
+        Error err1 = t.ExpectFalse(port.IsKnob(), "NewSetting port is not a knob");
+        Error err2 = t.ExpectFalse(port.IsMeter(), "NewSetting port is not a meter");
+        -> __end(runner, t);
+    }
+}
+
 autotuner InstrumentPortJSON -> (int passed, int failed) {
     passed = 0; failed = 0;
     start -> __init;

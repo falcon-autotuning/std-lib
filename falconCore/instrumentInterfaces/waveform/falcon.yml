@@ -32,4 +32,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/waveform-wrapper.so: sha256:5fc2de539bd6ae67a2a7677eb9bb8be1107cdd1ea6c1decb4b5031ffc8f85708
+  build/waveform-wrapper.so: sha256:ed7f8bd36491038878197fa1343e51d745719726d39d442f97dbcc1937870c9d

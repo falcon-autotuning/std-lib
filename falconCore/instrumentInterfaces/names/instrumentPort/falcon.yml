@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../physics/units/symbolUnit/"
 
 ffi:
-  build/instrument-port-wrapper.so: sha256:a6c0a4d7c73e6b2069bc70b0b2f7fa9dda3e6380fbd40e30284e701828473872
+  build/instrument-port-wrapper.so: sha256:5ec9369c3799df99e12fc340ba4ff1568764270ce5caa3f64e621244d004701e

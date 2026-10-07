@@ -2,6 +2,8 @@
 #include <falcon-routine/hub.hpp>
 #include <falcon-core/communications/messages/MeasurementRequest.hpp>
 #include <falcon-core/communications/messages/MeasurementResponse.hpp>
+#include <falcon-core/communications/messages/SettingRequest.hpp>
+#include <falcon-core/communications/messages/SettingResponse.hpp>
 #include <falcon-core/communications/messages/VoltageStatesResponse.hpp>
 #include <falcon-core/communications/voltage_states/DeviceVoltageStates.hpp>
 #include <falcon-core/instrument_interfaces/names/Ports.hpp>
@@ -97,6 +99,17 @@ void RequestMeasurement(const FalconParamEntry *param_entries, int32_t param_cou
   int32_t timeout_ms = extract_int_param(param_entries, param_count, "timeout_ms");
   auto resp = falcon::routine::request_measurement(req, timeout_ms);
   pack_opaque(resp, &out_slots[0], "MeasurementResponse");
+  *out_count = 1;
+}
+
+// ── 2b. RequestSetting ──────────────────────────────────────────────────────
+void RequestSetting(const FalconParamEntry *param_entries, int32_t param_count,
+                    FalconResultSlot *out_slots, int32_t *out_count) {
+  auto req = extract_opaque_handle<falcon_core::communications::messages::SettingRequest>(
+      param_entries, param_count, "req", "SettingRequest");
+  int32_t timeout_ms = extract_int_param(param_entries, param_count, "timeout_ms");
+  auto resp = falcon::routine::request_setting(req, timeout_ms);
+  pack_opaque(resp, &out_slots[0], "SettingResponse");
   *out_count = 1;
 }
 

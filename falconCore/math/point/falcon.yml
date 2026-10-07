@@ -23,4 +23,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/point-wrapper.so: sha256:cf844db17aa469dde1fa7a47a4d1a97b8365d72ee308026bc70d8741796fffe8
+  build/point-wrapper.so: sha256:1d4879e8a84ddb09d8b5213a29614b3017bba30bfe04874edeeaf742d3be77ca
