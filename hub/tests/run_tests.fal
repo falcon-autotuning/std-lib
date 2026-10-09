@@ -104,9 +104,11 @@ autotuner HubCommsTests -> (int passed, int failed) {
         mock.SetPortPayload(knobs, meters);
         ports::Ports rec_knobs;
         ports::Ports rec_meters;
-        rec_knobs, rec_meters = RequestPortPayload(3000);
+        ports::Ports rec_settings;
+        rec_knobs, rec_meters, rec_settings = RequestPortPayload(3000);
         Error err_knobs = t.ExpectIntEq(rec_knobs.Size(), 1, "Received knobs count matches mock");
         Error err_meters = t.ExpectIntEq(rec_meters.Size(), 1, "Received meters count matches mock");
+        Error err_settings = t.ExpectIntEq(rec_settings.Size(), 0, "Received settings count matches mock");
 
         // 3. Test RequestDeviceState
         connection::Connection conn = connection::Connection.NewPlungerGate("P1");

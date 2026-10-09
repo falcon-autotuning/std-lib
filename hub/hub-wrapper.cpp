@@ -126,12 +126,14 @@ void RequestConfig(const FalconParamEntry *param_entries, int32_t param_count,
 void RequestPortPayload(const FalconParamEntry *param_entries, int32_t param_count,
                         FalconResultSlot *out_slots, int32_t *out_count) {
   int32_t timeout_ms = extract_int_param(param_entries, param_count, "timeout_ms");
-  auto [knobs_val, meters_val] = falcon::routine::request_port_payload(timeout_ms);
+  auto [knobs_val, meters_val, settings_val] = falcon::routine::request_port_payload(timeout_ms);
   auto knobs = std::make_shared<falcon_core::instrument_interfaces::names::Ports>(std::move(knobs_val));
   auto meters = std::make_shared<falcon_core::instrument_interfaces::names::Ports>(std::move(meters_val));
+  auto settings = std::make_shared<falcon_core::instrument_interfaces::names::Ports>(std::move(settings_val));
   pack_opaque(knobs, &out_slots[0], "Ports");
   pack_opaque(meters, &out_slots[1], "Ports");
-  *out_count = 2;
+  pack_opaque(settings, &out_slots[2], "Ports");
+  *out_count = 3;
 }
 
 // ── 5. CacheDeviceVoltages ──────────────────────────────────────────────────

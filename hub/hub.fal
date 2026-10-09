@@ -28,8 +28,8 @@ routine RequestSetting (settingRequest::SettingRequest req, int timeout_ms) -> (
 // Request device config from the instrument hub
 routine RequestConfig (int timeout_ms) -> (config::Config config)
 
-// Request current port payload from the instrument hub (knobs, meters)
-routine RequestPortPayload (int timeout_ms) -> (ports::Ports knobs, ports::Ports meters)
+// Request current port payload from the instrument hub (knobs, meters, settings)
+routine RequestPortPayload (int timeout_ms) -> (ports::Ports knobs, ports::Ports meters, ports::Ports settings)
 
 // ── Caching Operations ──────────────────────────────────────────────────────
 
