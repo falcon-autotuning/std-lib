@@ -20,4 +20,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/setting-response-wrapper.so: sha256:fc8fb19e16f18f89c6e4f91b613ba34f07e3b7fafa4b3c910d5d6e8d0a3ea613
+  build/setting-response-wrapper.so: sha256:1e25c1b0fa48a12696e3fc49b13d0275f4af06aa0fd82577c815f76f6c0f0bd5

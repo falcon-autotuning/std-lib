@@ -6,8 +6,6 @@ vcpkg_from_github(
 )
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
-    OPTIONS
-        -DCMAKE_BUILD_TYPE=Release
 )
 vcpkg_cmake_install()
 vcpkg_cmake_config_fixup()

@@ -37,7 +37,10 @@ target_link_libraries(falcon_wrapper_base INTERFACE
 
 # Native Clang/GCC Precompiled Headers: parsed ONCE and shared across all 45 wrappers
 target_precompile_headers(falcon_wrapper_base INTERFACE
-    <falcon-core/CerealRegistry.hpp>
+    <string>
+    <vector>
+    <memory>
+    <map>
     <falcon-typing/FFIHelpers.hpp>
 )
 

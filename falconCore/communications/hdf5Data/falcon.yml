@@ -17,4 +17,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/hdf5-data-wrapper.so: sha256:d5ceccc1a9508590c7b4ead277a0b4696fe63b719643cd7b913185c5ffcd0987
+  build/hdf5-data-wrapper.so: sha256:262a28227a6719d99d0ae103244603f0539f1bc6a2f433737f68883ff8718772

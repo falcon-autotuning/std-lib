@@ -23,4 +23,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/setting-request-wrapper.so: sha256:5756408cdc1239a4df77c93f738ce44fdba82f59cdb72191b1cdfda64847515c
+  build/setting-request-wrapper.so: sha256:109b27ecc3e11b6d4a3ec81e965eedcbeef34867212e39048e05e885e86ef359

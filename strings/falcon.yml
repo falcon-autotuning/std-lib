@@ -4,7 +4,7 @@ maintainer: falcon-devs
 github: falcon-autotuning/std-lib
 license: ""
 ffi:
-  build/strings-wrapper.so: sha256:64bcbb63644e8673a1aada013df1773751c0d32efe405ec92ab68d5587375db5
+  build/strings-wrapper.so: sha256:63d7f5ff7f8f57195accd11af0eebe01fea39e6b8a91ea91d5e641de5a28caf5
 dependencies:
   - name: array
     version: 1.0.0
