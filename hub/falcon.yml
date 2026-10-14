@@ -43,5 +43,5 @@ dependencies:
     version: 1.0.0
     local_path: ../testing/
   - name: mockHub
-    version: 0.0.3
+    version: 0.0.4
     github: falcon-autotuning/mock-hub
