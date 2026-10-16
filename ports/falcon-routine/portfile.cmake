@@ -2,25 +2,8 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO falcon-autotuning/falcon-routine
     REF v${VERSION}
-    SHA512 fb8325fb774fbf225446d02f79e3650aaf09ef587f3abaed43c33a151327e0daa9a1601c801c09fd49f0276e2ef8fd8d50fc5f44b624ac9f34d6eb754a448d87
+    SHA512 c68e49f8f1357b86d2627596ab80d75d82ee5f814a7a51f9cb7f34aedae94f534114423d151553b22de961e307eb505f85ca621d5fc12b9637b2f19873236fc1
 )
-
-# Inject local workspace overrides if present
-get_filename_component(WORKSPACE_ROOT "${CURRENT_PORT_DIR}/../../.." ABSOLUTE)
-set(FALCON_ROUTINE_HUB_OVERRIDE "${WORKSPACE_ROOT}/falcon/comms/src/hub_override/hub.cpp")
-if(EXISTS "${FALCON_ROUTINE_HUB_OVERRIDE}")
-    file(COPY "${FALCON_ROUTINE_HUB_OVERRIDE}" DESTINATION "${SOURCE_PATH}/src")
-endif()
-
-if(EXISTS "${WORKSPACE_ROOT}/falcon-routine/include/falcon-routine")
-    file(GLOB ROUTINE_HEADERS "${WORKSPACE_ROOT}/falcon-routine/include/falcon-routine/*.hpp" "${WORKSPACE_ROOT}/falcon-routine/include/falcon-routine/*.h")
-    file(COPY ${ROUTINE_HEADERS} DESTINATION "${SOURCE_PATH}/include/falcon-routine")
-endif()
-
-if(EXISTS "${WORKSPACE_ROOT}/falcon-routine/src")
-    file(GLOB ROUTINE_SRCS "${WORKSPACE_ROOT}/falcon-routine/src/*.cpp")
-    file(COPY ${ROUTINE_SRCS} DESTINATION "${SOURCE_PATH}/src")
-endif()
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
