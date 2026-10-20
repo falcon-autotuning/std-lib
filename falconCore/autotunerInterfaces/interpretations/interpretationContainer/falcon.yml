@@ -17,4 +17,4 @@ dependencies:
     local_path: "../../../../testing/"
 
 ffi:
-  build/interpretation-container-wrapper.so: sha256:ad351ad8d0743d26457d5284e956ea5027b4aac5909a44962cbac212ace6a379
+  build/interpretation-container-wrapper.so: sha256:4b86741fbc63d329eb81063e7f3fd3573db0220aa610087ee30334f0366431d5

@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/quantity-wrapper.so: sha256:cbc44c912c11d6814aaba0606e0b2642d531dad8686bddc8c1291bc6bff1d667
+  build/quantity-wrapper.so: sha256:f4e3ea0b2daf9079a922c0e38cb0159abb760825011d5ef5f8bc3de1057c3e2a

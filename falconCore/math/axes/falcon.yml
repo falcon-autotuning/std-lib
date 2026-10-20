@@ -11,4 +11,4 @@ dependencies:
     local_path: "../../../testing/"
 
 ffi:
-  build/axes-wrapper.so: sha256:0b5a1de5db99c27f235bbe0f5b451d0027a07c1e09d47cbfd0fecaa533990010
+  build/axes-wrapper.so: sha256:2e7eceeecaea3d6c1ba7e4291a105b09b5854e67562f1a9229a90325b011d1e6

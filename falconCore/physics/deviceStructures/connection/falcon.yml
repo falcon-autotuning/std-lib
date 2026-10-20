@@ -4,8 +4,8 @@ maintainer: falcon-devs
 github: falcon-autotuning/std-lib
 license: ""
 ffi:
-  build/connection-wrapper.so: sha256:9610a99c4cd93c88991192bf63f19b798d100805eb22fd3461c5eefe1e7a6a21
-  build/connection-wrapper.so: sha256:9610a99c4cd93c88991192bf63f19b798d100805eb22fd3461c5eefe1e7a6a21
+  build/connection-wrapper.so: sha256:9f24a8fbd4a52657cddb5491630f00bc566ac88d46969a1203eb409ef04dd223
+  build/connection-wrapper.so: sha256:9f24a8fbd4a52657cddb5491630f00bc566ac88d46969a1203eb409ef04dd223
 dependencies:
   - name: testing
     version: 1.0.0
