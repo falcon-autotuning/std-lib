@@ -1,5 +1,17 @@
 import "../../../../testing/testing.fal";
+
 import "../waveform.fal";
+import "../../../physics/deviceStructures/connection/connection.fal";
+import "../../../physics/units/symbolUnit/symbolUnit.fal";
+import "../../names/instrumentPort/instrumentPort.fal";
+import "../../portTransforms/portTransform/portTransform.fal";
+import "../../../math/domains/domain/domain.fal";
+import "../../../math/domains/labelledDomain/labelledDomain.fal";
+import "../../../math/domains/coupledLabelledDomain/coupledLabelledDomain.fal";
+import "../../../math/axes/axes.fal";
+import "../../../math/discreteSpaces/discreteSpace/discreteSpace.fal";
+import "../../../../collections/array/array.fal";
+import "../../../../collections/map/map.fal";
 
 autotuner WaveformJSON -> (int passed, int failed) {
     passed = 0; failed = 0;
@@ -8,9 +20,17 @@ autotuner WaveformJSON -> (int passed, int failed) {
     state test_roundtrip (TestRunner runner, TestContext t) {
         string sample     = SampleJSON();
         Waveform orig     = Waveform.FromJSON(sample);
-        string   json     = orig.ToJSON();
+        string json       = orig.ToJSON();
         Waveform restored = Waveform.FromJSON(json);
-        Error err = t.ExpectTrue(orig.Equal(restored), "Waveform JSON roundtrip preserves equality");
+
+        Error err = t.ExpectTrue(
+            orig.Equal(restored),
+            "Waveform JSON roundtrip preserves equality");
+
+        err = t.ExpectFalse(
+            orig.NotEqual(restored),
+            "Waveform JSON roundtrip preserves inequality");
+
         -> __end(runner, t);
     }
 }
@@ -20,10 +40,775 @@ autotuner WaveformListOps -> (int passed, int failed) {
     start -> __init;
 
     state test_size_and_empty (TestRunner runner, TestContext t) {
-        string sample = SampleJSON();
-        Waveform w = Waveform.FromJSON(sample);
-        Error err = t.ExpectFalse(w.IsEmpty(), "Waveform with transforms is not empty");
-        err = t.ExpectIntEq(1, w.Size(), "Waveform size is 1");
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        Error err = t.ExpectFalse(
+            w.IsEmpty(),
+            "Waveform with transforms is not empty");
+
+        err = t.ExpectIntEq(
+            1,
+            w.Size(),
+            "Waveform size is 1");
+
+        -> __end(runner, t);
+    }
+
+    state test_get_index (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        Error err = t.ExpectTrue(
+            w.Contains(pt),
+            "Retrieved element exists in waveform");
+
+        -> __end(runner, t);
+    }
+
+    state test_index_of (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        Error err = t.ExpectIntEq(
+            0,
+            w.IndexOf(pt),
+            "IndexOf returns expected index");
+
+        -> __end(runner, t);
+    }
+
+    state test_push_back_increases_size (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        int originalSize = w.Size();
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        w.PushBack(pt);
+
+        Error err = t.ExpectIntEq(
+            originalSize + 1,
+            w.Size(),
+            "PushBack increases size");
+
+        -> __end(runner, t);
+    }
+
+    state test_pop_back_restores_size (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        w.PushBack(pt);
+
+        int beforePop = w.Size();
+
+        portTransform::PortTransform popped = w.PopBack();
+
+        Error err = t.ExpectIntEq(
+            beforePop - 1,
+            w.Size(),
+            "PopBack decreases size");
+
+        err = t.ExpectTrue(
+            popped.Equal(pt),
+            "PopBack returns inserted element");
+
+        -> __end(runner, t);
+    }
+
+    state test_insert_increases_size (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        int originalSize = w.Size();
+
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        w.Insert(0, pt);
+
+        Error err = t.ExpectIntEq(
+            originalSize + 1,
+            w.Size(),
+            "Insert increases size");
+
+        -> __end(runner, t);
+    }
+
+    state test_erase_decreases_size (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        w.PushBack(pt);
+
+        int beforeErase = w.Size();
+
+        w.Erase(beforeErase - 1);
+
+        Error err = t.ExpectIntEq(
+            beforeErase - 1,
+            w.Size(),
+            "Erase decreases size");
+
+        -> __end(runner, t);
+    }
+
+    state test_set_index (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        portTransform::PortTransform pt = w.GetIndex(0);
+
+        w.PushBack(pt);
+
+        w.SetIndex(1, pt);
+
+        portTransform::PortTransform restored = w.GetIndex(1);
+
+        Error err = t.ExpectTrue(
+            restored.Equal(pt),
+            "SetIndex updates stored value");
+
+        -> __end(runner, t);
+    }
+
+    state test_clear (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        w.Clear();
+
+        Error err = t.ExpectTrue(
+            w.IsEmpty(),
+            "Clear empties waveform");
+
+        err = t.ExpectIntEq(
+            0,
+            w.Size(),
+            "Clear results in size 0");
+
+        -> __end(runner, t);
+    }
+
+    state test_space_survives_roundtrip (TestRunner runner, TestContext t) {
+        Waveform w = Waveform.FromJSON(SampleJSON());
+
+        discreteSpace::DiscreteSpace s = w.Space();
+
+        Error err = t.ExpectTrue(
+            s != nil,
+            "Space returns a valid discrete space");
+
+        -> __end(runner, t);
+    }
+
+    state test_equality_and_inequality (TestRunner runner, TestContext t) {
+        Waveform lhs = Waveform.FromJSON(SampleJSON());
+        Waveform rhs = Waveform.FromJSON(SampleJSON());
+
+        Error err = t.ExpectTrue(
+            lhs.Equal(rhs),
+            "Identical waveforms compare equal");
+
+        err = t.ExpectFalse(
+            lhs.NotEqual(rhs),
+            "Identical waveforms do not compare unequal");
+
+        rhs.PushBack(rhs.GetIndex(0));
+
+        err = t.ExpectFalse(
+            lhs.Equal(rhs),
+            "Mutated waveform no longer equal");
+
+        err = t.ExpectTrue(
+            lhs.NotEqual(rhs),
+            "Mutated waveform compares unequal");
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner WaveformConstructors -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new_constructor (TestRunner runner, TestContext t) {
+        Waveform sample = Waveform.FromJSON(SampleJSON());
+
+        discreteSpace::DiscreteSpace space = sample.Space();
+
+        Array<portTransform::PortTransform> transforms = Array.New();
+        transforms.PushBack(sample.GetIndex(0));
+
+        Waveform constructed =
+            Waveform.New(space, transforms);
+
+        Error err = t.ExpectFalse(
+            constructed.IsEmpty(),
+            "New() creates non-empty waveform");
+
+        err = t.ExpectIntEq(
+            1,
+            constructed.Size(),
+            "New() preserves transform count");
+
+        -> __end(runner, t);
+    }
+
+    state test_new_cartesian_waveform_1d (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        connection::Connection conn =
+            connection::Connection.NewPlungerGate("P1");
+
+        instrumentPort::Instrument inst =
+            instrumentPort::Instrument.NewDcVoltageSource();
+
+        symbolUnit::SymbolUnit volt =
+            symbolUnit::SymbolUnit.Volt();
+
+        instrumentPort::InstrumentPort port =
+            instrumentPort::InstrumentPort.NewKnob(
+                "P1",
+                conn,
+                volt,
+                "test",
+                "",
+                inst);
+
+        LabelledDomain ld =
+            LabelledDomain.FromPort(
+                1.0,
+                0.0,
+                port,
+                true,
+                true);
+
+        Array<LabelledDomain> domains = Array.New();
+        domains.PushBack(ld);
+
+        CoupledLabelledDomain cld =
+            CoupledLabelledDomain.New(domains);
+
+        Axes<CoupledLabelledDomain> axes =
+            Axes.New();
+
+        axes.PushBack(cld);
+
+        Map<string,bool> inc = Map.New();
+        inc.Set("P1", true);
+
+        Axes<Map<string,bool>> increasing =
+            Axes.New();
+
+        increasing.PushBack(inc);
+
+        Domain domain =
+            Domain.New(
+                0.0,
+                1.0,
+                true,
+                true);
+
+        portTransform::PortTransform pt =
+            portTransform::PortTransform.IdentityTranform(
+                port);
+
+        Array<portTransform::PortTransform> transforms =
+            Array.New();
+
+        transforms.PushBack(pt);
+
+        Waveform wf =
+            Waveform.NewCartesianWaveform1D(
+                10,
+                axes,
+                increasing,
+                transforms,
+                domain);
+
+        Error err = t.ExpectFalse(
+            wf.IsEmpty(),
+            "NewCartesianWaveform1D creates waveform");
+
+        err = t.ExpectTrue(
+            wf.Size() > 0,
+            "NewCartesianWaveform1D contains transforms");
+
+        -> __end(runner, t);
+    }
+
+    state test_new_cartesian_identity_waveform_1d (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        connection::Connection conn =
+            connection::Connection.NewPlungerGate("P1");
+
+        instrumentPort::Instrument inst =
+            instrumentPort::Instrument.NewDcVoltageSource();
+
+        symbolUnit::SymbolUnit volt =
+            symbolUnit::SymbolUnit.Volt();
+
+        instrumentPort::InstrumentPort port =
+            instrumentPort::InstrumentPort.NewKnob(
+                "P1",
+                conn,
+                volt,
+                "test",
+                "",
+                inst);
+
+        LabelledDomain ld =
+            LabelledDomain.FromPort(
+                1.0,
+                0.0,
+                port,
+                true,
+                true);
+
+        Array<LabelledDomain> domains = Array.New();
+        domains.PushBack(ld);
+
+        CoupledLabelledDomain cld =
+            CoupledLabelledDomain.New(domains);
+
+        Axes<CoupledLabelledDomain> axes =
+            Axes.New();
+
+        axes.PushBack(cld);
+
+        Map<string,bool> inc = Map.New();
+        inc.Set("P1", true);
+
+        Axes<Map<string,bool>> increasing =
+            Axes.New();
+
+        increasing.PushBack(inc);
+
+        Domain domain =
+            Domain.New(
+                0.0,
+                1.0,
+                true,
+                true);
+
+        Waveform wf =
+            Waveform.NewCartesianIdentityWaveform1D(
+                10,
+                axes,
+                increasing,
+                domain);
+
+        Error err = t.ExpectFalse(
+            wf.IsEmpty(),
+            "NewCartesianIdentityWaveform1D creates waveform");
+
+        -> __end(runner, t);
+    }
+
+    state test_space_valid_after_construction (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Waveform sample =
+            Waveform.FromJSON(SampleJSON());
+
+        discreteSpace::DiscreteSpace space =
+            sample.Space();
+
+        Array<portTransform::PortTransform> transforms =
+            Array.New();
+
+        transforms.PushBack(sample.GetIndex(0));
+
+        Waveform wf =
+            Waveform.New(
+                space,
+                transforms);
+
+        discreteSpace::DiscreteSpace out =
+            wf.Space();
+
+        Error err = t.ExpectTrue(
+            out.Equal(space),
+            "Constructed waveform retains space");
+
+        -> __end(runner, t);
+    }
+
+    state test_constructor_json_roundtrip (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        Waveform sample =
+            Waveform.FromJSON(SampleJSON());
+
+        discreteSpace::DiscreteSpace space =
+            sample.Space();
+
+        Array<portTransform::PortTransform> transforms =
+            Array.New();
+
+        transforms.PushBack(sample.GetIndex(0));
+
+        Waveform constructed =
+            Waveform.New(
+                space,
+                transforms);
+
+        Waveform restored =
+            Waveform.FromJSON(
+                constructed.ToJSON());
+
+        Error err = t.ExpectTrue(
+            constructed.Equal(restored),
+            "Constructor output survives JSON roundtrip");
+
+        -> __end(runner, t);
+    }
+}
+
+
+struct WaveformFixture {
+    Domain domain;
+    int divisions1d;
+    Axes<int> divisions2d;
+    CoupledLabelledDomain axes1d;
+    Axes<CoupledLabelledDomain> axes2d;
+    Map<string, bool> increasingAxes1d;
+    Axes<Map<string, bool>> increasingAxes2d;
+    Array<PortTransform> transforms1d;
+    Array<PortTransform> transforms2d;
+    DiscreteSpace discreteSpace;
+
+    routine New()
+        -> (WaveformFixture fixture)
+    {
+        Connection p1 =
+            Connection.NewPlungerGate("P1");
+
+        Connection p2 =
+            Connection.NewPlungerGate("P2");
+
+        Instrument inst =
+            Instrument.NewDcVoltageSource();
+
+        SymbolUnit volt =
+            SymbolUnit.Volt();
+
+        InstrumentPort vg1 =
+            InstrumentPort.NewKnob(
+                "Vg1",
+                p1,
+                volt,
+                "gate1",
+                "instrument1",
+                inst);
+
+        InstrumentPort vg2 =
+            InstrumentPort.NewKnob(
+                "Vg2",
+                p2,
+                volt,
+                "gate2",
+                "instrument2",
+                inst);
+
+        Domain domain = Domain.New(
+                0.0,
+                1.0,
+                true,
+                true);
+        fixture.domain = domain;
+
+        LabelledDomain ld1 =
+            LabelledDomain.FromPortAndDomain(
+                vg1,
+                fixture.domain);
+
+        LabelledDomain ld2 =
+            LabelledDomain.FromPortAndDomain(
+                vg2,
+                fixture.domain);
+
+        Array<LabelledDomain> labels1d =
+            Array.New();
+
+        labels1d.PushBack(ld1);
+
+        Array<LabelledDomain> labels2d =
+            Array.New();
+
+        labels2d.PushBack(ld1);
+        labels2d.PushBack(ld2);
+
+        CoupledLabelledDomain coupled1d =
+            CoupledLabelledDomain.New(
+                labels1d);
+
+        CoupledLabelledDomain coupled2dA =
+            CoupledLabelledDomain.New(
+                labels1d);
+
+        Array<LabelledDomain> temp =
+            Array.New();
+
+        temp.PushBack(ld2);
+
+        CoupledLabelledDomain coupled2dB =
+            CoupledLabelledDomain.New(
+                temp);
+
+        fixture.axes1d = coupled1d;
+
+        Axes<CoupledLabelledDomain> axes2d = Axes.New();
+        axes2d.PushBack(coupled2dA);
+        axes2d.PushBack(coupled2dB);
+
+        fixture.axes2d = axes2d;
+
+        Map<string, bool> increasing1 =
+            Map.New();
+
+        increasing1.Set(
+            "Vg1",
+            true);
+
+        Map<string, bool> increasing2 =
+            Map.New();
+
+        increasing2.Set(
+            "Vg2",
+            true);
+
+        fixture.increasingAxes1d = increasing1;
+        
+        Axes<Map<string, bool>> increasingAxes2d = Axes.New();
+        increasingAxes2d.PushBack(increasing1);
+        increasingAxes2d.PushBack(increasing2);
+        fixture.increasingAxes2d = increasingAxes2d;
+
+        fixture.divisions1d = 10;
+        Axes<int> divisions2d = Axes.New();
+        divisions2d.PushBack(10);
+        divisions2d.PushBack(10);
+        fixture.divisions2d = divisions2d;
+
+        PortTransform pt1 =
+            PortTransform.IdentityTranform(
+                vg1);
+
+        PortTransform pt2 =
+            PortTransform.IdentityTranform(
+                vg2);
+        
+        Array<PortTransform> transforms1d = Array.New();
+        transforms1d.PushBack(pt1);
+        fixture.transforms1d =transforms1d;
+
+        Array<PortTransform> transforms2d = Array.New();
+        transforms2d.PushBack(pt1);
+        transforms2d.PushBack(pt2);
+        fixture.transforms2d =transforms2d;
+
+        DiscreteSpace space = DiscreteSpace.CartesianDiscreteSpace(
+                fixture.divisions2d,
+                fixture.axes2d,
+                fixture.increasingAxes2d,
+                fixture.domain);
+        fixture.discreteSpace = space;
+    }
+}
+
+autotuner WaveformConstructors -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+        Waveform waveform =
+            Waveform.New(
+                fixture.discreteSpace,
+                fixture.transforms2d);
+
+        Error err = t.ExpectIntEq(
+            2,
+            waveform.Size(),
+            "Waveform.New works");
+
+        -> __end(runner, t);
+    }
+
+    state test_new_cartesian_waveform (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianWaveform(
+                fixture.divisions2d,
+                fixture.axes2d,
+                fixture.increasingAxes2d,
+                fixture.transforms2d,
+                fixture.domain);
+
+        Error err = t.ExpectFalse(
+            waveform.IsEmpty(),
+            "NewCartesianWaveform works");
+
+        err = t.ExpectIntEq(
+            2,
+            waveform.Size(),
+            "NewCartesianWaveform preserves transform count");
+
+        -> __end(runner, t);
+    }
+    state test_new_cartesian_identity_waveform (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianIdentityWaveform(
+                fixture.divisions2d,
+                fixture.axes2d,
+                fixture.increasingAxes2d,
+                fixture.domain);
+
+        Error err = t.ExpectTrue(
+            waveform.Space().Equal(
+                waveform.Space()),
+            "NewCartesianIdentityWaveform creates waveform");
+
+        -> __end(runner, t);
+    }
+    state test_new_cartesian_waveform_2d (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianWaveform2D(
+                fixture.divisions2d,
+                fixture.axes2d,
+                fixture.increasingAxes2d,
+                fixture.transforms2d,
+                fixture.domain);
+
+        Error err = t.ExpectIntEq(
+            2,
+            waveform.Size(),
+            "NewCartesianWaveform2D preserves transform count");
+
+        -> __end(runner, t);
+    }
+    state test_new_cartesian_identity_waveform_2d (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianIdentityWaveform2D(
+                fixture.divisions2d,
+                fixture.axes2d,
+                fixture.increasingAxes2d,
+                fixture.domain);
+
+        Error err = t.ExpectTrue(
+            waveform.Space().Equal(
+                waveform.Space()),
+            "NewCartesianIdentityWaveform2D creates waveform");
+
+        -> __end(runner, t);
+    }
+    state test_new_cartesian_waveform_1d (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianWaveform1D(
+                10,
+                fixture.axes1d,
+                fixture.increasingAxes1d,
+                fixture.transforms1d,
+                fixture.domain);
+
+        Error err = t.ExpectIntEq(
+            1,
+            waveform.Size(),
+            "NewCartesianWaveform1D preserves transform count");
+
+        -> __end(runner, t);
+    }
+    state test_new_cartesian_identity_waveform_1d (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianIdentityWaveform1D(
+                10,
+                fixture.axes1d,
+                fixture.increasingAxes1d,
+                fixture.domain);
+
+        Error err = t.ExpectTrue(
+            waveform.Space().Equal(
+                waveform.Space()),
+            "NewCartesianIdentityWaveform1D creates waveform");
+
+        -> __end(runner, t);
+    }
+
+    state test_cartesian_waveform_2d_roundtrip (
+        TestRunner runner,
+        TestContext t
+    ) {
+
+        WaveformFixture fixture =WaveformFixture.New();
+
+        Waveform waveform =
+            Waveform.NewCartesianWaveform2D(
+                fixture.divisions2d,
+                fixture.axes2d,
+                fixture.increasingAxes2d,
+                fixture.transforms2d,
+                fixture.domain);
+
+        Waveform restored =
+            Waveform.FromJSON(
+                waveform.ToJSON());
+
+        Error err = t.ExpectTrue(
+            waveform.Equal(restored),
+            "NewCartesianWaveform2D survives JSON roundtrip");
+
         -> __end(runner, t);
     }
 }
