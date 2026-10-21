@@ -104,7 +104,7 @@ autotuner DiscreteSpaceGetAxis -> (int passed, int failed) {
         Domain             dom = Domain.New(0.0, 1.0, true, true);
         Connection conn = Connection.NewPlungerGate("P1");
         SymbolUnit volt = SymbolUnit.Volt();
-        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "");
+        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "", "", Instrument.NewDcVoltageSource());
         LabelledDomain     ld  = LabelledDomain.FromPortAndDomain(ip, Domain.New(0.0, 1.0, true, true));
         Array<LabelledDomain> arr = Array.New();
         arr.PushBack(ld);
@@ -128,7 +128,7 @@ autotuner DiscreteSpaceGetDomain -> (int passed, int failed) {
         Domain             dom = Domain.New(0.0, 1.0, true, true);
         Connection conn = Connection.NewPlungerGate("P1");
         SymbolUnit volt = SymbolUnit.Volt();
-        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "");
+        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "", "", Instrument.NewDcVoltageSource());
         LabelledDomain     ld  = LabelledDomain.FromPortAndDomain(ip, dom);
         Array<LabelledDomain> arr = Array.New();
         arr.PushBack(ld);
@@ -153,7 +153,7 @@ autotuner DiscreteSpaceGetProjection -> (int passed, int failed) {
         Domain             dom = Domain.New(0.0, 1.0, true, true);
         Connection conn = Connection.NewPlungerGate("P1");
         SymbolUnit volt = SymbolUnit.Volt();
-        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "");
+        InstrumentPort     ip  = InstrumentPort.NewKnob("freq", conn, volt, "", "", Instrument.NewDcVoltageSource());
         LabelledDomain     ld  = LabelledDomain.FromPortAndDomain(ip, dom);
         Array<LabelledDomain> arr = Array.New();
         arr.PushBack(ld);

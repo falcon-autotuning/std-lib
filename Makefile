@@ -75,7 +75,10 @@ update-hashes: build ## Update SHA-256 hashes in all falcon.yml files
 
 $(TEST_TARGETS): run-test-%:
 	@echo "🧪 Testing $*..."
-	@(cd $* && FALCON_LIBRARY_PATH=$(CURDIR) LD_LIBRARY_PATH=$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH $(VCPKG_DIR)/bin/falcon-test ./run_tests.fal --log-level info || exit 1)
+	@cd $* && \
+		FALCON_LIBRARY_PATH="$(CURDIR)" \
+		LD_LIBRARY_PATH="$(VCPKG_DIR)/lib:/opt/falcon/lib:$$LD_LIBRARY_PATH" \
+		"$(VCPKG_DIR)/bin/falcon-test" ./run_tests.fal --log-level info
 
 test: build $(TEST_TARGETS) ## Run tests for all packages
 

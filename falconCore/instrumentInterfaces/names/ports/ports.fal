@@ -4,6 +4,18 @@ import (
 "../../../../collections/array/array.fal"
 )
 ffimport "ports-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
+// Allows you to set a whole bunch of optional querries
+struct PortQuery {
+    routine New -> (PortQuery query)
+    routine SetDefaultName(string defaultName) -> ()
+    routine SetConnection(connection::Connection conn) -> ()
+    routine SetUnit(symbolUnit::SymbolUnit unit) -> ()
+    routine SetInstrumentName(string instrumentName) -> ()
+    routine SetAccess(instrumentPort::Access access) -> ()
+    routine SetScope(instrumentPort::Scope scope) -> ()
+    routine SetInstrument(instrumentPort::Instrument inst) -> ()
+    routine SetCharacteristic(instrumentPort::Characteristic char) -> ()
+}
 struct Ports {
     routine New (Array<instrumentPort::InstrumentPort> ports) -> (Ports ports)
     routine Ports -> (Array<instrumentPort::InstrumentPort> ports)
@@ -25,4 +37,7 @@ struct Ports {
     routine Index (instrumentPort::InstrumentPort value) -> (int index)
     routine Clear () -> ()
     routine Erase (int index) -> ()
+
+    routine IsQueryMatch (PortQuery query) -> (Error err)
+    routine FindQueryMatch (PortQuery query) -> (instrumentPort::InstrumentPort port)
 }

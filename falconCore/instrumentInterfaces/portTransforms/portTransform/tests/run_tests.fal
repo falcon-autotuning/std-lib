@@ -10,7 +10,7 @@ import "../../../../physics/units/symbolUnit/symbolUnit.fal";
 routine MakePort (string name) -> (InstrumentPort port) {
     Connection c  = Connection.NewPlungerGate(name);
     SymbolUnit volts = SymbolUnit.Volt();
-    port = InstrumentPort.NewKnob(name, c, volts, "test port");
+    port = InstrumentPort.NewKnob(name, c, volts, name, "instrument", Instrument.NewDcVoltageSource());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

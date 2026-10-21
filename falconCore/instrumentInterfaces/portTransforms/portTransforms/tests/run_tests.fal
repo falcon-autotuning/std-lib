@@ -7,6 +7,13 @@ import "../../../../math/analyticFunction/analyticFunction.fal";
 import "../../../../physics/deviceStructures/connection/connection.fal";
 import "../../../../physics/units/symbolUnit/symbolUnit.fal";
 
+
+routine MakePort (string name) -> (InstrumentPort port) {
+    Connection c  = Connection.NewPlungerGate(name);
+    SymbolUnit volts = SymbolUnit.Volt();
+    port = InstrumentPort.NewKnob(name, c, volts, name, "instrument", Instrument.NewDcVoltageSource());
+}
+
 autotuner PortTransformsConstruction -> (int passed, int failed) {
     passed = 0; failed = 0;
     start -> __init;
@@ -21,7 +28,7 @@ autotuner PortTransformsConstruction -> (int passed, int failed) {
     state test_new_with_one (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
+        InstrumentPort port   = MakePort("P1");
         PortTransform pt = PortTransform.IdentityTranform(port);
         Array<PortTransform> arr = Array.New();
         arr.PushBack(pt);
@@ -38,7 +45,7 @@ autotuner PortTransformsListOps -> (int passed, int failed) {
     state test_push_back (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
+        InstrumentPort port   = MakePort("P1");
         PortTransform pt = PortTransform.IdentityTranform(port);
         Array<PortTransform> arr = Array.New();
         PortTransforms pts = PortTransforms.New(arr);
@@ -50,7 +57,7 @@ autotuner PortTransformsListOps -> (int passed, int failed) {
     state test_get_index (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
+        InstrumentPort port   = MakePort("P1");
         PortTransform pt = PortTransform.ConstantTransform(port, 1.5);
         Array<PortTransform> arr = Array.New();
         arr.PushBack(pt);
@@ -76,7 +83,7 @@ autotuner PortTransformsEquality -> (int passed, int failed) {
     state test_not_equal (TestRunner runner, TestContext t) {
         Connection c = Connection.NewPlungerGate("P1");
         SymbolUnit v = SymbolUnit.Volt();
-        InstrumentPort port = InstrumentPort.NewKnob("P1", c, v, "test");
+        InstrumentPort port   = MakePort("P1");
         PortTransform pt = PortTransform.ConstantTransform(port, 1.0);
         Array<PortTransform> arr1 = Array.New();
         arr1.PushBack(pt);

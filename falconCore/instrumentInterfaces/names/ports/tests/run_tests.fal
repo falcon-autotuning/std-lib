@@ -12,13 +12,13 @@ import "../../../../../strings/strings.fal";
 routine MakeKnob (string name) -> (InstrumentPort port) {
     Connection c  = Connection.NewPlungerGate(name);
     SymbolUnit v  = SymbolUnit.Volt();
-    port          = InstrumentPort.NewKnob(name, c, v, name);
+    port          = InstrumentPort.NewKnob(name, c, v, name, "instrument", Instrument.NewDcVoltageSource());
 }
 
 routine MakeMeter (string name) -> (InstrumentPort port) {
     Connection c  = Connection.NewOhmic(name);
     SymbolUnit a  = SymbolUnit.Ampere();
-    port          = InstrumentPort.NewMeter(name, c, a, name);
+    port          = InstrumentPort.NewMeter(name, c, a, name, "other", Instrument.NewAmnmeter());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -223,6 +223,253 @@ autotuner PortsJSON -> (int passed, int failed) {
         string json    = orig.ToJSON();
         Ports restored = Ports.FromJSON(json);
         Error err = t.ExpectTrue(orig.Equal(restored), "FromJSON(ToJSON(ports)) round-trips");
+        -> __end(runner, t);
+    }
+}
+
+autotuner PortsQueryMatching -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_match_default_name (TestRunner runner, TestContext t) {
+        InstrumentPort p1 = MakeKnob("P1");
+        InstrumentPort p2 = MakeKnob("P2");
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(p1);
+        arr.PushBack(p2);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetDefaultName("P2");
+
+        Error err = ports.IsQueryMatch(query);
+
+        Error check = t.ExpectTrue(
+            err == nil,
+            "Default-name query finds matching port");
+
+        -> __end(runner, t);
+    }
+
+    state test_find_default_name_match (TestRunner runner, TestContext t) {
+        InstrumentPort p1 = MakeKnob("P1");
+        InstrumentPort p2 = MakeKnob("P2");
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(p1);
+        arr.PushBack(p2);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetDefaultName("P2");
+
+        InstrumentPort match =
+            ports.FindQueryMatch(query);
+
+        Error err = t.ExpectStrEq(
+            "P2",
+            match.DefaultName(),
+            "FindQueryMatch returns correct port");
+
+        -> __end(runner, t);
+    }
+
+    state test_match_connection (TestRunner runner, TestContext t) {
+        Connection p1conn = Connection.NewPlungerGate("P1");
+        Connection p2conn = Connection.NewPlungerGate("P2");
+
+        InstrumentPort p1 =
+            InstrumentPort.NewKnob(
+                "P1",
+                p1conn,
+                SymbolUnit.Volt(),
+                "p1",
+                "",
+                Instrument.NewDcVoltageSource());
+
+        InstrumentPort p2 =
+            InstrumentPort.NewKnob(
+                "P2",
+                p2conn,
+                SymbolUnit.Volt(),
+                "p2",
+                "",
+                Instrument.NewDcVoltageSource());
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(p1);
+        arr.PushBack(p2);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetConnection(p2conn);
+
+        Error err = ports.IsQueryMatch(query);
+
+        Error check = t.ExpectTrue(
+            err==nil,
+            "Connection query matches");
+
+        -> __end(runner, t);
+    }
+
+    state test_match_instrument_type (TestRunner runner, TestContext t) {
+        InstrumentPort knob =
+            InstrumentPort.NewKnob(
+                "P1",
+                Connection.NewPlungerGate("P1"),
+                SymbolUnit.Volt(),
+                "knob",
+                "",
+                Instrument.NewDcVoltageSource());
+
+        InstrumentPort meter =
+            InstrumentPort.NewMeter(
+                "I1",
+                Connection.NewOhmic("I1"),
+                SymbolUnit.Ampere(),
+                "meter",
+                "",
+                Instrument.NewAmnmeter());
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(knob);
+        arr.PushBack(meter);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetInstrument(
+            Instrument.NewAmnmeter());
+
+        InstrumentPort result =
+            ports.FindQueryMatch(query);
+
+        Error err = t.ExpectTrue(
+            result.InstrumentType().IsAmnmeter(),
+            "Instrument query returns amnmeter");
+
+        -> __end(runner, t);
+    }
+
+    state test_match_scope (TestRunner runner, TestContext t) {
+
+        InstrumentPort setting =
+            InstrumentPort.NewSetting(
+                "sample_rate",
+                nil,
+                SymbolUnit.Hertz(),
+                "rate",
+                "",
+                Instrument.NewDcVoltageSource(),
+                Scope.NewGlobalScope(),
+                Access.NewReadWriteAccess(),
+                Characteristic.NewSampleRate());
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(setting);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetScope(
+            Scope.NewGlobalScope());
+
+        Error err = ports.IsQueryMatch(query);
+
+        Error check = t.ExpectTrue(
+            err==nil,
+            "Scope query matches");
+
+        -> __end(runner, t);
+    }
+
+    state test_match_access (TestRunner runner, TestContext t) {
+
+        InstrumentPort setting =
+            InstrumentPort.NewSetting(
+                "sample_rate",
+                nil,
+                SymbolUnit.Hertz(),
+                "rate",
+                "",
+                Instrument.NewDcVoltageSource(),
+                Scope.NewLocalScope(),
+                Access.NewReadAccess(),
+                Characteristic.NewSampleRate());
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(setting);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetAccess(
+            Access.NewReadAccess());
+
+        Error err = ports.IsQueryMatch(query);
+
+        Error check = t.ExpectTrue(
+            err==nil,
+            "Access query matches");
+
+        -> __end(runner, t);
+    }
+
+    state test_match_characteristic (TestRunner runner, TestContext t) {
+
+        InstrumentPort setting =
+            InstrumentPort.NewSetting(
+                "sample_rate",
+                nil,
+                SymbolUnit.Hertz(),
+                "rate",
+                "",
+                Instrument.NewDcVoltageSource(),
+                Scope.NewLocalScope(),
+                Access.NewReadWriteAccess(),
+                Characteristic.NewSampleRate());
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(setting);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetCharacteristic(
+            Characteristic.NewSampleRate());
+
+        InstrumentPort result =
+            ports.FindQueryMatch(query);
+
+        Error err = t.ExpectTrue(
+            result.Characteristic().IsSampleRate(),
+            "Characteristic query returns correct setting");
+
+        -> __end(runner, t);
+    }
+
+    state test_no_match_returns_error (TestRunner runner, TestContext t) {
+        InstrumentPort p1 = MakeKnob("P1");
+
+        Array<InstrumentPort> arr = Array.New();
+        arr.PushBack(p1);
+
+        Ports ports = Ports.New(arr);
+
+        PortQuery query = PortQuery.New();
+        query.SetDefaultName("DOES_NOT_EXIST");
+
+        Error err = ports.IsQueryMatch(query);
+
+        Error check = t.ExpectFalse(
+            err == nil,
+            "Missing query returns error");
+
         -> __end(runner, t);
     }
 }

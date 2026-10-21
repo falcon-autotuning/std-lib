@@ -1,10 +1,11 @@
 #include "falcon-core/instrument_interfaces/names/InstrumentPort.hpp"
-#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/instrument_interfaces/names/Ports.hpp"
 #include "falcon-core/physics/device_structures/Connection.hpp"
+#include "falcon-core/physics/units/SymbolUnit.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
+#include <optional>
 #include <stdexcept>
-#include <vector>
 
 using namespace falcon::typing;
 using namespace falcon::typing::ffi::wrapper;
@@ -16,10 +17,93 @@ using InstrumentPort =
 using InstrumentPortSP = std::shared_ptr<InstrumentPort>;
 using Connection = falcon_core::physics::device_structures::Connection;
 using ConnectionSP = std::shared_ptr<Connection>;
+using SymbolUnit = falcon_core::physics::units::SymbolUnit;
+using SymbolUnitSP = std::shared_ptr<SymbolUnit>;
+
+using Scope = falcon_core::instrument_interfaces::names::Scope;
+using Access = falcon_core::instrument_interfaces::names::Access;
+using Instrument = falcon_core::instrument_interfaces::names::Instrument;
+using Characteristic =
+    falcon_core::instrument_interfaces::names::InstrumentCharacteristic;
+
+struct ScopeWrapper {
+  Scope value;
+};
+
+struct AccessWrapper {
+  Access value;
+};
+
+struct InstrumentWrapper {
+  Instrument value;
+};
+
+struct CharacteristicWrapper {
+  Characteristic value;
+};
+
+using ScopeWrapperSP = std::shared_ptr<ScopeWrapper>;
+using AccessWrapperSP = std::shared_ptr<AccessWrapper>;
+using InstrumentWrapperSP = std::shared_ptr<InstrumentWrapper>;
+using CharacteristicWrapperSP = std::shared_ptr<CharacteristicWrapper>;
+
+struct PortQuery {
+  std::optional<std::string> default_name;
+  ConnectionSP connection;
+  SymbolUnitSP unit;
+  std::optional<std::string> instrument_name;
+  std::optional<Access> access;
+  std::optional<Scope> scope;
+  std::optional<Instrument> instrument;
+  std::optional<Characteristic> characteristic;
+};
+
+using PortQuerySP = std::shared_ptr<PortQuery>;
+static bool matches_query(const PortQuery &query,
+                          const InstrumentPortSP &port) {
+
+  if (query.default_name && port->default_name() != *query.default_name)
+    return false;
+
+  if (query.instrument_name &&
+      port->instrument_name() != *query.instrument_name)
+    return false;
+
+  if (query.instrument && port->instrument_type() != *query.instrument)
+    return false;
+
+  if (query.scope && port->scope() != *query.scope)
+    return false;
+
+  if (query.access && port->access() != *query.access)
+    return false;
+
+  if (query.characteristic && port->characteristic() != *query.characteristic)
+    return false;
+
+  if (query.connection && *port->pseudo_name() != *query.connection)
+    return false;
+
+  if (query.unit && *port->units() != *query.unit)
+    return false;
+
+  return true;
+}
 
 // ── helpers
 // ───────────────────────────────────────────────────────────────────
+static void pack_port_query(PortQuerySP query, FalconResultSlot *out,
+                            int32_t *oc) {
 
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_OPAQUE;
+  out[0].value.opaque.type_name = "PortQuery";
+  out[0].value.opaque.ptr = new PortQuerySP(std::move(query));
+  out[0].value.opaque.deleter = [](void *p) {
+    delete static_cast<PortQuerySP *>(p);
+  };
+  *oc = 1;
+}
 static void pack_opaque_ports(PortsSP ports, FalconResultSlot *out,
                               int32_t *oc) {
   out[0] = {};
@@ -127,7 +211,7 @@ static void pack_instrument_port(InstrumentPortSP ld, FalconResultSlot *out,
                                  int32_t *oc) {
   out[0] = {};
   out[0].tag = FALCON_TYPE_OPAQUE;
-  out[0].value.opaque.type_name = "LabelledDomain";
+  out[0].value.opaque.type_name = "InstrumentPort";
   out[0].value.opaque.ptr = new InstrumentPortSP(std::move(ld));
   out[0].value.opaque.deleter = [](void *p) {
     delete static_cast<InstrumentPortSP *>(p);
@@ -139,7 +223,10 @@ extern "C" {
 
 // ── Constructor
 // ───────────────────────────────────────────────────────────────
-
+void STRUCTPortQueryNew(const FalconParamEntry *, int32_t,
+                        FalconResultSlot *out, int32_t *oc) {
+  pack_port_query(std::make_shared<PortQuery>(), out, oc);
+}
 // New(ports: Array<InstrumentPort>) -> (Ports ports)
 void STRUCTPortsNew(const FalconParamEntry *params, int32_t param_count,
                     FalconResultSlot *out, int32_t *oc) {
@@ -185,6 +272,120 @@ void STRUCTPortsNew(const FalconParamEntry *params, int32_t param_count,
 // ── Accessors
 // ─────────────────────────────────────────────────────────────────
 
+void STRUCTPortQuerySetDefaultName(const FalconParamEntry *params,
+                                   int32_t param_count, FalconResultSlot *out,
+                                   int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  auto pm = unpack_params(params, param_count);
+
+  query->default_name = std::get<std::string>(pm.at("defaultName"));
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+void STRUCTPortQuerySetConnection(const FalconParamEntry *params,
+                                  int32_t param_count, FalconResultSlot *out,
+                                  int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  query->connection = get_opaque<Connection>(params, param_count, "conn");
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+// SetUnit(this: PortQuery, unit: SymbolUnit) -> ()
+void STRUCTPortQuerySetUnit(const FalconParamEntry *params, int32_t param_count,
+                            FalconResultSlot *out, int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  query->unit = get_opaque<SymbolUnit>(params, param_count, "unit");
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+// SetInstrumentName(this: PortQuery, instrumentName: string) -> ()
+void STRUCTPortQuerySetInstrumentName(const FalconParamEntry *params,
+                                      int32_t param_count,
+                                      FalconResultSlot *out, int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  auto pm = unpack_params(params, param_count);
+
+  query->instrument_name = std::get<std::string>(pm.at("instrumentName"));
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+// SetAccess(this: PortQuery, access: Access) -> ()
+void STRUCTPortQuerySetAccess(const FalconParamEntry *params,
+                              int32_t param_count, FalconResultSlot *out,
+                              int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  auto access = get_opaque<AccessWrapper>(params, param_count, "access");
+
+  query->access = access->value;
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+// SetScope(this: PortQuery, scope: Scope) -> ()
+void STRUCTPortQuerySetScope(const FalconParamEntry *params,
+                             int32_t param_count, FalconResultSlot *out,
+                             int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  auto scope = get_opaque<ScopeWrapper>(params, param_count, "scope");
+
+  query->scope = scope->value;
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+// SetInstrument(this: PortQuery, inst: Instrument) -> ()
+void STRUCTPortQuerySetInstrument(const FalconParamEntry *params,
+                                  int32_t param_count, FalconResultSlot *out,
+                                  int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  auto inst = get_opaque<InstrumentWrapper>(params, param_count, "inst");
+
+  query->instrument = inst->value;
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
+// SetCharacteristic(this: PortQuery, char: Characteristic) -> ()
+void STRUCTPortQuerySetCharacteristic(const FalconParamEntry *params,
+                                      int32_t param_count,
+                                      FalconResultSlot *out, int32_t *oc) {
+
+  auto query = get_opaque<PortQuery>(params, param_count, "this");
+
+  auto characteristic =
+      get_opaque<CharacteristicWrapper>(params, param_count, "char");
+
+  query->characteristic = characteristic->value;
+
+  out[0] = {};
+  out[0].tag = FALCON_TYPE_NIL;
+  *oc = 1;
+}
 // Ports(this: Ports) -> (Array<InstrumentPort> ports)
 void STRUCTPortsPorts(const FalconParamEntry *params, int32_t param_count,
                       FalconResultSlot *out, int32_t *oc) {
@@ -380,6 +581,63 @@ void STRUCTPortsErase(const FalconParamEntry *params, int32_t param_count,
   out[0] = {};
   out[0].tag = FALCON_TYPE_NIL;
   *oc = 1;
+}
+
+// IsQueryMatch(this: Ports, query: PortQuery) -> (Error err)
+void STRUCTPortsIsQueryMatch(const FalconParamEntry *params,
+                             int32_t param_count, FalconResultSlot *out,
+                             int32_t *oc) {
+
+  try {
+    auto ports = get_opaque<Ports>(params, param_count, "this");
+
+    auto query = get_opaque<PortQuery>(params, param_count, "query");
+
+    bool found = false;
+
+    auto raw_ports = *ports->ports();
+    for (const auto &port : raw_ports) {
+      if (matches_query(*query, port)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (found) {
+      out[0] = {};
+      out[0].tag = FALCON_TYPE_NIL;
+      *oc = 1;
+      return;
+    }
+
+    pack_results(
+        FunctionResult{nullptr,
+                       ErrorObject{"No InstrumentPort matches query", false}},
+        out, 16, oc);
+
+  } catch (const std::exception &e) {
+
+    pack_results(FunctionResult{nullptr, ErrorObject{e.what(), false}}, out, 16,
+                 oc);
+  }
+}
+
+void STRUCTPortsFindQueryMatch(const FalconParamEntry *params,
+                               int32_t param_count, FalconResultSlot *out,
+                               int32_t *oc) {
+
+  auto ports = get_opaque<Ports>(params, param_count, "this");
+
+  auto query = get_opaque<PortQuery>(params, param_count, "query");
+  auto raw_ports = *ports->ports();
+  for (const auto &port : raw_ports) {
+    if (matches_query(*query, port)) {
+      pack_instrument_port(port, out, oc);
+      return;
+    }
+  }
+
+  throw std::runtime_error("No InstrumentPort matched PortQuery");
 }
 
 } // extern "C"
