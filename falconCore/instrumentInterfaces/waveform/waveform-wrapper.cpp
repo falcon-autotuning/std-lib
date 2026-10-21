@@ -106,6 +106,176 @@ get_int_axes(const ParameterMap &pm, const char *key) {
   return native;
 }
 
+static std::shared_ptr<
+    falcon_core::math::Axes<falcon_core::math::domains::CoupledLabelledDomain>>
+get_coupled_labelled_domain_axes(const ParameterMap &pm, const char *key) {
+
+  auto inst = std::get<std::shared_ptr<StructInstance>>(pm.at(key));
+
+  if (!inst) {
+    throw std::runtime_error(
+        std::string(
+            "get_coupled_labelled_domain_axes: null StructInstance for '") +
+        key + "'");
+  }
+
+  auto fields = inst->fields;
+
+  auto arr_it = fields->find("arr_");
+  if (arr_it == fields->end()) {
+    throw std::runtime_error(
+        std::string(
+            "get_coupled_labelled_domain_axes: missing arr_ field for '") +
+        key + "'");
+  }
+
+  auto arr_inst = std::get<std::shared_ptr<StructInstance>>(arr_it->second);
+
+  if (!arr_inst) {
+    throw std::runtime_error(
+        std::string("get_coupled_labelled_domain_axes: arr_ is null for '") +
+        key + "'");
+  }
+
+  if (!arr_inst->native_handle.has_value()) {
+    throw std::runtime_error(std::string("get_coupled_labelled_domain_axes: "
+                                         "Array has no native_handle for '") +
+                             key + "'");
+  }
+
+  auto arr =
+      std::static_pointer_cast<ArrayValue>(arr_inst->native_handle.value());
+
+  auto native = std::make_shared<falcon_core::math::Axes<
+      falcon_core::math::domains::CoupledLabelledDomain>>();
+
+  for (const auto &v : arr->elements) {
+
+    auto elem_inst = std::get<std::shared_ptr<StructInstance>>(v);
+
+    if (!elem_inst || !elem_inst->native_handle.has_value()) {
+      throw std::runtime_error(
+          "get_coupled_labelled_domain_axes: invalid element");
+    }
+
+    auto coupled = std::static_pointer_cast<
+        falcon_core::math::domains::CoupledLabelledDomain>(
+        elem_inst->native_handle.value());
+
+    native->push_back(coupled);
+  }
+
+  return native;
+}
+
+static std::shared_ptr<falcon_core::generic::Map<std::string, bool>>
+build_native_string_bool_map(const std::shared_ptr<StructInstance> &map_inst) {
+  auto native =
+      std::make_shared<falcon_core::generic::Map<std::string, bool>>();
+
+  auto keys_inst =
+      std::get<std::shared_ptr<StructInstance>>(map_inst->get_field("keys_"));
+
+  auto values_inst =
+      std::get<std::shared_ptr<StructInstance>>(map_inst->get_field("values_"));
+
+  auto keys =
+      std::static_pointer_cast<ArrayValue>(keys_inst->native_handle.value());
+
+  auto values =
+      std::static_pointer_cast<ArrayValue>(values_inst->native_handle.value());
+
+  if (keys->elements.size() != values->elements.size()) {
+    throw std::runtime_error(
+        "build_native_string_bool_map: key/value size mismatch");
+  }
+
+  for (size_t i = 0; i < keys->elements.size(); ++i) {
+
+    std::string key = std::get<std::string>(keys->elements[i]);
+
+    bool value = std::get<bool>(values->elements[i]);
+
+    native->insert(key, value);
+  }
+
+  return native;
+}
+
+static std::shared_ptr<
+    falcon_core::math::Axes<falcon_core::generic::Map<std::string, bool>>>
+get_map_bool_axes(const ParameterMap &pm, const char *key) {
+  auto inst = std::get<std::shared_ptr<StructInstance>>(pm.at(key));
+
+  auto arr_inst =
+      std::get<std::shared_ptr<StructInstance>>(inst->get_field("arr_"));
+
+  auto arr =
+      std::static_pointer_cast<ArrayValue>(arr_inst->native_handle.value());
+
+  auto native = std::make_shared<
+      falcon_core::math::Axes<falcon_core::generic::Map<std::string, bool>>>();
+
+  for (const auto &elem : arr->elements) {
+
+    auto map_inst = std::get<std::shared_ptr<StructInstance>>(elem);
+
+    auto map = build_native_string_bool_map(map_inst);
+
+    native->push_back(map);
+  }
+
+  return native;
+}
+
+static std::shared_ptr<falcon_core::generic::Map<std::string, bool>>
+get_map_string_bool(const std::shared_ptr<StructInstance> &inst) {
+  if (!inst) {
+    throw std::runtime_error("get_map_string_bool: null StructInstance");
+  }
+
+  auto keys_inst =
+      std::get<std::shared_ptr<StructInstance>>(inst->get_field("keys_"));
+
+  auto values_inst =
+      std::get<std::shared_ptr<StructInstance>>(inst->get_field("values_"));
+
+  if (!keys_inst || !keys_inst->native_handle.has_value()) {
+    throw std::runtime_error("get_map_string_bool: keys_ array invalid");
+  }
+
+  if (!values_inst || !values_inst->native_handle.has_value()) {
+    throw std::runtime_error("get_map_string_bool: values_ array invalid");
+  }
+
+  auto keys =
+      std::static_pointer_cast<ArrayValue>(keys_inst->native_handle.value());
+
+  auto values =
+      std::static_pointer_cast<ArrayValue>(values_inst->native_handle.value());
+
+  if (keys->elements.size() != values->elements.size()) {
+    throw std::runtime_error("get_map_string_bool: key/value size mismatch");
+  }
+
+  auto native =
+      std::make_shared<falcon_core::generic::Map<std::string, bool>>();
+
+  for (size_t i = 0; i < keys->elements.size(); ++i) {
+    native->insert(std::get<std::string>(keys->elements[i]),
+                   std::get<bool>(values->elements[i]));
+  }
+
+  return native;
+}
+
+static std::shared_ptr<falcon_core::generic::Map<std::string, bool>>
+get_map_string_bool(const ParameterMap &pm, const char *key) {
+  auto inst = std::get<std::shared_ptr<StructInstance>>(pm.at(key));
+
+  return get_map_string_bool(inst);
+}
+
 extern "C" {
 
 void SampleJSON(const FalconParamEntry *, int32_t, FalconResultSlot *out,
@@ -172,14 +342,12 @@ void STRUCTWaveformNewCartesianWaveform1D(const FalconParamEntry *params,
                                           FalconResultSlot *out, int32_t *oc) {
 
   auto pm = unpack_params(params, param_count);
+  auto increasing = get_map_string_bool(pm, "increasing");
 
   int division = static_cast<int>(std::get<int64_t>(pm.at("division")));
 
   auto axes = get_opaque<falcon_core::math::domains::CoupledLabelledDomain>(
       params, param_count, "sharedDomain");
-
-  auto increasing = get_opaque<falcon_core::generic::Map<std::string, bool>>(
-      params, param_count, "increasing");
 
   auto domain = get_opaque<falcon_core::math::domains::Domain>(
       params, param_count, "domain");
@@ -211,14 +379,12 @@ void STRUCTWaveformNewCartesianIdentityWaveform1D(
     int32_t *oc) {
 
   auto pm = unpack_params(params, param_count);
+  auto increasing = get_map_string_bool(pm, "increasing");
 
   int division = static_cast<int>(std::get<int64_t>(pm.at("division")));
 
   auto axes = get_opaque<falcon_core::math::domains::CoupledLabelledDomain>(
-      params, param_count, "axes");
-
-  auto increasing = get_opaque<falcon_core::generic::Map<std::string, bool>>(
-      params, param_count, "increasing");
+      params, param_count, "sharedDomain");
 
   auto domain = get_opaque<falcon_core::math::domains::Domain>(
       params, param_count, "domain");
@@ -236,14 +402,8 @@ void STRUCTWaveformNewCartesianWaveform(const FalconParamEntry *params,
 
   auto pm = unpack_params(params, param_count);
   auto divisions = get_int_axes(pm, "divisions");
-
-  auto axes = get_opaque<falcon_core::math::Axes<
-      falcon_core::math::domains::CoupledLabelledDomain>>(params, param_count,
-                                                          "axes");
-
-  auto increasing = get_opaque<
-      falcon_core::math::Axes<falcon_core::generic::Map<std::string, bool>>>(
-      params, param_count, "increasing");
+  auto axes = get_coupled_labelled_domain_axes(pm, "axes");
+  auto increasing = get_map_bool_axes(pm, "increasing");
 
   auto domain = get_opaque<falcon_core::math::domains::Domain>(
       params, param_count, "domain");
@@ -261,7 +421,6 @@ void STRUCTWaveformNewCartesianWaveform(const FalconParamEntry *params,
 
     transforms->push_back(pt);
   }
-
   auto wf = Waveform::CartesianWaveform(divisions, axes, increasing, transforms,
                                         domain);
 
@@ -276,14 +435,8 @@ void STRUCTWaveformNewCartesianIdentityWaveform(const FalconParamEntry *params,
 
   auto pm = unpack_params(params, param_count);
   auto divisions = get_int_axes(pm, "divisions");
-
-  auto axes = get_opaque<falcon_core::math::Axes<
-      falcon_core::math::domains::CoupledLabelledDomain>>(params, param_count,
-                                                          "axes");
-
-  auto increasing = get_opaque<
-      falcon_core::math::Axes<falcon_core::generic::Map<std::string, bool>>>(
-      params, param_count, "increasing");
+  auto axes = get_coupled_labelled_domain_axes(pm, "axes");
+  auto increasing = get_map_bool_axes(pm, "increasing");
 
   auto domain = get_opaque<falcon_core::math::domains::Domain>(
       params, param_count, "domain");
@@ -301,14 +454,8 @@ void STRUCTWaveformNewCartesianWaveform2D(const FalconParamEntry *params,
 
   auto pm = unpack_params(params, param_count);
   auto divisions = get_int_axes(pm, "divisions");
-
-  auto axes = get_opaque<falcon_core::math::Axes<
-      falcon_core::math::domains::CoupledLabelledDomain>>(params, param_count,
-                                                          "axes");
-
-  auto increasing = get_opaque<
-      falcon_core::math::Axes<falcon_core::generic::Map<std::string, bool>>>(
-      params, param_count, "increasing");
+  auto axes = get_coupled_labelled_domain_axes(pm, "axes");
+  auto increasing = get_map_bool_axes(pm, "increasing");
 
   auto domain = get_opaque<falcon_core::math::domains::Domain>(
       params, param_count, "domain");
@@ -340,14 +487,8 @@ void STRUCTWaveformNewCartesianIdentityWaveform2D(
 
   auto pm = unpack_params(params, param_count);
   auto divisions = get_int_axes(pm, "divisions");
-
-  auto axes = get_opaque<falcon_core::math::Axes<
-      falcon_core::math::domains::CoupledLabelledDomain>>(params, param_count,
-                                                          "axes");
-
-  auto increasing = get_opaque<
-      falcon_core::math::Axes<falcon_core::generic::Map<std::string, bool>>>(
-      params, param_count, "increasing");
+  auto axes = get_coupled_labelled_domain_axes(pm, "axes");
+  auto increasing = get_map_bool_axes(pm, "increasing");
 
   auto domain = get_opaque<falcon_core::math::domains::Domain>(
       params, param_count, "domain");
