@@ -1,7 +1,17 @@
 import "../../../../../testing/testing.fal";
+import "../../../../../collections/array/array.fal";
 import "../measurementResponse.fal";
-import "../../../../math/arrays/labelledMeasuredArrays/labelledMeasuredArrays.fal";
 import "../../../../math/arrays/labelledMeasuredArray/labelledMeasuredArray.fal";
+import "../../../../generic/farray/farray.fal";
+
+routine FA (Array<float> vals) -> (farray::FArray arr) {
+    arr = farray::FArrayTestHelpers.NewFromFloats(vals);
+}
+
+routine LMA (Array<float> vals) -> (labelledMeasuredArray::LabelledMeasuredArray marray) {
+    farray::FArray fa = FA(vals);
+    marray = labelledMeasuredArray::LabelledMeasuredArray.New(fa);
+}
 
 autotuner MeasurementResponseJSON -> (int passed, int failed) {
     passed = 0;
@@ -44,7 +54,7 @@ autotuner MeasurementResponseJSON -> (int passed, int failed) {
         -> __end(runner, t);
     }
 
-    state test_arrays_returns_labelled_arrays (
+    state test_arrays_returns_array (
         TestRunner runner,
         TestContext t
     ) {
@@ -53,35 +63,36 @@ autotuner MeasurementResponseJSON -> (int passed, int failed) {
         MeasurementResponse resp =
             MeasurementResponse.FromJSON(sample);
 
-        LabelledMeasuredArrays arrays = resp.Arrays();
-
-        Error err = t.ExpectTrue(
-            arrays.IsMeasuredArrays(),
-            "Arrays() returns measured arrays");
-
-        err = t.ExpectFalse(
-            arrays.IsControlArrays(),
-            "Arrays() is not control arrays");
-
-        -> __end(runner, t);
-    }
-
-    state test_arrays_survive_method_dispatch (
-        TestRunner runner,
-        TestContext t
-    ) {
-        string sample = SampleJSON();
-
-        MeasurementResponse resp =
-            MeasurementResponse.FromJSON(sample);
-
-        LabelledMeasuredArrays arrays = resp.Arrays();
+        Array<labelledMeasuredArray::LabelledMeasuredArray> arrays = resp.Arrays();
 
         int size = arrays.Size();
 
         Error err = t.ExpectTrue(
             size >= 0,
-            "LabelledArrays method dispatch works");
+            "Arrays() returns Array with non-negative size");
+
+        -> __end(runner, t);
+    }
+
+    state test_new_with_arrays (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<float> vals = Array.New();
+        vals.PushBack(1.0);
+        vals.PushBack(2.0);
+        labelledMeasuredArray::LabelledMeasuredArray lma = LMA(vals);
+
+        Array<labelledMeasuredArray::LabelledMeasuredArray> arr = Array.New();
+        arr.PushBack(lma);
+
+        MeasurementResponse resp = MeasurementResponse.New(arr);
+        Array<labelledMeasuredArray::LabelledMeasuredArray> out_arr = resp.Arrays();
+
+        Error err = t.ExpectIntEq(
+            1,
+            out_arr.Size(),
+            "MeasurementResponse created with 1 array has Size 1");
 
         -> __end(runner, t);
     }

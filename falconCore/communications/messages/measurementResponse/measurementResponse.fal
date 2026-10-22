@@ -1,11 +1,12 @@
 import (
-"../../../math/arrays/labelledMeasuredArrays/labelledMeasuredArrays.fal"
+  "../../../../collections/array/array.fal"
+  "../../../math/arrays/labelledMeasuredArray/labelledMeasuredArray.fal"
 )
 ffimport "measurement-response-wrapper.cpp" ("-I/opt/falcon/include/") ("-L/opt/falcon/lib" "-lfalcon_core_cpp")
 routine SampleJSON () -> (string json)
 struct MeasurementResponse { 
-    routine New (array::Array<LabelledMeasuredArray> arrays) -> (MeasurementResponse response)
-    routine Arrays -> (array::Array<LabelledMeasuredArray> arrays)
+    routine New (array::Array<labelledMeasuredArray::LabelledMeasuredArray> arrays) -> (MeasurementResponse response)
+    routine Arrays -> (array::Array<labelledMeasuredArray::LabelledMeasuredArray> arrays)
     routine Equal (MeasurementResponse other) -> (bool equal)
     routine NotEqual (MeasurementResponse other) -> (bool notequal)
     routine FromJSON (string json) -> (MeasurementResponse response)
