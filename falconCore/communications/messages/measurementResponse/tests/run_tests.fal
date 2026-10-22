@@ -1,24 +1,88 @@
 import "../../../../../testing/testing.fal";
 import "../measurementResponse.fal";
+import "../../../../math/arrays/labelledMeasuredArrays/labelledMeasuredArrays.fal";
+import "../../../../math/arrays/labelledMeasuredArray/labelledMeasuredArray.fal";
 
 autotuner MeasurementResponseJSON -> (int passed, int failed) {
-    passed = 0; failed = 0;
+    passed = 0;
+    failed = 0;
+
     start -> __init;
 
-    state test_roundtrip (TestRunner runner, TestContext t) {
+    state test_roundtrip (
+        TestRunner runner,
+        TestContext t
+    ) {
         string sample                = SampleJSON();
         MeasurementResponse orig     = MeasurementResponse.FromJSON(sample);
-        string              json     = orig.ToJSON();
+        string json                  = orig.ToJSON();
         MeasurementResponse restored = MeasurementResponse.FromJSON(json);
-        Error err = t.ExpectTrue(orig.Equal(restored), "MeasurementResponse JSON roundtrip");
+
+        Error err = t.ExpectTrue(
+            orig.Equal(restored),
+            "MeasurementResponse JSON roundtrip");
+
         -> __end(runner, t);
     }
 
-    state test_to_json_non_empty (TestRunner runner, TestContext t) {
-        string sample                = SampleJSON();
-        MeasurementResponse resp = MeasurementResponse.FromJSON(sample);
+    state test_to_json_non_empty (
+        TestRunner runner,
+        TestContext t
+    ) {
+        string sample = SampleJSON();
+
+        MeasurementResponse resp =
+            MeasurementResponse.FromJSON(sample);
+
         string json = resp.ToJSON();
-        Error err = t.ExpectStrNe("", json, "ToJSON is non-empty");
+
+        Error err = t.ExpectStrNe(
+            "",
+            json,
+            "ToJSON is non-empty");
+
+        -> __end(runner, t);
+    }
+
+    state test_arrays_returns_labelled_arrays (
+        TestRunner runner,
+        TestContext t
+    ) {
+        string sample = SampleJSON();
+
+        MeasurementResponse resp =
+            MeasurementResponse.FromJSON(sample);
+
+        LabelledMeasuredArrays arrays = resp.Arrays();
+
+        Error err = t.ExpectTrue(
+            arrays.IsMeasuredArrays(),
+            "Arrays() returns measured arrays");
+
+        err = t.ExpectFalse(
+            arrays.IsControlArrays(),
+            "Arrays() is not control arrays");
+
+        -> __end(runner, t);
+    }
+
+    state test_arrays_survive_method_dispatch (
+        TestRunner runner,
+        TestContext t
+    ) {
+        string sample = SampleJSON();
+
+        MeasurementResponse resp =
+            MeasurementResponse.FromJSON(sample);
+
+        LabelledMeasuredArrays arrays = resp.Arrays();
+
+        int size = arrays.Size();
+
+        Error err = t.ExpectTrue(
+            size >= 0,
+            "LabelledArrays method dispatch works");
+
         -> __end(runner, t);
     }
 }
