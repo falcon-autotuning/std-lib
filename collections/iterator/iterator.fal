@@ -1,0 +1,83 @@
+import "../array/array.fal";
+
+// ---------------------------------------------------------------------------
+// Iterator<T> — sequential traversal of an Array.
+//
+// Iterators maintain a position within an array and provide routines for
+// navigating between elements and evaluating the value at the current
+// position.
+//
+// Type parameters:
+//   T — element type stored in the array
+//
+// Usage:
+//   import "libs/collections/iterator/iterator.fal";
+//
+//   Iterator<int> it = Iterator.New(values);
+// ---------------------------------------------------------------------------
+struct Iterator <T> {
+    int index_;
+    Array<T> contents_;
+
+    // Creates a new iterator over the provided array.
+    // The iterator is initially positioned at the first element.
+    routine New (Array<T> contents) -> (Iterator<T> it) {
+        it.index_ = 0;
+        it.contents_ = contents;
+    }
+
+    // Moves the iterator to the first element of the array.
+    routine Beginning -> () {
+        this.index_ = 0;
+    }
+
+    // Moves the iterator to the final element of the array.
+    routine End -> () {
+        this.index_ = this.contents_.Size() - 1;
+    }
+
+    // Returns the current position of the iterator.
+    routine CurrentIndex -> (int index) {
+        index = this.index_;
+    }
+
+    // Returns true if the iterator can advance to a later element.
+    routine HasNext -> (bool has_next) {
+        int size = this.contents_.Size();
+        has_next = (this.index_ < size - 1);
+    }
+
+    // Returns true if the iterator can move to an earlier element.
+    routine HasPrevious -> (bool has_previous) {
+        has_previous = (this.index_ > 0);
+    }
+
+    // Advances the iterator to the next element.
+    // Returns true if the move occurred.
+    // Returns false if the iterator is already positioned
+    // at the final element.
+    routine Increment -> (bool success) {
+        success = this.HasNext();
+
+        if (success) {
+            this.index_ = this.index_ + 1;
+        }
+    }
+
+    // Moves the iterator to the previous element.
+    // Returns true if the move occurred.
+    // Returns false if the iterator is already positioned
+    // at the first element.
+    routine Decrement -> (bool success) {
+        success = this.HasPrevious();
+
+        if (success) {
+            this.index_ = this.index_ - 1;
+        }
+    }
+
+    // Returns the element at the current iterator position.
+    routine Evaluate -> (T value) {
+        value = this.contents_.GetIndex(this.index_);
+    }
+}

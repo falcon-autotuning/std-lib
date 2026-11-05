@@ -1,0 +1,368 @@
+import "../../../testing/testing.fal";
+import "../../array/array.fal";
+import "../iterator.fal";
+
+// Test struct used to verify Iterator<T> works
+// with user-defined Falcon types.
+struct TestPoint {
+    int x_;
+    int y_;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 1: Construction and Position
+// ─────────────────────────────────────────────────────────────────────────────
+
+autotuner ConstructionTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_new_starts_at_zero (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        int idx   = it.CurrentIndex();
+        Error err = t.ExpectIntEq(idx, 0,
+                                  "New iterator begins at index 0");
+        -> __end(runner, t);
+    }
+
+    state test_beginning_moves_to_start (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(1);
+        values.PushBack(2);
+        values.PushBack(3);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool success = it.Increment();
+        success = it.Increment();
+
+        it.Beginning();
+
+        int idx   = it.CurrentIndex();
+        Error err = t.ExpectIntEq(idx, 0,
+                                  "Beginning resets iterator to index 0");
+        -> __end(runner, t);
+    }
+
+    state test_end_moves_to_last_index (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(1);
+        values.PushBack(2);
+        values.PushBack(3);
+
+        Iterator<int> it = Iterator.New(values);
+
+        it.End();
+
+        int idx   = it.CurrentIndex();
+        Error err = t.ExpectIntEq(idx, 2,
+                                  "End moves iterator to final element");
+        -> __end(runner, t);
+    }
+
+    state test_end_then_evaluate (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(11);
+        values.PushBack(22);
+        values.PushBack(33);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        int value = it.Evaluate();
+
+        Error err = t.ExpectIntEq(value, 33,
+                                  "Evaluate returns final element after End");
+        -> __end(runner, t);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 2: Evaluate and Navigation
+// ─────────────────────────────────────────────────────────────────────────────
+
+autotuner NavigationTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_evaluate_first_element (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        int value = it.Evaluate();
+
+        Error err = t.ExpectIntEq(value, 10,
+                                  "Evaluate returns first element");
+        -> __end(runner, t);
+    }
+
+    state test_has_next_true (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool has   = it.HasNext();
+        Error err  = t.ExpectTrue(has,
+                                  "HasNext true when later element exists");
+        -> __end(runner, t);
+    }
+
+    state test_has_previous_false_at_start (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool has   = it.HasPrevious();
+        Error err  = t.ExpectFalse(has,
+                                   "HasPrevious false at first element");
+        -> __end(runner, t);
+    }
+
+    state test_increment_succeeds (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool success = it.Increment();
+        int idx      = it.CurrentIndex();
+
+        Error err = t.ExpectTrue(success,
+                                 "Increment succeeds when next element exists");
+        err = t.ExpectIntEq(idx, 1,
+                            "Increment advances index");
+        -> __end(runner, t);
+    }
+
+    state test_increment_changes_current_value (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool success = it.Increment();
+        int value    = it.Evaluate();
+
+        Error err = t.ExpectIntEq(value, 20,
+                                  "Increment advances to next value");
+        -> __end(runner, t);
+    }
+
+    state test_decrement_succeeds (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        bool success = it.Decrement();
+        int idx      = it.CurrentIndex();
+
+        Error err = t.ExpectTrue(success,
+                                 "Decrement succeeds when previous exists");
+        err = t.ExpectIntEq(idx, 1,
+                            "Decrement moves iterator backward");
+        -> __end(runner, t);
+    }
+
+    state test_decrement_changes_current_value (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        bool success = it.Decrement();
+        int value    = it.Evaluate();
+
+        Error err = t.ExpectIntEq(value, 20,
+                                  "Decrement moves to previous value");
+        -> __end(runner, t);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 3: Boundary Conditions
+// ─────────────────────────────────────────────────────────────────────────────
+
+autotuner BoundaryTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_has_next_false_at_end (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(1);
+        values.PushBack(2);
+        values.PushBack(3);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        bool has   = it.HasNext();
+
+        Error err = t.ExpectFalse(has,
+                                  "HasNext false at final element");
+        -> __end(runner, t);
+    }
+
+    state test_has_previous_true_at_end (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(1);
+        values.PushBack(2);
+        values.PushBack(3);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        bool has   = it.HasPrevious();
+
+        Error err = t.ExpectTrue(has,
+                                 "HasPrevious true at final element");
+        -> __end(runner, t);
+    }
+
+    state test_increment_fails_at_end (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(1);
+        values.PushBack(2);
+        values.PushBack(3);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        bool success = it.Increment();
+        int idx      = it.CurrentIndex();
+
+        Error err = t.ExpectFalse(success,
+                                  "Increment fails at final element");
+        err = t.ExpectIntEq(idx, 2,
+                            "Failed increment does not modify index");
+        -> __end(runner, t);
+    }
+
+    state test_decrement_fails_at_beginning (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(1);
+        values.PushBack(2);
+        values.PushBack(3);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool success = it.Decrement();
+        int idx      = it.CurrentIndex();
+
+        Error err = t.ExpectFalse(success,
+                                  "Decrement fails at first element");
+        err = t.ExpectIntEq(idx, 0,
+                            "Failed decrement does not modify index");
+        -> __end(runner, t);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 4: Struct Support
+// ─────────────────────────────────────────────────────────────────────────────
+
+autotuner StructTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_struct_evaluate_first (TestRunner runner, TestContext t) {
+        Array<TestPoint> points = Array.New();
+
+        TestPoint p1;
+        p1.x_ = 10;
+        p1.y_ = 20;
+
+        TestPoint p2;
+        p2.x_ = 30;
+        p2.y_ = 40;
+
+        points.PushBack(p1);
+        points.PushBack(p2);
+
+        Iterator<TestPoint> it = Iterator.New(points);
+
+        TestPoint p = it.Evaluate();
+
+        Error err = t.ExpectIntEq(p.x_, 10,
+                                  "Struct x value preserved");
+        err = t.ExpectIntEq(p.y_, 20,
+                            "Struct y value preserved");
+        -> __end(runner, t);
+    }
+
+    state test_struct_increment (TestRunner runner, TestContext t) {
+        Array<TestPoint> points = Array.New();
+
+        TestPoint p1;
+        p1.x_ = 10;
+        p1.y_ = 20;
+
+        TestPoint p2;
+        p2.x_ = 30;
+        p2.y_ = 40;
+
+        points.PushBack(p1);
+        points.PushBack(p2);
+
+        Iterator<TestPoint> it = Iterator.New(points);
+
+        bool success = it.Increment();
+
+        TestPoint p = it.Evaluate();
+
+        Error err = t.ExpectIntEq(p.x_, 30,
+                                  "Iterator advances between struct elements");
+        err = t.ExpectIntEq(p.y_, 40,
+                            "Struct contents preserved after Increment");
+        -> __end(runner, t);
+    }
+
+    state test_struct_end_and_decrement (TestRunner runner, TestContext t) {
+        Array<TestPoint> points = Array.New();
+
+        TestPoint p1;
+        p1.x_ = 1;
+        p1.y_ = 2;
+
+        TestPoint p2;
+        p2.x_ = 3;
+        p2.y_ = 4;
+
+        points.PushBack(p1);
+        points.PushBack(p2);
+
+        Iterator<TestPoint> it = Iterator.New(points);
+
+        it.End();
+
+        bool success = it.Decrement();
+
+        TestPoint p = it.Evaluate();
+
+        Error err = t.ExpectIntEq(p.x_, 1,
+                                  "Decrement returns to first struct");
+        err = t.ExpectIntEq(p.y_, 2,
+                            "Correct struct returned after Decrement");
+        -> __end(runner, t);
+    }
+}
