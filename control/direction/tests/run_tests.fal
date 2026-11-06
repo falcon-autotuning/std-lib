@@ -1,0 +1,464 @@
+import "../../../testing/testing.fal";
+import "../direction.fal";
+
+routine P1() -> (Gate gate) {
+    gate = Gate.New("P1");
+}
+
+routine P2() -> (Gate gate) {
+    gate = Gate.New("P2");
+}
+
+autotuner DirectionStorageTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new_is_empty (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction dir = Direction.New();
+
+        Error err =
+            t.ExpectTrue(
+                dir.IsEmpty(),
+                "new direction is empty"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_set_get_coefficient (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction dir = Direction.New();
+
+        Gate p1 = P1();
+
+        dir.SetCoefficient(
+            p1,
+            5.0
+        );
+
+        float coeff =
+            dir.GetCoefficient(p1);
+
+        Error err =
+            t.ExpectFloatEq(
+                coeff,
+                5.0,
+                1.0e-6,
+                "set/get coefficient"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_contains_gate (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction dir = Direction.New();
+
+        Gate p1 = P1();
+
+        dir.SetCoefficient(
+            p1,
+            1.0
+        );
+
+        Error err =
+            t.ExpectTrue(
+                dir.ContainsGate(p1),
+                "contains inserted gate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_remove_gate (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction dir = Direction.New();
+
+        Gate p1 = P1();
+
+        dir.SetCoefficient(
+            p1,
+            1.0
+        );
+
+        dir.RemoveGate(p1);
+
+        Error err =
+            t.ExpectFalse(
+                dir.ContainsGate(p1),
+                "remove gate works"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_domain_size (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction dir = Direction.New();
+
+        dir.SetCoefficient(
+            P1(),
+            1.0
+        );
+
+        dir.SetCoefficient(
+            P2(),
+            2.0
+        );
+
+        Error err =
+            t.ExpectIntEq(
+                dir.DomainSize(),
+                2,
+                "domain size tracks insertions"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner DirectionLinearAlgebraTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_dot_product (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction a = Direction.New();
+        Direction b = Direction.New();
+
+        Gate p1 = P1();
+        Gate p2 = P2();
+
+        a.SetCoefficient(p1, 1.0);
+        a.SetCoefficient(p2, 2.0);
+
+        b.SetCoefficient(p1, 3.0);
+        b.SetCoefficient(p2, 4.0);
+
+        float dot =
+            a.Dot(b);
+
+        Error err =
+            t.ExpectFloatEq(
+                dot,
+                11.0,
+                1.0e-6,
+                "dot product"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_norm_squared (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            3.0
+        );
+
+        d.SetCoefficient(
+            P2(),
+            4.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                d.NormSquared(),
+                25.0,
+                1.0e-6,
+                "norm squared"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_norm (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            3.0
+        );
+
+        d.SetCoefficient(
+            P2(),
+            4.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                d.Norm(),
+                5.0,
+                1.0e-6,
+                "3-4-5 norm"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_scale (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        Gate p1 = P1();
+
+        d.SetCoefficient(p1, 2.0);
+
+        Direction scaled =
+            d.Scale(3.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                scaled.GetCoefficient(p1),
+                6.0,
+                1.0e-6,
+                "scale multiplies coefficients"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_add (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate p1 = P1();
+
+        Direction a = Direction.New();
+        Direction b = Direction.New();
+
+        a.SetCoefficient(p1, 2.0);
+        b.SetCoefficient(p1, 3.0);
+
+        Direction result =
+            a.Add(b);
+
+        Error err =
+            t.ExpectFloatEq(
+                result.GetCoefficient(p1),
+                5.0,
+                1.0e-6,
+                "addition"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_subtract (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate p1 = P1();
+
+        Direction a = Direction.New();
+        Direction b = Direction.New();
+
+        a.SetCoefficient(p1, 7.0);
+        b.SetCoefficient(p1, 3.0);
+
+        Direction result =
+            a.Subtract(b);
+
+        Error err =
+            t.ExpectFloatEq(
+                result.GetCoefficient(p1),
+                4.0,
+                1.0e-6,
+                "subtraction"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner DirectionIdentityTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_dot_self_equals_norm_squared (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            3.0
+        );
+
+        d.SetCoefficient(
+            P2(),
+            4.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                d.Dot(d),
+                d.NormSquared(),
+                1.0e-6,
+                "dot(v,v)=norm²(v)"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_normalize_unit_vector (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            3.0
+        );
+
+        d.SetCoefficient(
+            P2(),
+            4.0
+        );
+
+        d.Normalize();
+
+        Error err =
+            t.ExpectFloatEq(
+                d.Norm(),
+                1.0,
+                1.0e-6,
+                "normalized vector has norm 1"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_is_normalized_after_normalize (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            5.0
+        );
+
+        d.Normalize();
+
+        Error err =
+            t.ExpectTrue(
+                d.IsNormalized(
+                    1.0e-6
+                ),
+                "normalized vector reports normalized"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_projection_onto_self (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            2.0
+        );
+
+        Direction proj =
+            d.Project(d);
+
+        Error err =
+            t.ExpectFloatEq(
+                proj.Dot(d),
+                d.Dot(d),
+                1.0e-6,
+                "projection onto self"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_orthogonal_vectors (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction x = Direction.New();
+        Direction y = Direction.New();
+
+        x.SetCoefficient(
+            P1(),
+            1.0
+        );
+
+        y.SetCoefficient(
+            P2(),
+            1.0
+        );
+
+        Error err =
+            t.ExpectTrue(
+                x.IsOrthogonal(
+                    y,
+                    1.0e-6
+                ),
+                "basis vectors are orthogonal"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_scale_zero (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Direction d = Direction.New();
+
+        d.SetCoefficient(
+            P1(),
+            10.0
+        );
+
+        Direction result =
+            d.Scale(0.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                result.NormSquared(),
+                0.0,
+                1.0e-6,
+                "scale by zero produces zero vector"
+            );
+
+        -> __end(runner, t);
+    }
+}

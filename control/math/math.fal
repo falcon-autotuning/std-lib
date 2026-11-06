@@ -1,0 +1,15 @@
+ffimport "math-wrapper.cpp" ("-I/opt/falcon/include/" "-std=c++20") ("-L/opt/falcon/lib")
+
+routine Sqrt(
+    float value
+) -> (float result)
+
+routine Abs(
+    float value
+) -> (float result)
+
+routine Min(float lhs, float rhs)
+    -> (float value)
+
+routine Max(float lhs, float rhs)
+    -> (float value)

@@ -1,0 +1,439 @@
+import "../../../testing/testing.fal";
+import "../math.fal";
+
+autotuner SqrtTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_sqrt_zero (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Sqrt(0.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                0.0,
+                1.0e-6,
+                "sqrt(0) == 0"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_sqrt_one (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Sqrt(1.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                1.0,
+                1.0e-6,
+                "sqrt(1) == 1"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_sqrt_four (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Sqrt(4.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                2.0,
+                1.0e-6,
+                "sqrt(4) == 2"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_sqrt_nine (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Sqrt(9.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                3.0,
+                1.0e-6,
+                "sqrt(9) == 3"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_sqrt_fraction (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Sqrt(0.25);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                0.5,
+                1.0e-6,
+                "sqrt(0.25) == 0.5"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_sqrt_large (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Sqrt(1000000.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                1000.0,
+                1.0e-6,
+                "sqrt(1000000) == 1000"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner AbsTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_abs_zero (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Abs(0.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                0.0,
+                1.0e-6,
+                "abs(0) == 0"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_abs_positive (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Abs(12.5);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                12.5,
+                1.0e-6,
+                "abs(+x) == x"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_abs_negative (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Abs(-12.5);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                12.5,
+                1.0e-6,
+                "abs(-x) == x"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_abs_small_negative (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Abs(-0.0001);
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                0.0001,
+                1.0e-6,
+                "abs handles small negatives"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner MinTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_min_first_smaller (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Min(
+            1.0,
+            2.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                1.0,
+                1.0e-6,
+                "min chooses smaller first value"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_min_second_smaller (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Min(
+            2.0,
+            1.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                1.0,
+                1.0e-6,
+                "min chooses smaller second value"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_min_equal (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Min(
+            5.0,
+            5.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                5.0,
+                1.0e-6,
+                "min handles equal values"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_min_negative (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Min(
+            -10.0,
+            4.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                -10.0,
+                1.0e-6,
+                "min handles negative values"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner MaxTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_max_first_larger (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Max(
+            10.0,
+            5.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                10.0,
+                1.0e-6,
+                "max chooses larger first value"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_max_second_larger (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Max(
+            5.0,
+            10.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                10.0,
+                1.0e-6,
+                "max chooses larger second value"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_max_equal (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Max(
+            7.0,
+            7.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                7.0,
+                1.0e-6,
+                "max handles equal values"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_max_negative (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float value = Max(
+            -10.0,
+            -3.0
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                value,
+                -3.0,
+                1.0e-6,
+                "max handles negative values"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner MathIdentityTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_abs_symmetry (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float lhs = Abs(5.0);
+        float rhs = Abs(-5.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                lhs,
+                rhs,
+                1.0e-6,
+                "abs(x) == abs(-x)"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_min_max_identity (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float mn = Min(12.0, 5.0);
+        float mx = Max(12.0, 5.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                mn + mx,
+                17.0,
+                1.0e-6,
+                "min/max identity"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_sqrt_square_identity (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float x = 7.0;
+
+        float result =
+            Sqrt(x * x);
+
+        Error err =
+            t.ExpectFloatEq(
+                result,
+                x,
+                1.0e-6,
+                "sqrt(x*x) == x"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_max_greater_equal_min (
+        TestRunner runner,
+        TestContext t
+    ) {
+        float mn = Min(-2.0, 4.0);
+        float mx = Max(-2.0, 4.0);
+
+        Error err =
+            t.ExpectTrue(
+                mx >= mn,
+                "max(x,y) >= min(x,y)"
+            );
+
+        -> __end(runner, t);
+    }
+}

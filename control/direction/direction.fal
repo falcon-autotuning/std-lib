@@ -1,0 +1,127 @@
+import "../../collections/map/map.fal";
+import "../math/math.fal";
+ffimport "direction-wrapper.cpp" ("-I/opt/falcon/include/" "-std=c++20") ("-L/opt/falcon/lib")
+
+// Gate identifies a physical or logical control channel within a device.
+//
+// Examples include plunger gates, barrier gates, accumulation gates, and
+// sensor gates such as P1, B2, or S0.
+//
+// Gates are used as the labels that define the domain of a ControlAxis.
+struct Gate {
+    string name_;
+
+    // New constructs a Gate from a name.
+    routine New(string name) -> (Gate gate) {
+        gate.name_ = name;
+    }
+}
+
+// Direction represents a direction in gate space.
+//
+// Each entry maps a gate to its relative contribution within the direction.
+// The values are dimensionless coefficients describing how gates move
+// together when traversing the direction.
+struct Direction {
+    Map<Gate, float> dir_;
+
+    // New constructs an empty direction.
+    routine New() -> (Direction dir) {
+        dir.dir_ = Map.New();
+    }
+
+    // Adds a gate and coefficient to the direction.
+    routine SetCoefficient(Gate gate,float coefficient) -> () {
+        dir_.Set(gate, coefficient);
+    }
+
+    routine GetCoefficient(Gate gate) -> (float coefficient) {
+        coefficient = dir_.Get(gate);
+    }
+
+    routine RemoveGate(Gate gate) -> () {
+        dir_.Remove(gate);
+    }
+
+    // ContainsGate reports whether a gate participates.
+    routine ContainsGate(Gate gate) -> (bool contains) {
+        contains = dir_.Contains(gate);
+    }
+
+    // Gates returns every gate represented in the direction.
+    routine Gates() -> (Array<Gate> gates) {
+        gates = dir_.Keys();
+    }
+
+    routine DomainSize() -> (int size) {
+        size = dir_.Size();
+    }
+
+    routine IsEmpty() -> (bool empty) {
+        empty = dir_.Size() == 0;
+    }
+
+    // Norm returns the Euclidean magnitude.
+    routine Norm() -> (float magnitude) {
+        magnitude = math::Sqrt(this.NormSquared());
+    }
+
+    // NormSquared returns the squared Euclidean magnitude.
+    routine NormSquared -> (float magnitude) {
+        magnitude = this.Dot(this);
+    }
+
+
+    // IsNormalized returns true if the norm is approximately one.
+    routine IsNormalized(float tolerance) -> (bool normalized) {
+        normalized = math::Abs(this.Norm() - 1.0) <= tolerance;
+    }
+
+
+    // IsOrthogonal returns true when the absolute value of the dot product
+    // between this direction and another is smaller than tol.
+    routine IsOrthogonal(Direction other,float tol) -> (bool orthogonal) {
+        orthogonal = math::Abs(this.Dot(other)) < tol;
+    }
+
+    // Project returns the projection of this direction onto another direction.
+    routine Project(Direction other) -> (Direction projected) {
+        float denom =
+            other.NormSquared();
+
+        if (denom != 0) {
+            float scale = this.Dot(other) / denom;
+            projected = other.Scale(scale);
+        }
+    }
+
+    // Orthogonalize removes the component of this direction that lies along
+    // the supplied direction.
+    routine Orthogonalize(Direction other) -> () {
+
+        Direction projection =
+            this.Project(other);
+
+        Direction result =
+            this.Subtract(projection);
+
+        this.dir_ = result.dir_;
+    }
+
+
+    // Dot computes the inner product of two directions.
+    routine Dot(Direction other) -> (float value)
+
+    // Normalize rescales the direction to unit length.
+    routine Normalize() -> ()
+
+    // Add performs element-wise addition.
+    routine Add(Direction other) -> (Direction dir)
+
+    // Subtract performs element-wise subtraction.
+    routine Subtract(Direction other) -> (Direction dir)
+
+    // Scale multiplies every component by a scalar.
+    routine Scale(float factor) -> (Direction dir)
+}
+
