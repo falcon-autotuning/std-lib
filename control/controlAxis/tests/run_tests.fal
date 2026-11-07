@@ -1,0 +1,929 @@
+import "../../../testing/testing.fal";
+import "../controlAxis.fal";
+
+routine P1() -> (Gate gate) {
+    gate = Gate.New("P1");
+}
+
+routine P2() -> (Gate gate) {
+    gate = Gate.New("P2");
+}
+
+autotuner PointTests
+    -> (int passed, int failed) {
+
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new_is_empty(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        Error err =
+            t.ExpectIntEq(
+                0,
+                point.DomainSize(),
+                "new point is empty"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_set_get(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(5.0)
+        );
+
+        Voltage voltage =
+            point.Get(
+                P1()
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                5.0,
+                voltage.value_,
+                1.0e-6,
+                "set/get voltage"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_contains_gate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        Error err =
+            t.ExpectTrue(
+                point.ContainsGate(
+                    P1()
+                ),
+                "contains inserted gate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_does_not_contain_missing_gate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        Error err =
+            t.ExpectFalse(
+                point.ContainsGate(
+                    P2()
+                ),
+                "missing gate not present"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_remove_gate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        point.RemoveGate(
+            P1()
+        );
+
+        Error err =
+            t.ExpectFalse(
+                point.ContainsGate(
+                    P1()
+                ),
+                "remove gate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_domain_size_single(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        Error err =
+            t.ExpectIntEq(
+                1,
+                point.DomainSize(),
+                "single gate size"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_domain_size_multiple(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        point.Set(
+            P2(),
+            Voltage.New(2.0)
+        );
+
+        Error err =
+            t.ExpectIntEq(
+                2,
+                point.DomainSize(),
+                "multiple gate size"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_overwrite_existing_gate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        point.Set(
+            P1(),
+            Voltage.New(7.0)
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                7.0,
+                point.Get(
+                    P1()
+                ).value_,
+                1.0e-6,
+                "overwrite gate value"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_overwrite_does_not_grow_domain(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        point.Set(
+            P1(),
+            Voltage.New(2.0)
+        );
+
+        Error err =
+            t.ExpectIntEq(
+                1,
+                point.DomainSize(),
+                "overwrite preserves size"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_gates_size(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        point.Set(
+            P2(),
+            Voltage.New(2.0)
+        );
+
+        Array<Gate> gates =
+            point.Gates();
+
+        Error err =
+            t.ExpectIntEq(
+                2,
+                gates.Size(),
+                "gates returns all labels"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_remove_reduces_domain_size(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point point =
+            Point.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(1.0)
+        );
+
+        point.Set(
+            P2(),
+            Voltage.New(2.0)
+        );
+
+        point.RemoveGate(
+            P1()
+        );
+
+        Error err =
+            t.ExpectIntEq(
+                1,
+                point.DomainSize(),
+                "remove updates size"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+routine MakeVoltage(float value)
+    -> (Voltage voltage) {
+    voltage = Voltage.New(value);
+}
+
+routine MakeAxis()
+    -> (ControlAxis axis) {
+    axis = ControlAxis.New();
+
+    axis.ExtendDomain(
+        P1(),
+        Voltage.New(1.0),
+        Voltage.New(2.0)
+    );
+
+    axis.ExtendDomain(
+        P2(),
+        Voltage.New(3.0),
+        Voltage.New(4.0)
+    );
+}
+
+autotuner ControlAxisStorageTests
+    -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new_is_empty(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            ControlAxis.New();
+
+        Error err =
+            t.ExpectTrue(
+                axis.IsEmpty(),
+                "new axis is empty"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_new_from_point_and_direction(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point offset = Point.New();
+        offset.Set(
+            P1(),
+            Voltage.New(5.0)
+        );
+
+        Direction dir =
+            Direction.New();
+
+        dir.SetCoefficient(
+            P1(),
+            2.0
+        );
+
+        ControlAxis axis =
+            ControlAxis.NewFromPointAndDirection(
+                offset,
+                dir
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetOffset(P1()).value_,
+                5.0,
+                1.0e-6,
+                "constructor stores offset"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_new_from_points(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Point offset = Point.New();
+        Point point = Point.New();
+
+        offset.Set(
+            P1(),
+            Voltage.New(2.0)
+        );
+
+        point.Set(
+            P1(),
+            Voltage.New(7.0)
+        );
+
+        ControlAxis axis =
+            ControlAxis.NewFromPoints(
+                offset,
+                point
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetAmplitude(
+                    P1()
+                ).value_,
+                5.0,
+                1.0e-6,
+                "new from points computes amplitude"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_extend_domain(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            ControlAxis.New();
+
+        axis.ExtendDomain(
+            P1(),
+            Voltage.New(1.0),
+            Voltage.New(2.0)
+        );
+
+        Error err =
+            t.ExpectTrue(
+                axis.ContainsGate(P1()),
+                "extend domain inserts gate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_gates(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Array<Gate> gates =
+            axis.Gates();
+
+        Error err =
+            t.ExpectIntEq(
+                gates.Size(),
+                2,
+                "gates accessor"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_domain_size(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Error err =
+            t.ExpectIntEq(
+                axis.DomainSize(),
+                2,
+                "domain size"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_get_offset(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Voltage value =
+            axis.GetOffset(
+                P1()
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                value.value_,
+                1.0,
+                1.0e-6,
+                "offset retrieval"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_offset_accessor(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Point point =
+            axis.Offset();
+
+        Error err =
+            t.ExpectFloatEq(
+                point.Get(P1()).value_,
+                1.0,
+                1.0e-6,
+                "offset accessor"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_direction_accessor(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Direction dir =
+            axis.Direction();
+
+        Error err =
+            t.ExpectFloatEq(
+                dir.GetCoefficient(
+                    P1()
+                ),
+                2.0,
+                1.0e-6,
+                "direction accessor"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_get_amplitude(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Voltage value =
+            axis.GetAmplitude(
+                P2()
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                value.value_,
+                4.0,
+                1.0e-6,
+                "amplitude retrieval"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_remove_gate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.RemoveGate(
+            P1()
+        );
+
+        Error err =
+            t.ExpectFalse(
+                axis.ContainsGate(
+                    P1()
+                ),
+                "remove gate"
+            );
+
+        -> __end(runner, t);
+    }
+}
+
+autotuner ControlAxisTransformationTests
+    -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_rescale(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.Rescale(2.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetAmplitude(
+                    P1()
+                ).value_,
+                4.0,
+                1.0e-6,
+                "rescale"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_shifted(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Direction shift =
+            Direction.New();
+
+        shift.SetCoefficient(
+            P1(),
+            10.0
+        );
+
+        ControlAxis shifted =
+            axis.Shifted(shift);
+
+        Error err =
+            t.ExpectFloatEq(
+                shifted.GetOffset(
+                    P1()
+                ).value_,
+                11.0,
+                1.0e-6,
+                "shifted modifies offset"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_shifted_does_not_modify_source(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Direction shift =
+            Direction.New();
+
+        shift.SetCoefficient(
+            P1(),
+            4.0
+        );
+
+        ControlAxis shifted =
+            axis.Shifted(shift);
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetOffset(
+                    P1()
+                ).value_,
+                1.0,
+                1.0e-6,
+                "shifted leaves original unchanged"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_scaled_returns_copy(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        ControlAxis scaled =
+            axis.Scaled(2.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                2.0,
+                axis.GetAmplitude(
+                    P1()
+                ).value_,
+                1.0e-6,
+                "scaled does not modify source"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_shift_offset(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.ShiftOffset(
+            P1(),
+            Voltage.New(2.0)
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetOffset(
+                    P1()
+                ).value_,
+                3.0,
+                1.0e-6,
+                "shift offset"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_shift_amplitude(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.ShiftAmplitude(
+            P1(),
+            Voltage.New(3.0)
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetAmplitude(
+                    P1()
+                ).value_,
+                5.0,
+                1.0e-6,
+                "shift amplitude"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_zero_offsets(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.ZeroOffsets();
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetOffset(
+                    P1()
+                ).value_,
+                0.0,
+                1.0e-6,
+                "zero offsets"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_set_offset(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.SetOffset(
+            P1(),
+            Voltage.New(7.0)
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetOffset(
+                    P1()
+                ).value_,
+                7.0,
+                1.0e-6,
+                "set offset"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_set_amplitude(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        axis.SetAmplitude(
+            P1(),
+            Voltage.New(9.0)
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetAmplitude(
+                    P1()
+                ).value_,
+                9.0,
+                1.0e-6,
+                "set amplitude"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_to_point(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Point point =
+            axis.ToPoint(
+                Voltage.New(2.0)
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                point.Get(
+                    P1()
+                ).value_,
+                5.0,
+                1.0e-6,
+                "offset+coordinate*amplitude"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_to_point_zero_coordinate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Point point =
+            axis.ToPoint(
+                Voltage.New(0.0)
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                point.Get(
+                    P1()
+                ).value_,
+                1.0,
+                1.0e-6,
+                "coordinate zero returns offset"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_to_point_negative_coordinate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Point point =
+            axis.ToPoint(
+                Voltage.New(-1.0)
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                point.Get(
+                    P1()
+                ).value_,
+                -1.0,
+                1.0e-6,
+                "negative coordinate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_to_point_does_not_modify_axis(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis axis =
+            MakeAxis();
+
+        Point point =
+            axis.ToPoint(
+                Voltage.New(100.0)
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.GetOffset(
+                    P1()
+                ).value_,
+                1.0,
+                1.0e-6,
+                "to point leaves axis unchanged"
+            );
+
+        -> __end(runner, t);
+    }
+}

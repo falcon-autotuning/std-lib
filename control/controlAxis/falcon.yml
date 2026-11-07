@@ -1,0 +1,14 @@
+name: controlAxis
+version: 1.0.0
+maintainer: Falcon Team
+github: falcon-autotuning/std-lib
+license: ""
+ffi:
+  build/control-axis-wrapper.so: ""
+dependencies:
+  - name: testing
+    version: 1.0.0
+    local_path: ../../testing/build/
+  - name: map
+    version: 1.0.0
+    local_path: "../../collections/map/"

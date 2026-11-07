@@ -1,0 +1,256 @@
+import "../../collections/map/map.fal";
+import "../direction/direction.fal";
+ffimport "control-axis-wrapper.cpp" ("-I/opt/falcon/include/" "-std=c++20") ("-L/opt/falcon/lib")
+
+// Voltage represents an electrical potential expressed in volts.
+//
+// All voltage values are stored internally in units of volts, regardless
+// of how they may be displayed or specified externally.
+struct Voltage {
+    float value_;
+
+    // New constructs a voltage value in volts.
+    routine New(float value) -> (Voltage voltage) {
+        voltage.value_ = value;
+    }
+
+    // Add returns the sum of two voltages.
+    routine Add(
+        Voltage other
+    ) -> (Voltage voltage) {
+        voltage.value_ =
+            this.value_ + other.value_;
+    }
+
+    // Subtract returns the difference of two voltages.
+    routine Subtract(
+        Voltage other
+    ) -> (Voltage voltage) {
+        voltage.value_ =
+            this.value_ - other.value_;
+    }
+
+    // Negate returns the additive inverse.
+    routine Negate() -> (Voltage voltage) {
+        voltage.value_ = -this.value_;
+    }
+
+    // Scale multiplies the voltage by a scalar.
+    routine Scale(
+        float factor
+    ) -> (Voltage voltage) {
+        voltage.value_ =
+            this.value_ * factor;
+    }
+}
+
+// Point represents a point in gate space.
+//
+// Each entry maps a gate to its magnitude in the space.
+struct Point {
+    Map<Gate, Voltage> location_;
+
+    // New constructs an empty point.
+    routine New() -> (Point point) {
+        point.location_ = Map.New();
+    }
+    // Get returns the voltage associated with a gate.
+    routine Get(Gate gate)
+        -> (Voltage voltage) {
+        voltage = location_.Get(gate);
+    }
+    // Set assigns a voltage to a gate.
+    routine Set(Gate gate,Voltage voltage) -> () {
+        location_.Set(gate, voltage);
+    }
+
+    // ContainsGate reports whether a gate exists.
+    routine ContainsGate(Gate gate) -> (bool contains) {
+        contains = location_.Contains(gate);
+    }
+
+    routine RemoveGate(Gate gate) -> () {
+        location_.Remove(gate);
+    }
+
+    // Gates returns every gate represented by the point.
+    routine Gates()
+        -> (Array<Gate> gates) {
+        gates = location_.Keys();
+    }
+    // DomainSize returns the number of gates.
+    routine DomainSize()
+        -> (int size) {
+        size = location_.Size();
+    }
+}
+
+// ControlAxis represents a one-dimensional control coordinate embedded in
+// a multidimensional gate-voltage space.
+//
+// Each gate contributes an offset and an amplitude. The offsets define the
+// center of the axis, while the amplitudes define its direction and scale.
+//
+// A ControlAxis generalizes the concept of a virtual gate. It may represent
+// any experimentally meaningful degree of freedom, including virtual
+// plungers, charge-transition axes, tunnel-coupling controls, exchange
+// controls, or arbitrary optimization directions.
+//
+// Mathematically:
+//
+//     gate_voltage = offset + coordinate * direction 
+//
+// where offset and amplitude are defined for every gate in the axis domain.
+struct ControlAxis {
+    Point offset_;
+    Direction direction_;
+    // ── Construction ─────────────────────────────────────────────────────────
+
+    // New constructs an empty ControlAxis with no gates in its domain.
+    routine New -> (ControlAxis axis) {
+        axis.offset_ = Point.New();
+        axis.direction_ = Direction.New();
+    }
+
+    // NewFromPointAndDirection constructs a ControlAxis from an operating
+    // point and a direction.
+    routine NewFromPointAndDirection(Point offset,Direction direction) -> (ControlAxis axis) {
+        axis.offset_ = offset.Clone();
+        axis.direction_ = direction.Clone();
+    }
+
+    // NewFromPoints constructs a ControlAxis from an operating point and a
+    // second point lying on the axis.
+    routine NewFromPoints(Point offset,Point point) -> (ControlAxis axis)
+
+    // Scaled returns a new ControlAxis whose amplitudes are multiplied by
+    // factor. Offsets are preserved unchanged.
+    routine Scaled(float factor) -> (ControlAxis axis) {
+        axis = ControlAxis.NewFromPointAndDirection(this.offset_, this.direction_);
+        axis.Rescale(factor);
+    }
+
+    // Shifted returns a new ControlAxis whose offsets are shifted along the
+    // supplied direction. Amplitudes remain unchanged.
+    routine Shifted(Direction dir) -> (ControlAxis axis)
+
+    // ── Modifiers ────────────────────────────────────────────────────────────
+
+    // ExtendDomain adds a gate to the axis domain. The supplied offset and
+    // amplitude become the initial values associated with the gate.
+    routine ExtendDomain(Gate gate,Voltage offset,Voltage amp) -> () {
+        direction_.SetCoefficient(gate, amp.value_);
+        offset_.Set(gate, offset);
+    }
+
+    // Rescale multiplies every direction in the axis by scale. Offsets are
+    // not modified.
+    routine Rescale(float scale) -> () {
+        direction_ = direction_.Scale(scale);
+    }
+
+    // SetOffset replaces the offset associated with gate.
+    routine SetOffset(Gate gate,Voltage offset) -> () {
+        offset_.Set(gate,offset);
+    }
+
+    // ShiftOffset adds delta to the offset associated with gate.
+    routine ShiftOffset(Gate gate,Voltage delta) -> () {
+        offset_.Set(gate,offset_.Get(gate).Add(delta));
+    }
+
+    // ZeroOffsets sets the offset of every gate in the domain to zero volts.
+    routine ZeroOffsets() -> ()
+
+    // SetAmplitude replaces the amplitude associated with gate.
+    routine SetAmplitude(Gate gate,Voltage amplitude) -> () {
+        direction_.SetCoefficient(gate,amplitude.value_);
+    }
+
+    // ShiftAmplitude adds delta to the amplitude associated with gate.
+    routine ShiftAmplitude(Gate gate,Voltage delta) -> () {
+        float coeff = direction_.GetCoefficient(gate);
+        direction_.SetCoefficient(gate,coeff + delta.value_);
+    }
+
+
+    // ── Access ───────────────────────────────────────────────────────────────
+
+    // Offset returns the operating point of the axis.
+    routine Offset() -> (Point point) {
+        point = this.offset_;
+    }
+
+    // Direction returns the directional component of the axis.
+    routine Direction() -> (Direction direction) {
+        direction = this.direction_;
+    }
+
+    // GetOffset returns the offset associated with gate.
+    routine GetOffset(Gate gate) -> (Voltage offset) {
+        offset = offset_.Get(gate);
+    }
+
+    // GetAmplitude returns the amplitude associated with gate.
+    routine GetAmplitude(Gate gate) -> (Voltage amplitude) {
+        amplitude = Voltage.New(direction_.GetCoefficient(gate));
+    }
+
+    // ContainsGate returns true if gate exists in the domain of the axis.
+    routine ContainsGate(Gate gate) -> (bool contains) {
+        contains = offset_.ContainsGate(gate);
+    }
+
+    // RemoveGate removes gate and all associated data from the domain.
+    routine RemoveGate(Gate gate) -> () {
+        offset_.RemoveGate(gate);
+        direction_.RemoveGate(gate);
+    }
+
+    // Gates returns every gate currently contained in the domain.
+    routine Gates() -> (Array<Gate> gates) {
+        gates = offset_.Gates();
+    }
+
+    // DomainSize returns the number of gates contained in the domain.
+    routine DomainSize() -> (int size) {
+        size = this.offset_.DomainSize();
+    }
+
+    // IsEmpty returns true if the axis contains no gates.
+    routine IsEmpty() -> (bool empty) {
+        empty = this.DomainSize() == 0;
+    }
+
+    // ── Interop ──────────────────────────────────────────────────────────────
+    
+    // GeneratePoint evaluates the ControlAxis at the supplied coordinate and
+    // returns the resulting gate-voltage configuration.
+    //
+    // For each gate in the domain, the returned voltage is computed as:
+    //
+    //     offset + coordinate * amplitude
+    //
+    // where offset and amplitude are the values associated with the
+    // gate. The result is a single point in gate-voltage space that can be
+    // applied directly to hardware, used as the starting point of a sweep, or
+    // supplied to optimization routines.
+    //
+    // A coordinate of 0 returns the axis operating point (all offsets).
+    // A coordinate of 1 returns one full axis amplitude away from the operating
+    // point. Negative coordinates move in the opposite direction.
+    //
+    // Example:
+    //
+    //     P1: offset = 100 mV, amplitude = .20 
+    //     B1: offset = 300 mV, amplitude = -.10 
+    //
+    //     coordinate = 2 V
+    //
+    // produces:
+    //
+    //     P1 = 500 mV
+    //     B1 = 100 mV
+    //
+    routine ToPoint(Voltage coordinate) -> (Point point)
+}
