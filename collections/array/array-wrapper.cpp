@@ -194,7 +194,16 @@ void STRUCTArrayContains(const FalconParamEntry *p, int32_t pc,
   const RuntimeValue &needle = pm.at("value");
   bool found = false;
   for (const auto &elem : arr->elements) {
-    if (elem == needle) {
+    if (std::holds_alternative<std::shared_ptr<StructInstance>>(elem) &&
+        std::holds_alternative<std::shared_ptr<StructInstance>>(needle)) {
+
+      auto lhs = std::get<std::shared_ptr<StructInstance>>(elem);
+      auto rhs = std::get<std::shared_ptr<StructInstance>>(needle);
+      if (lhs && rhs && *lhs == *rhs) {
+        found = true;
+        break;
+      }
+    } else if (elem == needle) {
       found = true;
       break;
     }
