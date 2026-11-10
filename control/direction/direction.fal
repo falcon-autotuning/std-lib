@@ -123,5 +123,8 @@ struct Direction {
 
     // Scale multiplies every component by a scalar.
     routine Scale(float factor) -> (Direction dir)
+    
+    // TODO: implement
+    routine Rotate(float theta, Array<Gate> planeOfRotation) -> ()
 }
 
