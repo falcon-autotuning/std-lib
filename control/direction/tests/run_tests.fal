@@ -9,6 +9,10 @@ routine P2() -> (Gate gate) {
     gate = Gate.New("P2");
 }
 
+routine Pi() -> (float value) {
+    value = 3.1415926535;
+}
+
 autotuner DirectionStorageTests -> (int passed, int failed) {
     passed = 0;
     failed = 0;
@@ -457,6 +461,145 @@ autotuner DirectionIdentityTests -> (int passed, int failed) {
                 0.0,
                 1.0e-6,
                 "scale by zero produces zero vector"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_rotate_ninety_degrees (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate p1 = P1();
+        Gate p2 = P2();
+
+        Direction dir = Direction.New();
+
+        dir.SetCoefficient(
+            p1,
+            1.0
+        );
+
+        dir.SetCoefficient(
+            p2,
+            0.0
+        );
+
+        Array<Gate> plane = Array.New();
+
+        plane.PushBack(p1);
+        plane.PushBack(p2);
+
+        dir.Rotate(
+            Pi() / 2.0,
+            plane
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                dir.GetCoefficient(p1),
+                0.0,
+                1.0e-6,
+                "rotation moves P1 component to zero"
+            );
+
+        err =
+            t.ExpectFloatEq(
+                dir.GetCoefficient(p2),
+                1.0,
+                1.0e-6,
+                "rotation moves magnitude into P2"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_rotate_preserves_norm (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate p1 = P1();
+        Gate p2 = P2();
+
+        Direction dir = Direction.New();
+
+        dir.SetCoefficient(
+            p1,
+            3.0
+        );
+
+        dir.SetCoefficient(
+            p2,
+            4.0
+        );
+
+        float before =
+            dir.Norm();
+
+        Array<Gate> plane = Array.New();
+
+        plane.PushBack(p1);
+        plane.PushBack(p2);
+
+        dir.Rotate(
+            0.731,
+            plane
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                dir.Norm(),
+                before,
+                1.0e-6,
+                "rotation preserves norm"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_rotate_zero_angle (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate p1 = P1();
+        Gate p2 = P2();
+
+        Direction dir = Direction.New();
+
+        dir.SetCoefficient(
+            p1,
+            3.0
+        );
+
+        dir.SetCoefficient(
+            p2,
+            4.0
+        );
+
+        Array<Gate> plane = Array.New();
+
+        plane.PushBack(p1);
+        plane.PushBack(p2);
+
+        dir.Rotate(
+            0.0,
+            plane
+        );
+
+        Error err =
+            t.ExpectFloatEq(
+                dir.GetCoefficient(p1),
+                3.0,
+                1.0e-6,
+                "zero angle preserves p1"
+            );
+
+        err =
+            t.ExpectFloatEq(
+                dir.GetCoefficient(p2),
+                4.0,
+                1.0e-6,
+                "zero angle preserves p2"
             );
 
         -> __end(runner, t);

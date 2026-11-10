@@ -1,7 +1,6 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 
 #include <falcon-typing/FFIHelpers.hpp>
 
@@ -163,9 +162,18 @@ static RuntimeValue clone_runtime_value(const RuntimeValue &value) {
       value);
 }
 
-// ---------------------------------------------------------------------------
-// Dot
-// ---------------------------------------------------------------------------
+static int find_gate_index(std::shared_ptr<StructInstance> direction,
+                           const RuntimeValue &gate) {
+  auto keys = direction_keys(direction);
+
+  for (size_t i = 0; i < keys->elements.size(); ++i) {
+    if (keys->elements[i] == gate) {
+      return static_cast<int>(i);
+    }
+  }
+
+  return -1;
+}
 
 extern "C" {
 
@@ -294,10 +302,6 @@ void STRUCTDirectionSubtract(const FalconParamEntry *p, int32_t pc,
   pack_results(FunctionResult{result}, out, FALCON_RESULT_SLOT_COUNT, oc);
 }
 
-// ---------------------------------------------------------------------------
-// Normalize
-// ---------------------------------------------------------------------------
-
 void STRUCTDirectionNormalize(const FalconParamEntry *p, int32_t pc,
                               FalconResultSlot *out, int32_t *oc) {
   auto pm = unpack_params(p, pc);
@@ -311,6 +315,64 @@ void STRUCTDirectionNormalize(const FalconParamEntry *p, int32_t pc,
       double coeff = std::get<double>(values->elements[i]);
       values->elements[i] = coeff / norm;
     }
+  }
+
+  pack_results(FunctionResult{}, out, FALCON_RESULT_SLOT_COUNT, oc);
+}
+
+void STRUCTDirectionRotate(const FalconParamEntry *p, int32_t pc,
+                           FalconResultSlot *out, int32_t *oc) {
+  auto pm = unpack_params(p, pc);
+  auto self = std::get<std::shared_ptr<StructInstance>>(pm.at("this"));
+  double theta = std::get<double>(pm.at("theta"));
+  auto plane_struct =
+      std::get<std::shared_ptr<StructInstance>>(pm.at("planeOfRotation"));
+  auto plane =
+      std::static_pointer_cast<ArrayValue>(plane_struct->native_handle.value());
+
+  if (plane->elements.size() != 2) {
+    throw std::runtime_error("Rotate requires exactly two gates "
+                             "to define a rotation plane.");
+  }
+
+  const RuntimeValue &gateA = plane->elements[0];
+  const RuntimeValue &gateB = plane->elements[1];
+
+  auto keys = direction_keys(self);
+  auto values = direction_values(self);
+
+  int idxA = find_gate_index(self, gateA);
+  int idxB = find_gate_index(self, gateB);
+
+  double a = 0.0;
+  double b = 0.0;
+
+  if (idxA >= 0) {
+    a = std::get<double>(values->elements[idxA]);
+  }
+
+  if (idxB >= 0) {
+    b = std::get<double>(values->elements[idxB]);
+  }
+
+  double c = std::cos(theta);
+  double s = std::sin(theta);
+
+  double rotatedA = c * a - s * b;
+  double rotatedB = s * a + c * b;
+
+  if (idxA >= 0) {
+    values->elements[idxA] = rotatedA;
+  } else {
+    keys->elements.push_back(gateA);
+    values->elements.push_back(rotatedA);
+  }
+
+  if (idxB >= 0) {
+    values->elements[idxB] = rotatedB;
+  } else {
+    keys->elements.push_back(gateB);
+    values->elements.push_back(rotatedB);
   }
 
   pack_results(FunctionResult{}, out, FALCON_RESULT_SLOT_COUNT, oc);
