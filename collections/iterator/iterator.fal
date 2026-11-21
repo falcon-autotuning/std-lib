@@ -80,4 +80,21 @@ struct Iterator <T> {
     routine Evaluate -> (T value) {
         value = this.contents_.GetIndex(this.index_);
     }
+
+    // Returns true if the supplied offset can be safely
+    // evaluated relative to the current iterator position.
+    routine CanLook(int offset) -> (bool canLook) {
+        int index = this.index_ + offset;
+
+        canLook =
+            index >= 0 &&
+            index < this.contents_.Size();
+    }
+
+    routine Look(int offset) -> (T value) {
+        value =
+            this.contents_.GetIndex(
+                this.index_ + offset
+            );
+    }
 }

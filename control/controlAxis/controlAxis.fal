@@ -83,6 +83,22 @@ struct Point {
         -> (int size) {
         size = location_.Size();
     }
+
+    routine Clone() -> (Point point) {
+
+        point = Point.New();
+        Array<Gate> gates =
+            this.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            point.Set(
+                gate,
+                this.Get(gate)
+            );
+        }
+    }
 }
 
 // ControlAxis represents a one-dimensional control coordinate embedded in
@@ -121,7 +137,29 @@ struct ControlAxis {
 
     // NewFromPoints constructs a ControlAxis from an operating point and a
     // second point lying on the axis.
-    routine NewFromPoints(Point offset,Point point) -> (ControlAxis axis)
+    routine NewFromPoints(
+        Point offset,
+        Point point
+    ) -> (ControlAxis axis) {
+
+        axis = ControlAxis.New();
+        axis.offset_ = offset.Clone();
+        Array<Gate> gates =
+            offset.Gates();
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+
+            float amplitude =
+                point.Get(gate).value_
+                - offset.Get(gate).value_;
+
+            axis.direction_.SetCoefficient(
+                gate,
+                amplitude
+            );
+        }
+    }
 
     // Scaled returns a new ControlAxis whose amplitudes are multiplied by
     // factor. Offsets are preserved unchanged.
@@ -132,7 +170,33 @@ struct ControlAxis {
 
     // Shifted returns a new ControlAxis whose offsets are shifted along the
     // supplied direction. Amplitudes remain unchanged.
-    routine Shifted(Direction dir) -> (ControlAxis axis)
+    routine Shifted(
+        Direction dir
+    ) -> (ControlAxis axis) {
+
+        axis =
+            ControlAxis.NewFromPointAndDirection(
+                this.offset_,
+                this.direction_
+            );
+        Array<Gate> gates =
+            dir.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            Voltage current =
+                axis.offset_.Get(gate);
+            axis.offset_.Set(
+                gate,
+                current.Add(
+                    Voltage.New(
+                        dir.GetCoefficient(gate)
+                    )
+                )
+            );
+        }
+    }
 
     // ── Modifiers ────────────────────────────────────────────────────────────
 
@@ -160,7 +224,21 @@ struct ControlAxis {
     }
 
     // ZeroOffsets sets the offset of every gate in the domain to zero volts.
-    routine ZeroOffsets() -> ()
+    routine ZeroOffsets() -> () {
+
+        Array<Gate> gates =
+            offset_.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+
+            offset_.Set(
+                gate,
+                Voltage.New(0.0)
+            );
+        }
+    }
 
     // SetAmplitude replaces the amplitude associated with gate.
     routine SetAmplitude(Gate gate,Voltage amplitude) -> () {
@@ -252,5 +330,31 @@ struct ControlAxis {
     //     P1 = 500 mV
     //     B1 = 100 mV
     //
-    routine ToPoint(Voltage coordinate) -> (Point point)
+    routine ToPoint(
+        Voltage coordinate
+    ) -> (Point point) {
+
+        point =
+            this.offset_.Clone();
+        Array<Gate> gates =
+            point.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            float amplitude =
+                direction_.GetCoefficient(
+                    gate
+                );
+            Voltage value =
+                Voltage.New(
+                    point.Get(gate).value_
+                    + coordinate.value_ * amplitude
+                );
+            point.Set(
+                gate,
+                value
+            );
+        }
+    }
 }

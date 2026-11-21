@@ -1,6 +1,5 @@
 import "../../collections/map/map.fal";
 import "../math/math.fal";
-ffimport "direction-wrapper.cpp" ("-I/opt/falcon/include/" "-std=c++20") ("-L/opt/falcon/lib")
 
 // Gate identifies a physical or logical control channel within a device.
 //
@@ -14,6 +13,10 @@ struct Gate {
     // New constructs a Gate from a name.
     routine New(string name) -> (Gate gate) {
         gate.name_ = name;
+    }
+
+    routine Name() -> (string name) {
+        name = name_;
     }
 }
 
@@ -36,7 +39,11 @@ struct Direction {
     }
 
     routine GetCoefficient(Gate gate) -> (float coefficient) {
-        coefficient = dir_.Get(gate);
+        coefficient = 0.0;
+
+        if (dir_.Contains(gate)) {
+            coefficient = dir_.Get(gate);
+        }
     }
 
     routine RemoveGate(Gate gate) -> () {
@@ -88,8 +95,9 @@ struct Direction {
     routine Project(Direction other) -> (Direction projected) {
         float denom =
             other.NormSquared();
+        projected = Direction.New();
 
-        if (denom != 0) {
+        if (denom != 0.0) {
             float scale = this.Dot(other) / denom;
             projected = other.Scale(scale);
         }
@@ -110,21 +118,219 @@ struct Direction {
 
 
     // Dot computes the inner product of two directions.
-    routine Dot(Direction other) -> (float value)
+    routine Dot(Direction other) -> (float value) {
+        value = 0.0;
+
+        Array<Gate> gates =
+            this.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            value =
+                value +
+                this.GetCoefficient(gate) *
+                other.GetCoefficient(gate);
+        }
+    }
 
     // Normalize rescales the direction to unit length.
-    routine Normalize() -> ()
+    routine Normalize() -> () {
+        float norm =
+            this.Norm();
+
+        if (norm != 0.0) {
+            Direction scaled =
+                this.Scale(1.0 / norm);
+
+            dir_ =
+                scaled.dir_;
+        }
+    }
 
     // Add performs element-wise addition.
-    routine Add(Direction other) -> (Direction dir)
+    routine Add(Direction other) -> (Direction dir) {
+        dir = Direction.New();
+
+        Array<Gate> gates =
+            this.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            dir.SetCoefficient(
+                gate,
+                this.GetCoefficient(gate)
+            );
+        }
+
+        gates = other.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            float value =
+                dir.GetCoefficient(gate) +
+                other.GetCoefficient(gate);
+
+            dir.SetCoefficient(
+                gate,
+                value
+            );
+        }
+    }
 
     // Subtract performs element-wise subtraction.
-    routine Subtract(Direction other) -> (Direction dir)
+    routine Subtract(Direction other) -> (Direction dir) {
+        dir = Direction.New();
+
+        Array<Gate> gates =
+            this.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+
+            dir.SetCoefficient(
+                gate,
+                this.GetCoefficient(gate)
+            );
+        }
+
+        gates = other.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+
+            float value =
+                dir.GetCoefficient(gate) -
+                other.GetCoefficient(gate);
+
+            dir.SetCoefficient(
+                gate,
+                value
+            );
+        }
+    }
 
     // Scale multiplies every component by a scalar.
-    routine Scale(float factor) -> (Direction dir)
+    routine Scale(float factor) -> (Direction dir) {
+        dir = Direction.New();
+
+        Array<Gate> gates =
+            this.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+
+            dir.SetCoefficient(
+                gate,
+                this.GetCoefficient(gate) * factor
+            );
+        }
+    }
     
-    // Rotate rotates the direction by an angle theta on a fixed plane 
-    routine Rotate(float theta, Array<Gate> planeOfRotation) -> ()
+    // RotatePlane rotates the direction by an angle theta on a fixed plane 
+    routine RotatePlane(
+        float theta,
+        Array<Gate> planeOfRotation
+    ) -> () {
+
+        Gate xGate =
+            planeOfRotation.GetIndex(0);
+
+        Gate yGate =
+            planeOfRotation.GetIndex(1);
+
+        float x =
+            this.GetCoefficient(xGate);
+
+        float y =
+            this.GetCoefficient(yGate);
+
+        float c =
+            math::Cos(theta);
+
+        float s =
+            math::Sin(theta);
+
+        float xRot =
+            c * x - s * y;
+
+        float yRot =
+            s * x + c * y;
+
+        this.SetCoefficient(
+            xGate,
+            xRot
+        );
+
+        this.SetCoefficient(
+            yGate,
+            yRot
+        );
+    }
+
+    routine Rotate(
+        float theta,
+        Direction firstBasis,
+        Direction secondBasis
+    ) -> () {
+
+        float a =
+            this.Dot(firstBasis);
+        float b =
+            this.Dot(secondBasis);
+        float c =
+            math::Cos(theta);
+        float s =
+            math::Sin(theta);
+        float aRot =
+            a * c -
+            b * s;
+        float bRot =
+            a * s +
+            b * c;
+        Direction _planeComponent =
+            firstBasis.Scale(a);
+        Direction planeComponent =
+            _planeComponent.Add(
+                secondBasis.Scale(b)
+            );
+        Direction orthogonalComponent =
+            this.Subtract(
+                planeComponent
+            );
+        Direction _rotatedPlane =
+            firstBasis.Scale(aRot);
+        Direction rotatedPlane =
+            _rotatedPlane.Add(
+                secondBasis.Scale(bRot)
+            );
+        Direction result =
+            orthogonalComponent.Add(
+                rotatedPlane
+            );
+        this.dir_ =
+            result.dir_;
+    }
+
+    routine Clone() -> (Direction dir) {
+
+        dir = Direction.New();
+        Array<Gate> gates =
+            this.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+            dir.SetCoefficient(
+                gate,
+                this.GetCoefficient(gate)
+            );
+        }
+    }
 }
 

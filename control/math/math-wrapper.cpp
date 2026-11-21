@@ -18,6 +18,26 @@ void Sqrt(const FalconParamEntry *params, int32_t param_count,
                FALCON_RESULT_SLOT_COUNT, out_count);
 }
 
+void Sin(const FalconParamEntry *params, int32_t param_count,
+         FalconResultSlot *result_slots, int32_t *out_count) {
+  auto unpacked = unpack_params(params, param_count);
+
+  double value = std::get<double>(unpacked.at("v"));
+
+  pack_results(FunctionResult{std::sin(value)}, result_slots,
+               FALCON_RESULT_SLOT_COUNT, out_count);
+}
+
+void Cos(const FalconParamEntry *params, int32_t param_count,
+         FalconResultSlot *result_slots, int32_t *out_count) {
+  auto unpacked = unpack_params(params, param_count);
+
+  double value = std::get<double>(unpacked.at("v"));
+
+  pack_results(FunctionResult{std::cos(value)}, result_slots,
+               FALCON_RESULT_SLOT_COUNT, out_count);
+}
+
 void Abs(const FalconParamEntry *params, int32_t param_count,
          FalconResultSlot *result_slots, int32_t *out_count) {
   auto unpacked = unpack_params(params, param_count);

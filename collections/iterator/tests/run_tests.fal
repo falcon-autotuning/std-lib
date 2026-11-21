@@ -366,3 +366,210 @@ autotuner StructTests -> (int passed, int failed) {
         -> __end(runner, t);
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 5: Look / CanLook
+// ─────────────────────────────────────────────────────────────────────────────
+
+autotuner LookTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_can_look_zero_offset (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool canLook = it.CanLook(0);
+
+        Error err = t.ExpectTrue(
+            canLook,
+            "CanLook(0) succeeds for current element"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_can_look_forward_in_range (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool canLook = it.CanLook(2);
+
+        Error err = t.ExpectTrue(
+            canLook,
+            "CanLook succeeds for valid forward offset"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_can_look_forward_out_of_range (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool canLook = it.CanLook(3);
+
+        Error err = t.ExpectFalse(
+            canLook,
+            "CanLook fails beyond array end"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_can_look_backward_in_range (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+        bool success = it.Increment();
+
+        bool canLook = it.CanLook(-1);
+
+        Error err = t.ExpectTrue(
+            canLook,
+            "CanLook succeeds for valid backward offset"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_can_look_backward_out_of_range (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+
+        bool canLook = it.CanLook(-1);
+
+        Error err = t.ExpectFalse(
+            canLook,
+            "CanLook fails before array beginning"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_look_zero_offset_returns_current_value (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+
+        Iterator<int> it = Iterator.New(values);
+
+        int value = it.Look(0);
+
+        Error err = t.ExpectIntEq(
+            value,
+            10,
+            "Look(0) returns current value"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_look_forward_returns_future_value (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+
+        int value = it.Look(2);
+
+        Error err = t.ExpectIntEq(
+            value,
+            30,
+            "Look returns value ahead of iterator"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_look_backward_returns_previous_value (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+        bool success = it.Increment();
+        success = it.Increment();
+
+        int value = it.Look(-1);
+
+        Error err = t.ExpectIntEq(
+            value,
+            20,
+            "Look returns value behind iterator"
+        );
+        -> __end(runner, t);
+    }
+
+    state test_look_does_not_change_position (
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+        bool success = it.Increment();
+
+        int value = it.Look(1);
+        int idx = it.CurrentIndex();
+
+        Error err = t.ExpectIntEq(
+            value,
+            30,
+            "Look returns correct value"
+        );
+
+        err = t.ExpectIntEq(
+            idx,
+            1,
+            "Look does not modify iterator position"
+        );
+
+        -> __end(runner, t);
+    }
+
+    state test_can_look_from_end_backward (TestRunner runner, TestContext t) {
+        Array<int> values = Array.New();
+        values.PushBack(10);
+        values.PushBack(20);
+        values.PushBack(30);
+
+        Iterator<int> it = Iterator.New(values);
+        it.End();
+
+        bool canLook = it.CanLook(-2);
+
+        Error err = t.ExpectTrue(
+            canLook,
+            "CanLook works from end position with backward offset"
+        );
+
+        -> __end(runner, t);
+    }
+}

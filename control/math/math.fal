@@ -13,3 +13,7 @@ routine Min(float lhs, float rhs)
 
 routine Max(float lhs, float rhs)
     -> (float value)
+
+routine Sin(float v) -> (float value)
+
+routine Cos(float v) -> (float value)
