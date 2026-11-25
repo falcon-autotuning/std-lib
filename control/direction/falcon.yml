@@ -10,4 +10,6 @@ dependencies:
   - name: map
     version: 1.0.0
     local_path: ../../collections/map/
-
+  - name: instrumentPort
+    version: 1.0.0
+    local_path: ../../falconCore/instrumentInterfaces/names/instrumentPort/
