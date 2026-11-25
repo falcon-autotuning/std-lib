@@ -10,3 +10,6 @@ dependencies:
   - name: map
     version: 1.0.0
     local_path: "../../collections/map/"
+  - name: direction
+    version: 1.0.0
+    local_path: "../direction/"

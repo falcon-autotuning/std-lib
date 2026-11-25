@@ -2,11 +2,31 @@ import "../../../testing/testing.fal";
 import "../controlAxis.fal";
 
 routine P1() -> (Gate gate) {
-    gate = Gate.New("P1");
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P1",
+                connection::Connection.NewPlungerGate("P1"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P1 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
 }
 
 routine P2() -> (Gate gate) {
-    gate = Gate.New("P2");
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P2",
+                connection::Connection.NewPlungerGate("P2"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P2 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
 }
 
 autotuner ControlPointTests
