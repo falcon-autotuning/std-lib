@@ -80,13 +80,13 @@ autotuner HubCommsTests -> (int passed, int failed) {
     start -> __init;
 
     state test_mock_hub_comms (TestRunner runner, TestContext t) {
-        mockHub::MockHub mock = mockHub::MockHub.New();
-        bool started = mock.Start(4222);
+        mockHub::MockHub m = mockHub::MockHub.New();
+        bool started = m.Start(4222);
         Error err_start = t.ExpectTrue(started, "MockHub started successfully on port 4222");
 
         // 1. Test RequestConfig
         config::Config cfg = config::Config.Load("device_config.yaml");
-        mock.SetConfig(cfg);
+        m.SetConfig(cfg);
         config::Config rec_cfg = RequestConfig(3000);
         Error err_cfg = t.ExpectIntEq(rec_cfg.NumUniqueChannels(), cfg.NumUniqueChannels(), "Received config channels match mock");
 
@@ -103,7 +103,7 @@ autotuner HubCommsTests -> (int passed, int failed) {
         meter_arr.PushBack(meter1);
         ports::Ports meters = ports::Ports.New(meter_arr);
 
-        mock.SetPortPayload(knobs, meters);
+        m.SetPortPayload(knobs, meters);
         ports::Ports rec_knobs;
         ports::Ports rec_meters;
         ports::Ports rec_settings;
@@ -121,7 +121,7 @@ autotuner HubCommsTests -> (int passed, int failed) {
         deviceVoltageStates::DeviceVoltageStates states = deviceVoltageStates::DeviceVoltageStates.New(arr);
         voltageStatesResponse::VoltageStatesResponse state_resp = voltageStatesResponse::VoltageStatesResponse.New("OK", states);
 
-        mock.SetDeviceState(state_resp);
+        m.SetDeviceState(state_resp);
         voltageStatesResponse::VoltageStatesResponse rec_state = RequestDeviceState(3000);
         Error err_state = t.ExpectIntEq(rec_state.States().Size(), 1, "Received device states count matches mock");
 
@@ -136,20 +136,20 @@ autotuner HubCommsTests -> (int passed, int failed) {
         Map<instrumentPort::InstrumentPort, quantity::Quantity> get_map = Map.New();
         get_map.Set(setting_port, qty);
         settingResponse::SettingResponse set_resp = settingResponse::SettingResponse.New("OK_SET", get_map);
-        mock.SetSettingResponse(set_resp);
+        m.SetSettingResponse(set_resp);
 
         settingResponse::SettingResponse rec_set_resp = RequestSetting(set_req, 3000);
         Error err_set_resp = t.ExpectStrEq(rec_set_resp.Message(), "OK_SET", "Received setting response message matches mock");
 
         // 5. Test RequestMeasurement
-        measurementRequest::MeasurementRequest meas_req = measurementRequest::MeasurementRequest.FromJSON(mock.SampleMeasurementRequestJSON());
-        measurementResponse::MeasurementResponse meas_resp = measurementResponse::MeasurementResponse.FromJSON(mock.SampleMeasurementResponseJSON());
-        mock.SetMeasurementResponse(meas_resp);
+        measurementRequest::MeasurementRequest meas_req = measurementRequest::MeasurementRequest.FromJSON(m.SampleMeasurementRequestJSON());
+        measurementResponse::MeasurementResponse meas_resp = measurementResponse::MeasurementResponse.FromJSON(m.SampleMeasurementResponseJSON());
+        m.SetMeasurementResponse(meas_resp);
 
         measurementResponse::MeasurementResponse rec_meas_resp = RequestMeasurement(meas_req, 3000);
         Error err_meas_resp = t.ExpectTrue(rec_meas_resp.Equal(meas_resp), "Received measurement response matches mock");
 
-        mock.Stop();
+        m.Stop();
         -> __end(runner, t);
     }
 }
