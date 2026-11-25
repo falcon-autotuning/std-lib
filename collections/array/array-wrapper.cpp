@@ -27,7 +27,9 @@
  * — those two types have different internal layouts when T != void, giving
  * undefined behaviour.  Always go through shared_ptr<void>.
  */
+#define FALCON_IMPLEMENT_RUNTIME_HOOK
 #include <falcon-typing/FFIHelpers.hpp>
+#include <falcon-typing/FalconRuntime.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -139,7 +141,7 @@ void STRUCTArrayPopBack(const FalconParamEntry *p, int32_t pc,
   }
   RuntimeValue val = arr->elements.back();
   arr->elements.pop_back();
-  pack_results(FunctionResult{std::move(val)}, out, 16, oc);
+  pack_single(std::move(val), out, oc);
 }
 
 // ── Insert(int index, T value) -> () ─────────────────────────────────────
@@ -194,21 +196,12 @@ void STRUCTArrayContains(const FalconParamEntry *p, int32_t pc,
   const RuntimeValue &needle = pm.at("value");
   bool found = false;
   for (const auto &elem : arr->elements) {
-    if (std::holds_alternative<std::shared_ptr<StructInstance>>(elem) &&
-        std::holds_alternative<std::shared_ptr<StructInstance>>(needle)) {
-
-      auto lhs = std::get<std::shared_ptr<StructInstance>>(elem);
-      auto rhs = std::get<std::shared_ptr<StructInstance>>(needle);
-      if (lhs && rhs && *lhs == *rhs) {
-        found = true;
-        break;
-      }
-    } else if (elem == needle) {
+    if (elem == needle) {
       found = true;
       break;
     }
   }
-  pack_results(FunctionResult{found}, out, 16, oc);
+  pack_single(found, out, oc);
 }
 
 // ── IndexOf(T value) -> (int index) ──────────────────────────────────────
@@ -217,23 +210,13 @@ void STRUCTArrayIndexOf(const FalconParamEntry *p, int32_t pc,
   auto pm = unpack_params(p, pc);
   auto arr = get_array(p, pc);
   const RuntimeValue &needle = pm.at("value");
-  for (size_t i = 0; i < arr->elements.size(); ++i) {
-    // If both are shared_ptr, compare their contents
-    if (std::holds_alternative<std::shared_ptr<StructInstance>>(
-            arr->elements[i]) &&
-        std::holds_alternative<std::shared_ptr<StructInstance>>(needle)) {
-      auto lhs = std::get<std::shared_ptr<StructInstance>>(arr->elements[i]);
-      auto rhs = std::get<std::shared_ptr<StructInstance>>(needle);
-      if (lhs && rhs && *lhs == *rhs) {
-        pack_results(FunctionResult{static_cast<int64_t>(i)}, out, 16, oc);
-        return;
-      }
-    } else if (arr->elements[i] == needle) {
-      pack_results(FunctionResult{static_cast<int64_t>(i)}, out, 16, oc);
+  for (long i = 0; i < arr->elements.size(); ++i) {
+    if (arr->elements.at(i) == needle) {
+      pack_single(i, out, oc);
       return;
     }
   }
-  pack_results(FunctionResult{static_cast<int64_t>(-1)}, out, 16, oc);
+  pack_single(-1, out, oc);
 }
 
 } // extern "C"

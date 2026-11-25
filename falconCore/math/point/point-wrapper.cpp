@@ -1,9 +1,9 @@
 #include "falcon-core/generic/Map.hpp"
-#include <falcon-core/CerealRegistry.hpp>
 #include "falcon-core/math/Point.hpp"
 #include "falcon-core/math/Quantity.hpp"
 #include "falcon-core/physics/device_structures/Connection.hpp"
 #include "falcon-core/physics/units/SymbolUnit.hpp"
+#include <falcon-core/CerealRegistry.hpp>
 #include <falcon-typing/FFIHelpers.hpp>
 
 using namespace falcon::typing;
@@ -48,12 +48,14 @@ static void pack_array_result(std::shared_ptr<ArrayValue> arr,
 static std::shared_ptr<StructInstance>
 get_map_param(const FalconParamEntry *params, int32_t count, const char *key) {
   for (int32_t i = 0; i < count; ++i) {
-    if (std::strcmp(params[i].key, key) != 0)
+    if (std::strcmp(params[i].key, key) != 0) {
       continue;
+    }
     const FalconParamEntry &e = params[i];
-    if (e.tag != FALCON_TYPE_OPAQUE)
+    if (e.tag != FALCON_TYPE_OPAQUE) {
       throw std::runtime_error(std::string("get_map_param: parameter '") + key +
                                "' is not OPAQUE");
+    }
     auto sv = *static_cast<std::shared_ptr<void> *>(e.value.opaque.ptr);
     return std::static_pointer_cast<StructInstance>(sv);
   }
@@ -65,14 +67,16 @@ get_map_param(const FalconParamEntry *params, int32_t count, const char *key) {
 static std::shared_ptr<ArrayValue>
 get_struct_field_array(const std::shared_ptr<StructInstance> &inst,
                        const char *field_name) {
-  if (!inst)
+  if (!inst) {
     throw std::runtime_error(
         std::string("get_struct_field_array: null StructInstance for field '") +
         field_name + "'");
+  }
   auto it = inst->fields->find(field_name);
-  if (it == inst->fields->end())
+  if (it == inst->fields->end()) {
     throw std::runtime_error(std::string("get_struct_field_array: field '") +
                              field_name + "' not found");
+  }
   const RuntimeValue &fv = it->second;
   if (std::holds_alternative<std::shared_ptr<StructInstance>>(fv)) {
     auto farr_inst = std::get<std::shared_ptr<StructInstance>>(fv);
@@ -266,12 +270,12 @@ void STRUCTPointCoordinates(const FalconParamEntry *params, int32_t param_count,
     // Wrap Connection as StructInstance with native_handle
     auto key_inst = std::make_shared<StructInstance>("Connection");
     key_inst->native_handle = std::static_pointer_cast<void>(entry->first());
-    keys_array->elements.push_back(key_inst);
+    keys_array->elements.emplace_back(key_inst);
 
     // Wrap Quantity as StructInstance with native_handle
     auto value_inst = std::make_shared<StructInstance>("Quantity");
     value_inst->native_handle = std::static_pointer_cast<void>(entry->second());
-    values_array->elements.push_back(value_inst);
+    values_array->elements.emplace_back(value_inst);
   }
 
   // Wrap each ArrayValue as a StructInstance with native_handle,
@@ -290,7 +294,7 @@ void STRUCTPointCoordinates(const FalconParamEntry *params, int32_t param_count,
   // Pack as StructInstance (plain FAL struct) — NOT as OPAQUE
   // This will be unpacked correctly as a FAL struct with native Array fields
   FunctionResult result;
-  result.push_back(map_inst);
+  result.emplace_back(map_inst);
   pack_results(result, out, 1, oc);
 }
 
@@ -303,7 +307,7 @@ void STRUCTPointConnections(const FalconParamEntry *params, int32_t param_count,
   for (const auto &conn : conn_lst->items()) {
     auto inst = std::make_shared<StructInstance>("Connection");
     inst->native_handle = std::static_pointer_cast<void>(conn);
-    elements.push_back(inst);
+    elements.emplace_back(inst);
   }
   auto arr_val =
       std::make_shared<ArrayValue>("Connection", std::move(elements));
