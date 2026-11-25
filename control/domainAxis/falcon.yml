@@ -1,0 +1,21 @@
+name: domainAxes
+version: 1.0.0
+maintainer: Falcon Team
+github: falcon-autotuning/std-lib
+license: ""
+dependencies:
+  - name: testing
+    version: 1.0.0
+    local_path: ../../testing/build/
+  - name: map
+    version: 1.0.0
+    local_path: ../../collections/map/
+  - name: controlAxis
+    version: 1.0.0
+    local_path: ../controlAxis/
+  - name: math
+    version: 1.0.0
+    local_path: ../math/
+  - name: coupledLabelledDomain
+    version: 1.0.0
+    local_path: ../../falconCore/math/domains/coupledLabelledDomain/

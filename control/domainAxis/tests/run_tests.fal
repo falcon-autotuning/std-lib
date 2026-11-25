@@ -1,0 +1,408 @@
+import "../../../testing/testing.fal";
+import "../domainAxis.fal";
+
+routine P1() -> (Gate gate) {
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P1",
+                connection::Connection.NewPlungerGate("P1"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P1 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
+}
+
+routine P2() -> (Gate gate) {
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P2",
+                connection::Connection.NewPlungerGate("P2"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P2 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
+}
+
+routine MakeDomainAxis()
+    -> (DomainAxis axis) {
+    ControlPoint begin =ControlPoint.New();
+
+    begin.Set(
+        P1(),
+        Voltage.New(0.0)
+    );
+    begin.Set(
+        P2(),
+        Voltage.New(0.0)
+    );
+    Direction dir = Direction.New();
+    dir.SetCoefficient(
+        P1(),
+        3.0
+    );
+    dir.SetCoefficient(
+        P2(),
+        4.0
+    );
+    axis =
+        DomainAxis.NewFromControlPointAndDirection(
+            begin,
+            dir,
+            1.0
+        );
+}
+
+routine MakeControlAxis()
+    -> (ControlAxis axis) {
+    axis = ControlAxis.New();
+    axis.ExtendDomain(
+        P1(),
+        Voltage.New(1.0),
+        Voltage.New(2.0)
+    );
+    axis.ExtendDomain(
+        P2(),
+        Voltage.New(3.0),
+        Voltage.New(4.0)
+    );
+}
+
+autotuner DomainAxisTests
+    -> (int passed, int failed) {
+
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Error err =
+            t.ExpectFloatEq(
+                3.0,
+                axis.End().Get(P1()).value_,
+                1e-6,
+                "constructor"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_new_from_axis(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlAxis control =
+            MakeControlAxis();
+
+        DomainAxis axis =
+            DomainAxis.NewFromAxis(
+                control,
+                0.0,
+                1.0
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                3.0,
+                axis.End().Get(P1()).value_,
+                1e-6,
+                "new from axis"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_new_from_point_direction(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Error err =
+            t.ExpectFloatEq(
+                4.0,
+                axis.End().Get(P2()).value_,
+                1e-6,
+                "point direction constructor"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_start(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Error err =
+            t.ExpectFloatEq(
+                0.0,
+                axis.Start().Get(P1()).value_,
+                1e-6,
+                "start accessor"
+            );
+
+        -> __end(runner, t);
+    }
+    
+    state test_end(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Error err =
+            t.ExpectFloatEq(
+                3.0,
+                axis.End().Get(P1()).value_,
+                1e-6,
+                "end accessor"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_length(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Error err =
+            t.ExpectFloatEq(
+                5.0,
+                axis.Length(),
+                1e-6,
+                "length"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_direction(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Direction dir =
+            axis.Direction();
+
+        Error err =
+            t.ExpectFloatEq(
+                0.6,
+                dir.GetCoefficient(P1()),
+                1e-6,
+                "normalized direction"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_evaluate_zero(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        ControlPoint point =
+            axis.Evaluate(0.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                0.0,
+                point.Get(P1()).value_,
+                1e-6,
+                "evaluate start"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_evaluate_one(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        ControlPoint point =
+            axis.Evaluate(1.0);
+
+        Error err =
+            t.ExpectFloatEq(
+                3.0,
+                point.Get(P1()).value_,
+                1e-6,
+                "evaluate end"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_evaluate_half(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        ControlPoint point =
+            axis.Evaluate(0.5);
+
+        Error err =
+            t.ExpectFloatEq(
+                1.5,
+                point.Get(P1()).value_,
+                1e-6,
+                "evaluate midpoint"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_not_degenerate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Error err =
+            t.ExpectFalse(
+                axis.IsDegenerate(),
+                "nondegenerate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_degenerate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        ControlPoint point =
+            ControlPoint.New();
+
+        point.Set(
+            P1(),
+            Voltage.New(2.0)
+        );
+
+        DomainAxis axis =
+            DomainAxis.New(
+                point,
+                point
+            );
+
+        Error err =
+            t.ExpectTrue(
+                axis.IsDegenerate(),
+                "degenerate"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_reversed(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        DomainAxis reverse =
+            axis.Reversed();
+
+        Error err =
+            t.ExpectFloatEq(
+                3.0,
+                reverse.Start().Get(P1()).value_,
+                1e-6,
+                "reverse swaps endpoints"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_subdomain(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        DomainAxis sub =
+            axis.Subdomain(
+                0.25,
+                0.75
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                0.75,
+                sub.Start().Get(P1()).value_,
+                1e-6,
+                "subdomain start"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_coupled_labelled_domain_roundtrip(
+        TestRunner runner,
+        TestContext t
+    ) {
+        DomainAxis axis =
+            MakeDomainAxis();
+
+        Increasing inc;
+        CoupledLabelledDomain domain;
+
+        inc, domain =
+            axis.ToIncreasingAndCoupledLabelledDomain();
+
+        DomainAxis rebuilt =
+            DomainAxis.FromIncreasingAndCoupledLabelledDomain(
+                inc,
+                domain
+            );
+
+        Error err =
+            t.ExpectFloatEq(
+                axis.Start().Get(P1()).value_,
+                rebuilt.Start().Get(P1()).value_,
+                1e-6,
+                "roundtrip preserves start"
+            );
+
+        err =
+            t.ExpectFloatEq(
+                axis.End().Get(P2()).value_,
+                rebuilt.End().Get(P2()).value_,
+                1e-6,
+                "roundtrip preserves end"
+            );
+
+        -> __end(runner, t);
+    }
+}

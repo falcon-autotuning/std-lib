@@ -1,0 +1,373 @@
+import "../../collections/map/map.fal";
+import "../controlAxis/controlAxis.fal";
+import "../math/math.fal";
+import "../../falconCore/math/domains/coupledLabelledDomain/coupledLabelledDomain.fal";
+// Increasing is a wrapper for the Increasing object in the falcon-core API
+struct Increasing {
+    Map<string, bool> increasing_;
+    routine New() -> (Increasing inc) {
+        inc.increasing_ = Map.New();
+    }
+    routine Set(string key, bool value) -> () {
+        this.increasing_.Set(key, value);
+    }
+    routine Get(string key) -> (bool value) {
+        value = this.increasing_.Get(key);
+    }
+}
+// DomainAxis represents a bounded one-dimensional domain in gate-voltage
+// space.
+//
+// A DomainAxis is defined by two endpoints and describes the linear path
+// between them. Unlike ControlAxis, which stores an offset and direction
+// representation, a DomainAxis stores an explicit start and end point.
+//
+// DomainAxis is the natural representation for parameter sweeps,
+// optimization intervals, and Falcon CoupledLabelledDomain objects.
+//
+// Every point along the axis can be expressed as:
+//
+//     point(t) = start + t * (end - start)
+//
+// where:
+//
+//     t ∈ [0,1]
+//
+// and:
+//
+//     point(0) = start
+//     point(1) = end
+//
+// A DomainAxis retains no information about how it was constructed.
+// Multiple ControlAxis objects may produce the same DomainAxis.
+struct DomainAxis {
+    controlAxis::ControlPoint start_;
+    controlAxis::ControlPoint end_;
+
+    // ── Construction ───────────────────────────────────────────────────────
+
+    // New constructs a DomainAxis between two points.
+    //
+    // Both points must describe the same gate domain.
+    routine New(
+        ControlPoint first,
+        ControlPoint second
+    ) -> (DomainAxis axis) {
+        axis.start_ = first.DeepCopy();
+        axis.end_ = second.DeepCopy();
+    }
+
+    // NewFromAxis constructs a DomainAxis by evaluating a ControlAxis at
+    // two coordinates.
+    //
+    // Equivalent to:
+    //
+    //     begin = axis.ToControlPoint(begin)
+    //     end   = axis.ToControlPoint(end)
+    //
+    routine NewFromAxis(
+        ControlAxis axis,
+        float begin,
+        float end
+    ) -> (DomainAxis domain) {
+
+        domain.start_ =
+            axis.ToControlPoint(
+                Voltage.New(begin)
+            );
+
+        domain.end_ =
+            axis.ToControlPoint(
+                Voltage.New(end)
+            );
+    }
+
+    // NewFromControlPointAndDirection constructs a DomainAxis
+    routine NewFromControlPointAndDirection(
+        ControlPoint begin,
+        Direction direction,
+        float length
+    ) -> (DomainAxis axis) {
+
+        axis.start_ = begin.DeepCopy();
+
+        ControlPoint end =
+            begin.DeepCopy();
+
+        Array<Gate> gates =
+            direction.Gates();
+
+        for i in gates.Size() {
+            Gate gate =
+                gates.GetIndex(i);
+
+            Voltage value =
+                end.Get(gate);
+
+            end.Set(
+                gate,
+                Voltage.New(
+                    value.value_
+                    + direction.GetCoefficient(gate)
+                        * length
+                )
+            );
+        }
+
+        axis.end_ = end;
+    }
+
+    // ── Access ────────────────────────────────────────────────────────────
+
+    // Start returns the first endpoint.
+    routine Start()
+        -> (ControlPoint point) {
+        point = start_.DeepCopy();
+    }
+
+    // End returns the second endpoint.
+    routine End()
+        -> (ControlPoint point) {
+        point = end_.DeepCopy();
+    }
+
+    // Length returns the Euclidean distance between the two endpoints.
+    //
+    // Length is computed in voltage space and is independent of the number
+    // of gates in the domain.
+    routine Length()
+        -> (float length) {
+
+        length = 0.0;
+
+        Array<Gate> gates =
+            start_.Gates();
+
+        for i in gates.Size() {
+
+            Gate gate =
+                gates.GetIndex(i);
+
+            float delta =
+                end_.Get(gate).value_
+                - start_.Get(gate).value_;
+
+            length = length + delta * delta;
+        }
+
+        length = math::Sqrt(length);
+    }
+
+    // Direction returns the normalized direction pointing from the start
+    // point toward the end point.
+    routine Direction()
+        -> (Direction dir) {
+
+        dir = Direction.New();
+
+        Array<Gate> gates =
+            start_.Gates();
+
+        for i in gates.Size() {
+
+            Gate gate =
+                gates.GetIndex(i);
+
+            dir.SetCoefficient(
+                gate,
+                end_.Get(gate).value_
+                - start_.Get(gate).value_
+            );
+        }
+
+        dir.Normalize();
+    }
+
+    // Evaluate returns the point located at coordinate t along the domain.
+    //
+    // t=0 returns the start point.
+    // t=1 returns the end point.
+    // Intermediate values are linearly interpolated.
+    routine Evaluate(
+        float t
+    ) -> (ControlPoint point) {
+
+        point =
+            start_.DeepCopy();
+
+        Array<Gate> gates =
+            point.Gates();
+
+        for i in gates.Size() {
+
+            Gate gate =
+                gates.GetIndex(i);
+
+            float start_v =
+                start_.Get(gate).value_;
+
+            float end_v =
+                end_.Get(gate).value_;
+
+            point.Set(
+                gate,
+                Voltage.New(
+                    start_v
+                    + t * (end_v - start_v)
+                )
+            );
+        }
+    }
+
+    // IsDegenerate returns true when the start and end points are equal.
+    routine IsDegenerate()
+        -> (bool degenerate) {
+
+        degenerate =
+            this.Length()
+            < 1.0e-12;
+    }
+
+    // ── Transformations ───────────────────────────────────────────────────
+
+    // Reversed returns a DomainAxis with the start and end points swapped.
+    routine Reversed()
+        -> (DomainAxis axis) {
+
+        axis.start_ =
+            end_.DeepCopy();
+
+        axis.end_ =
+            start_.DeepCopy();
+    }
+
+    // Subdomain returns a smaller domain bounded by fractional positions
+    // along the current axis.
+    //
+    // Example:
+    //
+    //     axis.Subdomain(0.25, 0.75)
+    //
+    // returns the middle half of the domain.
+    routine Subdomain(
+        float begin,
+        float end
+    ) -> (DomainAxis axis) {
+
+        axis.start_ =
+            this.Evaluate(begin);
+
+        axis.end_ =
+            this.Evaluate(end);
+    }
+
+    // ── Interop ───────────────────────────────────────────────────────────
+
+    // ToIncreasingAndCoupledLabelledDomain converts the DomainAxis into a
+    // Falcon CoupledLabelledDomain.
+    routine ToIncreasingAndCoupledLabelledDomain()
+        -> (Increasing inc, CoupledLabelledDomain domain) {
+        inc = Increasing.New();
+        domain = CoupledLabelledDomain.New(
+                    Array.New()
+                );
+        Array<Gate> gates = this.start_.Gates();
+
+        for i in gates.Size() {
+            Gate gate = gates.GetIndex(i);
+            float startValue = this.start_.Get(gate).value_;
+            float endValue = this.end_.Get(gate).value_;
+            bool increasing = endValue > startValue;
+            inc.Set(
+                gate.Name(),
+                increasing
+            );
+
+            float minValue = startValue;
+            float maxValue = endValue;
+            if (minValue > maxValue) {
+                float tmp = minValue;
+                minValue = maxValue;
+                maxValue = tmp;
+            }
+            LabelledDomain labelled =
+                LabelledDomain.FromPort(
+                    maxValue,
+                    minValue,
+                    gate.Port(),
+                    true,
+                    true
+                );
+            domain.PushBack(
+                labelled
+            );
+        }
+    }
+
+    // FromIncreasingAndCoupledLabelledDomain converts the DomainAxis from a
+    // Falcon CoupledLabelledDomain.
+    routine FromIncreasingAndCoupledLabelledDomain(
+        Increasing inc,
+        CoupledLabelledDomain domain
+    ) -> (DomainAxis axis) {
+
+        ControlPoint begin =
+            ControlPoint.New();
+
+        ControlPoint end =
+            ControlPoint.New();
+
+        for i in domain.Size() {
+
+            LabelledDomain labelled =
+                domain.GetIndex(i);
+
+            Gate gate =
+                Gate.New(
+                    labelled.Port()
+                );
+
+            float low =
+                labelled.LesserBound();
+
+            float high =
+                labelled.GreaterBound();
+
+            bool increasing =
+                inc.Get(
+                    gate.Name()
+                );
+
+            if (increasing) {
+
+                begin.Set(
+                    gate,
+                    Voltage.New(low)
+                );
+
+                end.Set(
+                    gate,
+                    Voltage.New(high)
+                );
+
+            } else {
+
+                begin.Set(
+                    gate,
+                    Voltage.New(high)
+                );
+
+                end.Set(
+                    gate,
+                    Voltage.New(low)
+                );
+            }
+        }
+
+        axis =
+            DomainAxis.New(
+                begin,
+                end
+            );
+    }
+}
