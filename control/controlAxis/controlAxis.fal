@@ -1,6 +1,5 @@
 import "../../collections/map/map.fal";
 import "../direction/direction.fal";
-ffimport "control-axis-wrapper.cpp" ("-I/opt/falcon/include/" "-std=c++20") ("-L/opt/falcon/lib")
 
 // Voltage represents an electrical potential expressed in volts.
 //
@@ -44,14 +43,14 @@ struct Voltage {
     }
 }
 
-// Point represents a point in gate space.
+// ControlPoint represents a point in gate space.
 //
 // Each entry maps a gate to its magnitude in the space.
-struct Point {
+struct ControlPoint {
     Map<Gate, Voltage> location_;
 
     // New constructs an empty point.
-    routine New() -> (Point point) {
+    routine New() -> (ControlPoint point) {
         point.location_ = Map.New();
     }
     // Get returns the voltage associated with a gate.
@@ -84,9 +83,9 @@ struct Point {
         size = location_.Size();
     }
 
-    routine Clone() -> (Point point) {
+    routine Clone() -> (ControlPoint point) {
 
-        point = Point.New();
+        point = ControlPoint.New();
         Array<Gate> gates =
             this.Gates();
 
@@ -118,28 +117,28 @@ struct Point {
 //
 // where offset and amplitude are defined for every gate in the axis domain.
 struct ControlAxis {
-    Point offset_;
+    ControlPoint offset_;
     Direction direction_;
     // ── Construction ─────────────────────────────────────────────────────────
 
     // New constructs an empty ControlAxis with no gates in its domain.
     routine New -> (ControlAxis axis) {
-        axis.offset_ = Point.New();
+        axis.offset_ = ControlPoint.New();
         axis.direction_ = Direction.New();
     }
 
-    // NewFromPointAndDirection constructs a ControlAxis from an operating
+    // NewFromControlPointAndDirection constructs a ControlAxis from an operating
     // point and a direction.
-    routine NewFromPointAndDirection(Point offset,Direction direction) -> (ControlAxis axis) {
+    routine NewFromControlPointAndDirection(ControlPoint offset,Direction direction) -> (ControlAxis axis) {
         axis.offset_ = offset.Clone();
         axis.direction_ = direction.Clone();
     }
 
-    // NewFromPoints constructs a ControlAxis from an operating point and a
+    // NewFromControlPoints constructs a ControlAxis from an operating point and a
     // second point lying on the axis.
-    routine NewFromPoints(
-        Point offset,
-        Point point
+    routine NewFromControlPoints(
+        ControlPoint offset,
+        ControlPoint point
     ) -> (ControlAxis axis) {
 
         axis = ControlAxis.New();
@@ -164,7 +163,7 @@ struct ControlAxis {
     // Scaled returns a new ControlAxis whose amplitudes are multiplied by
     // factor. Offsets are preserved unchanged.
     routine Scaled(float factor) -> (ControlAxis axis) {
-        axis = ControlAxis.NewFromPointAndDirection(this.offset_, this.direction_);
+        axis = ControlAxis.NewFromControlPointAndDirection(this.offset_, this.direction_);
         axis.Rescale(factor);
     }
 
@@ -175,7 +174,7 @@ struct ControlAxis {
     ) -> (ControlAxis axis) {
 
         axis =
-            ControlAxis.NewFromPointAndDirection(
+            ControlAxis.NewFromControlPointAndDirection(
                 this.offset_,
                 this.direction_
             );
@@ -255,7 +254,7 @@ struct ControlAxis {
     // ── Access ───────────────────────────────────────────────────────────────
 
     // Offset returns the operating point of the axis.
-    routine Offset() -> (Point point) {
+    routine Offset() -> (ControlPoint point) {
         point = this.offset_;
     }
 
@@ -302,7 +301,7 @@ struct ControlAxis {
 
     // ── Interop ──────────────────────────────────────────────────────────────
     
-    // GeneratePoint evaluates the ControlAxis at the supplied coordinate and
+    // GenerateControlPoint evaluates the ControlAxis at the supplied coordinate and
     // returns the resulting gate-voltage configuration.
     //
     // For each gate in the domain, the returned voltage is computed as:
@@ -330,9 +329,9 @@ struct ControlAxis {
     //     P1 = 500 mV
     //     B1 = 100 mV
     //
-    routine ToPoint(
+    routine ToControlPoint(
         Voltage coordinate
-    ) -> (Point point) {
+    ) -> (ControlPoint point) {
 
         point =
             this.offset_.Clone();

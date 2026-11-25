@@ -9,7 +9,7 @@ routine P2() -> (Gate gate) {
     gate = Gate.New("P2");
 }
 
-autotuner PointTests
+autotuner ControlPointTests
     -> (int passed, int failed) {
 
     passed = 0;
@@ -21,8 +21,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         Error err =
             t.ExpectIntEq(
@@ -38,8 +38,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -66,8 +66,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -89,8 +89,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -112,8 +112,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -139,8 +139,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -161,8 +161,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -188,8 +188,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -218,8 +218,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -245,8 +245,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -275,8 +275,8 @@ autotuner PointTests
         TestRunner runner,
         TestContext t
     ) {
-        Point point =
-            Point.New();
+        ControlPoint point =
+            ControlPoint.New();
 
         point.Set(
             P1(),
@@ -352,7 +352,7 @@ autotuner ControlAxisStorageTests
         TestRunner runner,
         TestContext t
     ) {
-        Point offset = Point.New();
+        ControlPoint offset = ControlPoint.New();
         offset.Set(
             P1(),
             Voltage.New(5.0)
@@ -367,7 +367,7 @@ autotuner ControlAxisStorageTests
         );
 
         ControlAxis axis =
-            ControlAxis.NewFromPointAndDirection(
+            ControlAxis.NewFromControlPointAndDirection(
                 offset,
                 dir
             );
@@ -387,8 +387,8 @@ autotuner ControlAxisStorageTests
         TestRunner runner,
         TestContext t
     ) {
-        Point offset = Point.New();
-        Point point = Point.New();
+        ControlPoint offset = ControlPoint.New();
+        ControlPoint point = ControlPoint.New();
 
         offset.Set(
             P1(),
@@ -401,7 +401,7 @@ autotuner ControlAxisStorageTests
         );
 
         ControlAxis axis =
-            ControlAxis.NewFromPoints(
+            ControlAxis.NewFromControlPoints(
                 offset,
                 point
             );
@@ -508,7 +508,7 @@ autotuner ControlAxisStorageTests
         ControlAxis axis =
             MakeAxis();
 
-        Point point =
+        ControlPoint point =
             axis.Offset();
 
         Error err =
@@ -834,8 +834,8 @@ autotuner ControlAxisTransformationTests
         ControlAxis axis =
             MakeAxis();
 
-        Point point =
-            axis.ToPoint(
+        ControlPoint point =
+            axis.ToControlPoint(
                 Voltage.New(2.0)
             );
 
@@ -859,8 +859,8 @@ autotuner ControlAxisTransformationTests
         ControlAxis axis =
             MakeAxis();
 
-        Point point =
-            axis.ToPoint(
+        ControlPoint point =
+            axis.ToControlPoint(
                 Voltage.New(0.0)
             );
 
@@ -884,8 +884,8 @@ autotuner ControlAxisTransformationTests
         ControlAxis axis =
             MakeAxis();
 
-        Point point =
-            axis.ToPoint(
+        ControlPoint point =
+            axis.ToControlPoint(
                 Voltage.New(-1.0)
             );
 
@@ -909,8 +909,8 @@ autotuner ControlAxisTransformationTests
         ControlAxis axis =
             MakeAxis();
 
-        Point point =
-            axis.ToPoint(
+        ControlPoint point =
+            axis.ToControlPoint(
                 Voltage.New(100.0)
             );
 
