@@ -78,4 +78,5 @@ struct Array <T> {
     // Returns the 0-based index of the first occurrence of `value`,
     // or -1 if not found.
     routine IndexOf (T value) -> (int index)
+    routine DeepCopy () -> (Array<T> copy)
 }

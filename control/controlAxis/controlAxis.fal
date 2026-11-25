@@ -82,22 +82,6 @@ struct ControlPoint {
         -> (int size) {
         size = location_.Size();
     }
-
-    routine Clone() -> (ControlPoint point) {
-
-        point = ControlPoint.New();
-        Array<Gate> gates =
-            this.Gates();
-
-        for i in gates.Size() {
-            Gate gate =
-                gates.GetIndex(i);
-            point.Set(
-                gate,
-                this.Get(gate)
-            );
-        }
-    }
 }
 
 // ControlAxis represents a one-dimensional control coordinate embedded in
@@ -130,8 +114,8 @@ struct ControlAxis {
     // NewFromControlPointAndDirection constructs a ControlAxis from an operating
     // point and a direction.
     routine NewFromControlPointAndDirection(ControlPoint offset,Direction direction) -> (ControlAxis axis) {
-        axis.offset_ = offset.Clone();
-        axis.direction_ = direction.Clone();
+        axis.offset_ = offset.DeepCopy();
+        axis.direction_ = direction.DeepCopy();
     }
 
     // NewFromControlPoints constructs a ControlAxis from an operating point and a
@@ -142,7 +126,7 @@ struct ControlAxis {
     ) -> (ControlAxis axis) {
 
         axis = ControlAxis.New();
-        axis.offset_ = offset.Clone();
+        axis.offset_ = offset.DeepCopy();
         Array<Gate> gates =
             offset.Gates();
         for i in gates.Size() {
@@ -334,7 +318,7 @@ struct ControlAxis {
     ) -> (ControlPoint point) {
 
         point =
-            this.offset_.Clone();
+            this.offset_.DeepCopy();
         Array<Gate> gates =
             point.Gates();
 

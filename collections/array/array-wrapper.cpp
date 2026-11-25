@@ -219,4 +219,12 @@ void STRUCTArrayIndexOf(const FalconParamEntry *p, int32_t pc,
   pack_single(-1, out, oc);
 }
 
+// ── DeepCopy () -> (Array<T> copy)
+void STRUCTArrayDeepCopy(const FalconParamEntry *p, int32_t pc,
+                         FalconResultSlot *out, int32_t *oc) {
+  auto pm = unpack_params(p, pc);
+  auto arr = get_array(p, pc);
+  pack_single(Runtime::deep_copy(arr), out, oc);
+}
+
 } // extern "C"
