@@ -313,10 +313,8 @@ struct DomainAxis {
 
         ControlPoint begin =
             ControlPoint.New();
-
         ControlPoint end =
             ControlPoint.New();
-
         for i in domain.Size() {
 
             LabelledDomain labelled =
@@ -351,12 +349,10 @@ struct DomainAxis {
                 );
 
             } else {
-
                 begin.Set(
                     gate,
                     Voltage.New(high)
                 );
-
                 end.Set(
                     gate,
                     Voltage.New(low)
