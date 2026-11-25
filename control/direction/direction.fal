@@ -1,5 +1,6 @@
 import "../../collections/map/map.fal";
 import "../math/math.fal";
+import "../../falconCore/instrumentInterfaces/names/instrumentPort/instrumentPort.fal";
 
 // Gate identifies a physical or logical control channel within a device.
 //
@@ -9,14 +10,20 @@ import "../math/math.fal";
 // Gates are used as the labels that define the domain of a ControlAxis.
 struct Gate {
     string name_;
+    instrumentPort::InstrumentPort port_;
 
     // New constructs a Gate from a name.
-    routine New(string name) -> (Gate gate) {
-        gate.name_ = name;
+    routine New(instrumentPort::InstrumentPort port) -> (Gate gate) {
+        gate.port_= port;
+        gate.name_ = port.PsuedoName().Name();
     }
 
     routine Name() -> (string name) {
-        name = name_;
+        name = this.name_;
+    }
+
+    routine Port() -> (instrumentPort::InstrumentPort port) {
+        port = this.port_;
     }
 }
 
@@ -315,22 +322,6 @@ struct Direction {
             );
         this.dir_ =
             result.dir_;
-    }
-
-    routine Clone() -> (Direction dir) {
-
-        dir = Direction.New();
-        Array<Gate> gates =
-            this.Gates();
-
-        for i in gates.Size() {
-            Gate gate =
-                gates.GetIndex(i);
-            dir.SetCoefficient(
-                gate,
-                this.GetCoefficient(gate)
-            );
-        }
     }
 }
 

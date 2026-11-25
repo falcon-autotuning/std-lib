@@ -2,15 +2,145 @@ import "../../../testing/testing.fal";
 import "../direction.fal";
 
 routine P1() -> (Gate gate) {
-    gate = Gate.New("P1");
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P1",
+                connection::Connection.NewPlungerGate("P1"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P1 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
 }
 
 routine P2() -> (Gate gate) {
-    gate = Gate.New("P2");
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P2",
+                connection::Connection.NewPlungerGate("P2"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P2 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
+}
+
+routine P3() -> (Gate gate) {
+    gate =
+        Gate.New(
+            instrumentPort::InstrumentPort.NewKnob(
+                "P3",
+                connection::Connection.NewPlungerGate("P3"),
+                symbolUnit::SymbolUnit.Volt(),
+                "P3 gate",
+                "inst 1",
+                instrumentPort::Instrument.NewDcVoltageSource(),
+            )
+        );
 }
 
 routine Pi() -> (float value) {
     value = 3.1415926535;
+}
+
+autotuner GateStorageTests -> (int passed, int failed) {
+    passed = 0;
+    failed = 0;
+
+    start -> __init;
+
+    state test_new_preserves_name(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate gate =
+            P1();
+
+        Error err =
+            t.ExpectStrEq(
+                gate.Name(),
+                "P1",
+                "gate name preserved"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_port_round_trip(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate gate =
+            P1();
+
+        instrumentPort::InstrumentPort port =
+            gate.Port();
+
+        Error err =
+            t.ExpectStrEq(
+                port.PsuedoName().Name(),
+                "P1",
+                "port round trip"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_distinct_gate_names(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Error err =
+            t.ExpectTrue(
+                P1().Name() != P2().Name(),
+                "distinct gate names"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_connection_name_matches_gate(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate gate =
+            P1();
+
+        Error err =
+            t.ExpectStrEq(
+                gate.Port()
+                    .PsuedoName()
+                    .Name(),
+                gate.Name(),
+                "connection matches gate name"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_gate_deepcopy(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Gate gate =
+            P1();
+
+        Gate copy =
+            gate.DeepCopy();
+
+        Error err =
+            t.ExpectStrEq(
+                copy.Name(),
+                "P1",
+                "deepcopy preserves name"
+            );
+
+        -> __end(runner, t);
+    }
 }
 
 autotuner DirectionStorageTests -> (int passed, int failed) {
@@ -716,10 +846,7 @@ autotuner DirectionIdentityTests -> (int passed, int failed) {
 
         dir.SetCoefficient(P1(), 1.0);
         dir.SetCoefficient(P2(), 0.0);
-        dir.SetCoefficient(
-            Gate.New("P3"),
-            5.0
-        );
+        dir.SetCoefficient(P3(), 5.0);
 
         Direction xAxis = Direction.New();
         xAxis.SetCoefficient(P1(), 1.0);
@@ -736,7 +863,7 @@ autotuner DirectionIdentityTests -> (int passed, int failed) {
         Error err =
             t.ExpectFloatEq(
                 dir.GetCoefficient(
-                    Gate.New("P3")
+                    P3()
                 ),
                 5.0,
                 1.0e-6,

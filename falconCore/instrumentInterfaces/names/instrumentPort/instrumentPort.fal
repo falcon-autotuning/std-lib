@@ -83,4 +83,5 @@ struct InstrumentPort {
     routine NotEqual (InstrumentPort other) -> (bool notequal)
     routine FromJSON (string json) -> (InstrumentPort port)
     routine ToJSON () -> (string json)
+    routine DeepCopy () -> (InstrumentPort port)
 }

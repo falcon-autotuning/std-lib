@@ -693,4 +693,12 @@ void STRUCTInstrumentPortFromJSON(const FalconParamEntry *params,
   pack_opaque_port(std::make_shared<InstrumentPort>(*port), out, oc);
 }
 
+// DeepCopy() -> (InstrumentPort port)
+void STRUCTInstrumentPortDeepCopy(const FalconParamEntry *params,
+                                  int32_t param_count, FalconResultSlot *out,
+                                  int32_t *oc) {
+  auto self = get_opaque<InstrumentPort>(params, param_count, "this");
+  auto copy = std::make_shared<InstrumentPort>(*self);
+  pack_opaque_port(std::move(copy), out, oc);
+}
 } // extern "C"
