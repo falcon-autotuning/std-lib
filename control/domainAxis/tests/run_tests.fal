@@ -200,12 +200,8 @@ autotuner DomainAxisTests
         TestRunner runner,
         TestContext t
     ) {
-        DomainAxis axis =
-            MakeDomainAxis();
-
-        Direction dir =
-            axis.Direction();
-
+        DomainAxis axis = MakeDomainAxis();
+        Direction dir = axis.Direction();
         Error err =
             t.ExpectFloatEq(
                 0.6,
