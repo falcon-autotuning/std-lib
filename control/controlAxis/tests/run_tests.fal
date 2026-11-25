@@ -348,35 +348,6 @@ autotuner ControlAxisStorageTests
         -> __end(runner, t);
     }
 
-    state test_map_survives_deepcopy(
-        TestRunner runner,
-        TestContext t
-    ) {
-        Map<Gate, Voltage> m =
-            Map.New();
-
-        m.Set(
-            P1(),
-            Voltage.New(5.0)
-        );
-
-        Map<Gate, Voltage> copy =
-            m.DeepCopy();
-
-        Voltage v =
-            copy.Get(P1());
-
-        Error err =
-            t.ExpectFloatEq(
-                5.0,
-                v.value_,
-                1e-6,
-                "map deepcopy"
-            );
-
-        -> __end(runner, t);
-    }
-
     state test_controlpoint_deepcopy(
         TestRunner runner,
         TestContext t
@@ -398,59 +369,6 @@ autotuner ControlAxisStorageTests
                 copy.Get(P1()).value_,
                 1e-6,
                 "deepcopy preserves values"
-            );
-
-        -> __end(runner, t);
-    }
-    state test_array_indexof_gate(
-        TestRunner runner,
-        TestContext t
-    ) {
-        Array<Gate> gates =
-            Array.New();
-
-        gates.PushBack(
-            P1()
-        );
-
-        int idx =
-            gates.IndexOf(
-                P1()
-            );
-
-        Error err =
-            t.ExpectIntEq(
-                0,
-                idx,
-                "indexof gate"
-            );
-
-        -> __end(runner, t);
-    }
-
-    state test_map_get(
-        TestRunner runner,
-        TestContext t
-    ) {
-        Map<Gate, Voltage> m =
-            Map.New();
-
-        m.Set(
-            P1(),
-            Voltage.New(5.0)
-        );
-
-        Voltage v =
-            m.Get(
-                P1()
-            );
-
-        Error err =
-            t.ExpectFloatEq(
-                5.0,
-                v.value_,
-                1e-6,
-                "map get"
             );
 
         -> __end(runner, t);

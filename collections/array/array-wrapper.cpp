@@ -224,7 +224,11 @@ void STRUCTArrayDeepCopy(const FalconParamEntry *p, int32_t pc,
                          FalconResultSlot *out, int32_t *oc) {
   auto pm = unpack_params(p, pc);
   auto arr = get_array(p, pc);
-  pack_single(Runtime::deep_copy(arr), out, oc);
+  auto res = Runtime::deep_copy(arr);
+  if (auto *copy_ptr = std::get_if<decltype(arr)>(&res)) {
+    auto copy = *copy_ptr;
+    pack_array(copy, out, oc);
+  }
 }
 
 } // extern "C"

@@ -236,3 +236,160 @@ autotuner StringElementTests -> (int passed, int failed) {
         -> __end(runner, t);
     }
 }
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 7: DeepCopy 
+// ─────────────────────────────────────────────────────────────────────────────
+autotuner DeepCopyTests -> (int passed, int failed) {
+    passed = 0; failed = 0;
+    start -> __init;
+
+    state test_array_deepcopy_size(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> a =
+            Array.New();
+        a.PushBack(2);
+        Array<int> copy =
+            a.DeepCopy();
+
+        int n =
+            copy.Size();
+        Error err =
+            t.ExpectIntEq(
+                1,
+                n,
+                "deepcopy preserves size"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_array_deepcopy_contains(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> a =
+            Array.New();
+        a.PushBack(2);
+        Array<int> copy =
+            a.DeepCopy();
+
+        bool found =
+            copy.Contains(2);
+
+        Error err =
+            t.ExpectTrue(
+                found,
+                "deepcopy preserves contains"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_array_survives_deepcopy(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> a =
+            Array.New();
+        a.PushBack(2);
+        Array<int> copy =
+            a.DeepCopy();
+        int idx =
+            copy.IndexOf(2);
+        Error err =
+            t.ExpectIntEq(
+                0,
+                idx,
+                "array deepcopy preserves type"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_nested_array_deepcopy(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<Array<int>> outer =
+            Array.New();
+        Array<int> inner =
+            Array.New();
+
+        inner.PushBack(2);
+        outer.PushBack(inner);
+
+        Array<Array<int>> copy =
+            outer.DeepCopy();
+
+        Array<int> recovered =
+            copy.GetIndex(0);
+
+        int idx =
+            recovered.IndexOf(2);
+
+        Error err =
+            t.ExpectIntEq(
+                0,
+                idx,
+                "nested array deepcopy"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_array_deepcopy_getindex(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> a =
+            Array.New();
+
+        a.PushBack(123);
+
+        Array<int> copy =
+            a.DeepCopy();
+
+        int value =
+            copy.GetIndex(0);
+
+        Error err =
+            t.ExpectIntEq(
+                123,
+                value,
+                "deepcopy getindex"
+            );
+
+        -> __end(runner, t);
+    }
+
+    state test_array_deepcopy_setindex(
+        TestRunner runner,
+        TestContext t
+    ) {
+        Array<int> a =
+            Array.New();
+
+        a.PushBack(1);
+
+        Array<int> copy =
+            a.DeepCopy();
+
+        copy.SetIndex(0, 5);
+
+        int value =
+            copy.GetIndex(0);
+
+        Error err =
+            t.ExpectIntEq(
+                5,
+                value,
+                "deepcopy setindex"
+            );
+
+        -> __end(runner, t);
+    }
+}
